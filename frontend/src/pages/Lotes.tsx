@@ -358,7 +358,7 @@ export function Lotes() {
         ) : (
           lotesComAmostras.sort((a: any, b: any) => 
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-          ).map((lote) => (
+          ).map((lote: any) => (
             <div key={lote.id} className="card hover:shadow-lg transition-shadow cursor-pointer" onClick={() => window.location.href = `/lotes/${lote.id}`}>
               <div className="card-content">
                 {/* Header do Lote */}

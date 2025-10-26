@@ -156,10 +156,10 @@ export function LancamentoResultados() {
       
       if (tipo === 'H+Al') {
         // Para H+Al, verificar se existe resultado do tipo H+Al
-        return amostra.resultados.some(r => r.tipo === 'H+Al')
+        return amostra.resultados.some((r: any) => r.tipo === 'H+Al')
       } else {
         // Para outros tipos, verificar se existe resultado do tipo específico
-        return amostra.resultados.some(r => r.tipo === tipo)
+        return amostra.resultados.some((r: any) => r.tipo === tipo)
       }
     })
     
@@ -220,7 +220,7 @@ export function LancamentoResultados() {
     }
 
     // Pegar as amostras selecionadas
-    const amostrasSelecionadas = amostrasData?.data?.filter(a => selectedAmostras.includes(a.id)) || []
+    const amostrasSelecionadas = amostrasData?.data?.filter((a: any) => selectedAmostras.includes(a.id)) || []
     
     if (amostrasSelecionadas.length === 0) {
       return tiposResultado
@@ -229,7 +229,7 @@ export function LancamentoResultados() {
     // Verificar quais tipos de análise as amostras selecionadas solicitam
     const tiposSolicitados = new Set<string>()
     
-    amostrasSelecionadas.forEach(amostra => {
+    amostrasSelecionadas.forEach((amostra: any) => {
       if (amostra.rotina) tiposSolicitados.add('Rotina')
       if (amostra.micronutrientes) tiposSolicitados.add('Micronutrientes')
       if (amostra.organica) tiposSolicitados.add('Matéria Orgânica')
@@ -367,11 +367,11 @@ export function LancamentoResultados() {
     const newVolumeTitR2Resultado: Record<string, string> = {}
     const newVolumeTitR3Resultado: Record<string, string> = {}
     
-    amostrasData.data.forEach(amostra => {
+    amostrasData.data.forEach((amostra: any) => {
       if (amostra.resultados && amostra.resultados.length > 0) {
         // Para H+Al, buscar resultado único com todos os campos
         if (tipo === 'H+Al') {
-          const resultadoHAl = amostra.resultados.find(r => r.tipo === 'H+Al')
+          const resultadoHAl = amostra.resultados.find((r: any) => r.tipo === 'H+Al')
           
           if (resultadoHAl) {
             // Carregar campo AL
@@ -389,7 +389,7 @@ export function LancamentoResultados() {
           }
         } else {
           // Para outros tipos, buscar resultado existente para o tipo selecionado
-          const resultadoExistente = amostra.resultados.find(r => r.tipo === tipo)
+          const resultadoExistente = amostra.resultados.find((r: any) => r.tipo === tipo)
           
           if (resultadoExistente) {
             if (resultadoExistente.valor && resultadoExistente.valor.trim() !== '') {
@@ -584,7 +584,7 @@ export function LancamentoResultados() {
       const novaDiluicao: Record<string, string> = {}
       const novaDilB: Record<string, string> = {}
       
-      amostrasData.data.forEach(amostra => {
+      amostrasData.data.forEach((amostra: any) => {
         // Verificar se a amostra solicita este tipo de análise
         if (amostraSolicitaAnalise(amostra, tipoResultado)) {
           novaDiluicao[amostra.id] = diluicaoPadrao
@@ -611,7 +611,7 @@ export function LancamentoResultados() {
     if (tipoResultado === 'N' && amostrasData?.data) {
       const newFatorFResultado: Record<string, string> = {}
       
-      amostrasData.data.forEach(amostra => {
+      amostrasData.data.forEach((amostra: any) => {
         const fatorFCalculado = calcularFatorF(amostra)
         if (fatorFCalculado) {
           newFatorFResultado[amostra.id] = fatorFCalculado
@@ -694,7 +694,7 @@ export function LancamentoResultados() {
       }
     }
 
-    const amostrasNoRange = amostrasData?.data.filter(amostra => {
+    const amostrasNoRange = amostrasData?.data.filter((amostra: any) => {
       const codigo = amostra.codigo
       
       // Para códigos numéricos, usar comparação numérica
@@ -719,7 +719,7 @@ export function LancamentoResultados() {
       return codigo >= inicio && codigo <= fim
     }) || []
 
-    setSelectedAmostras(amostrasNoRange.map(a => a.id))
+    setSelectedAmostras(amostrasNoRange.map((a: any) => a.id))
     setShowOnlySelected(true)
     toast.success(`${amostrasNoRange.length} amostras selecionadas`)
   }
@@ -853,7 +853,7 @@ export function LancamentoResultados() {
     // Limpar notificações antigas
     clearOldToasts()
     
-    const amostrasValidas = selectedAmostras.filter(id => amostrasParaExibir.some(a => a.id === id))
+    const amostrasValidas = selectedAmostras.filter((id: string) => amostrasParaExibir.some((a: any) => a.id === id))
     
     if (amostrasValidas.length === 0) {
       toast.error('Selecione pelo menos uma amostra que solicita este tipo de análise', {
@@ -1366,11 +1366,11 @@ export function LancamentoResultados() {
   // Filtrar amostras baseado no estado showOnlySelected e ordenar por código (menor para maior)
   const amostrasParaExibir = useMemo(() => {
     const step1 = showOnlySelected 
-    ? amostrasData?.data.filter(a => selectedAmostras.includes(a.id)) || []
+    ? amostrasData?.data.filter((a: any) => selectedAmostras.includes(a.id)) || []
     : amostrasData?.data || []
     
     // Aplicar filtro de tipo de análise
-    const step2 = step1.filter(amostra => {
+    const step2 = step1.filter((amostra: any) => {
       // Se não há tipo selecionado, mostrar todas as amostras
       if (!tipoResultado || tipoResultado === '') {
         return true
@@ -1393,7 +1393,7 @@ export function LancamentoResultados() {
     })
     
     // Ordenar por código (menor para maior)
-    const step3 = step2.sort((a, b) => {
+    const step3 = step2.sort((a: any, b: any) => {
       const codigoA = a.codigo
       const codigoB = b.codigo
       
@@ -1493,7 +1493,7 @@ export function LancamentoResultados() {
                 onClick={handleSelectAll}
                   className="btn btn-outline btn-xs"
               >
-                {amostrasParaExibir.length > 0 && amostrasParaExibir.every(a => selectedAmostras.includes(a.id)) 
+                {amostrasParaExibir.length > 0 && amostrasParaExibir.every((a: any) => selectedAmostras.includes(a.id)) 
                   ? 'Desmarcar Todas' 
                   : 'Selecionar Todas'
                 }
