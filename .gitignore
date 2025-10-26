@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Build outputs
+dist/
+**/dist/
+build/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Backups
+backup/
+backups/
+*.sql
+*.backup
+
+# Laudos
+laudos/
+*.pdf
+*.xlsx
+
+# Scripts locais
+*.bat
+*.ps1
+
+# Check files
+check-*.js
+check-*.log
+
+# TypeScript
+*.tsbuildinfo
+
+# Vite
+**/vite.config.ts.timestamp*
+
+# Test files
+test-*.ts
+test-*.js
+
+# PostgreSQL
+postgres_data/

@@ -1,0 +1,166 @@
+import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { api } from '../services/api'
+import { LoteAmostra, LoteAmostraFilters, CreateLoteAmostraData } from '../../../shared/types'
+import { useModule } from '../contexts/ModuleContext'
+
+// Hook para buscar lotes
+export function useLotes(filters: LoteAmostraFilters = {}) {
+  const { modulo } = useModule()
+  
+  return useQuery(
+    ['lotes', filters, modulo],
+    async () => {
+      const params: any = { ...filters }
+      
+      // Se modulo não foi explicitamente definido nos filtros, usar o do contexto
+      if (!('modulo' in filters)) {
+        params.modulo = modulo
+      }
+      // Se foi definido como undefined, não adicionar o parâmetro (buscar todos)
+      // Se foi definido com um valor específico, usar esse valor
+      
+      const response = await api.get<{ lotes: LoteAmostra[], pagination: any }>('/lotes', {
+        params
+      })
+      return {
+        data: response.data.data,
+        pagination: response.data.pagination
+      }
+    },
+    {
+      keepPreviousData: true,
+    }
+  )
+}
+
+// Hook para buscar um lote específico por ID (sem filtro de tipo)
+export function useLoteById(id: string) {
+  return useQuery(
+    ['lote', id],
+    async () => {
+      const response = await api.get<LoteAmostra>(`/lotes/${id}`)
+      return response.data
+    },
+    {
+      enabled: !!id, // Só executar se o ID estiver presente
+      keepPreviousData: true,
+    }
+  )
+}
+
+// Hook para buscar próximo número de lote
+export function useNextLoteNumber() {
+  const { modulo } = useModule()
+  
+  return useQuery(
+    ['lotes', 'next-number', modulo],
+    async () => {
+      const response = await api.get<{ nextNumber: string }>('/lotes/next-number', {
+        params: { modulo }
+      })
+      return response.data
+    }
+  )
+}
+
+// Hook para buscar lote por ID
+export function useLote(id: string) {
+  return useQuery(
+    ['lote', id],
+    async () => {
+      const response = await api.get<LoteAmostra>(`/lotes/${id}`)
+      return response.data
+    },
+    {
+      enabled: !!id,
+    }
+  )
+}
+
+// Hook para criar lote
+export function useCreateLote() {
+  const queryClient = useQueryClient()
+  const { modulo } = useModule()
+
+  return useMutation(
+    async (data: CreateLoteAmostraData) => {
+      const response = await api.post<LoteAmostra>('/lotes', {
+        ...data,
+        modulo
+      })
+      return response.data
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['lotes'])
+        queryClient.invalidateQueries(['clientes'])
+      },
+    }
+  )
+}
+
+// Hook para atualizar lote
+export function useUpdateLote() {
+  const queryClient = useQueryClient()
+
+  return useMutation(
+    async ({ id, data }: { id: string; data: Partial<CreateLoteAmostraData> }) => {
+      const response = await api.put<LoteAmostra>(`/lotes/${id}`, data)
+      return response.data
+    },
+    {
+      onSuccess: (data, variables) => {
+        // Invalidar queries de lotes
+        queryClient.invalidateQueries(['lotes'])
+        queryClient.invalidateQueries(['clientes'])
+        // Invalidar query específica do lote
+        queryClient.invalidateQueries(['lote', variables.id])
+        // Atualizar cache do lote específico
+        queryClient.setQueryData(['lote', variables.id], data)
+      },
+    }
+  )
+}
+
+// Hook para deletar lote
+export function useDeleteLote() {
+  const queryClient = useQueryClient()
+
+  return useMutation(
+    async ({ id, cascade = false }: { id: string; cascade?: boolean }) => {
+      const params = cascade ? '?cascade=true' : ''
+      await api.delete(`/lotes/${id}${params}`)
+    },
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['lotes'])
+        queryClient.invalidateQueries(['amostras'])
+        queryClient.invalidateQueries(['resultados'])
+        queryClient.invalidateQueries(['clientes'])
+      },
+    }
+  )
+}
+
+// Hook para limpar lotes vazios
+export function useCleanEmptyLotes() {
+  const queryClient = useQueryClient()
+  
+  return useMutation(
+    async () => {
+      const response = await api.delete<{ 
+        message: string
+        deletedCount: number
+        deletedLotes: string[]
+      }>('/lotes/clean-empty')
+      return response.data
+    },
+    {
+      onSuccess: () => {
+        // Invalidar todas as queries de lotes para recarregar os dados
+        queryClient.invalidateQueries(['lotes'])
+        queryClient.invalidateQueries(['clientes'])
+      }
+    }
+  )
+}

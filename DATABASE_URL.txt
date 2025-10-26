@@ -1,0 +1,5 @@
+postgresql://postgres:LaboratorioSolo@db.jahlbcqgowaxdptslula.supabase.co:5432/postgres
+
+⚠️ IMPORTANTE: Este arquivo será ignorado pelo Git
+Copie esta URL para as variáveis de ambiente do Vercel!
+
