@@ -84,7 +84,7 @@ export function Resultados() {
     
     const agrupados = new Map()
     
-    data.data.forEach(resultado => {
+    data.data.forEach((resultado: any) => {
       const amostraId = resultado.amostraId
       if (!agrupados.has(amostraId)) {
         agrupados.set(amostraId, {

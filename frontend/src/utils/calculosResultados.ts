@@ -77,7 +77,7 @@ export interface CalculadosResultados {
   n?: number // Resultado calculado do Nitrogênio
 }
 
-export function calcularResultados(dadosBrutos: DadosBrutos, moduloFoliar: boolean = false): CalculadosResultados {
+export function calcularResultados(dadosBrutos: DadosBrutos, _moduloFoliar: boolean = false): CalculadosResultados {
   const resultados: CalculadosResultados = {}
   
 

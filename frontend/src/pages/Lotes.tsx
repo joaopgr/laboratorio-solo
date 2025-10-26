@@ -46,13 +46,13 @@ export function Lotes() {
   // Filtrar lotes vazios (com 0 amostras)
   const lotesComAmostras = useMemo(() => {
     if (!data?.data) return []
-    return data.data.filter(lote => lote.amostras && lote.amostras.length > 0)
+    return data.data.filter((lote: any) => lote.amostras && lote.amostras.length > 0)
   }, [data?.data])
 
   // Contar lotes vazios
   const lotesVazios = useMemo(() => {
     if (!data?.data) return []
-    return data.data.filter(lote => !lote.amostras || lote.amostras.length === 0)
+    return data.data.filter((lote: any) => !lote.amostras || lote.amostras.length === 0)
   }, [data?.data])
 
   // Debounce para busca automática
@@ -356,7 +356,7 @@ export function Lotes() {
             </p>
           </div>
         ) : (
-          lotesComAmostras.sort((a, b) => 
+          lotesComAmostras.sort((a: any, b: any) => 
             new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
           ).map((lote) => (
             <div key={lote.id} className="card hover:shadow-lg transition-shadow cursor-pointer" onClick={() => window.location.href = `/lotes/${lote.id}`}>
@@ -397,7 +397,7 @@ export function Lotes() {
                   <div className="mb-4">
                     <h4 className="text-sm font-medium text-gray-700 mb-2">Amostras:</h4>
                     <div className="space-y-1">
-                      {lote.amostras.slice(0, 3).map((amostra) => (
+                      {lote.amostras.slice(0, 3).map((amostra: any) => (
                         <div key={amostra.id} className="text-xs text-gray-600 flex items-center justify-between">
                           <span>{amostra.codigo} - {amostra.identificacao}</span>
                           <span className={`px-2 py-0.5 rounded text-xs ${

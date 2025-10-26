@@ -89,7 +89,7 @@ export function ResultadosCalculados() {
     
     const agrupados = new Map()
     
-    data.data.forEach(resultado => {
+    data.data.forEach((resultado: any) => {
       const amostraId = resultado.amostraId
       if (!agrupados.has(amostraId)) {
         agrupados.set(amostraId, {
@@ -297,7 +297,7 @@ export function ResultadosCalculados() {
       }
     }
     
-    resultados.forEach(resultado => {
+    resultados.forEach((resultado: any) => {
       const { tipo, valor, diluicao, massa, al, h_al, param_a, param_b } = resultado
       
       // Função para obter o valor do branco com lógica especial (igual à aba Resultados)

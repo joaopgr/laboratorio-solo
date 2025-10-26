@@ -1609,13 +1609,13 @@ export function LancamentoResultados() {
                       type="button"
                       onClick={() => {
                         // Aplicar parâmetros A e B para todas as amostras visíveis
-                        const amostrasParaAplicar = selectedAmostras.length > 0 ? selectedAmostras : amostrasParaExibir.map(a => a.id)
+                        const amostrasParaAplicar = selectedAmostras.length > 0 ? selectedAmostras : amostrasParaExibir.map((a: any) => a.id)
                         
                         // Aplicar parâmetros usando uma única chamada para cada estado
                         const newParamA = { ...paramAResultado }
                         const newParamB = { ...paramBResultado }
                         
-                        amostrasParaAplicar.forEach(amostraId => {
+                        amostrasParaAplicar.forEach((amostraId: string) => {
                           // Converter vírgula para ponto para campos numéricos
                           const valorA = paramALote.replace(',', '.')
                           const valorB = paramBLote.replace(',', '.')
@@ -1664,12 +1664,12 @@ export function LancamentoResultados() {
                       type="button"
                       onClick={() => {
                         // Aplicar Branco para todas as amostras visíveis
-                        const amostrasParaAplicar = selectedAmostras.length > 0 ? selectedAmostras : amostrasParaExibir.map(a => a.id)
+                        const amostrasParaAplicar = selectedAmostras.length > 0 ? selectedAmostras : amostrasParaExibir.map((a: any) => a.id)
                         
                         // Aplicar Branco usando uma única chamada para o estado
                         const newBranco = { ...brancoResultado }
                         
-                        amostrasParaAplicar.forEach(amostraId => {
+                        amostrasParaAplicar.forEach((amostraId: string) => {
                           // Converter vírgula para ponto para campos numéricos
                           const valorBranco = brancoLote.replace(',', '.')
                           
@@ -1714,12 +1714,12 @@ export function LancamentoResultados() {
                       type="button"
                       onClick={() => {
                         // Aplicar Branco B para todas as amostras visíveis
-                        const amostrasParaAplicar = selectedAmostras.length > 0 ? selectedAmostras : amostrasParaExibir.map(a => a.id)
+                        const amostrasParaAplicar = selectedAmostras.length > 0 ? selectedAmostras : amostrasParaExibir.map((a: any) => a.id)
                         
                         // Aplicar Branco B usando uma única chamada para o estado
                         const newBrancoB = { ...brancoBResultado }
                         
-                        amostrasParaAplicar.forEach(amostraId => {
+                        amostrasParaAplicar.forEach((amostraId: string) => {
                           // Converter vírgula para ponto para campos numéricos
                           const valorBrancoB = brancoBLote.replace(',', '.')
                           
@@ -1764,12 +1764,12 @@ export function LancamentoResultados() {
                       type="button"
                       onClick={() => {
                         // Aplicar Branco N para todas as amostras visíveis
-                        const amostrasParaAplicar = selectedAmostras.length > 0 ? selectedAmostras : amostrasParaExibir.map(a => a.id)
+                        const amostrasParaAplicar = selectedAmostras.length > 0 ? selectedAmostras : amostrasParaExibir.map((a: any) => a.id)
                         
                         // Aplicar Branco N usando uma única chamada para o estado
                         const newBrancoN = { ...brancoNResultado }
                         
-                        amostrasParaAplicar.forEach(amostraId => {
+                        amostrasParaAplicar.forEach((amostraId: string) => {
                           // Converter vírgula para ponto para campos numéricos
                           const valorBrancoN = brancoNLote.replace(',', '.')
                           
@@ -1978,7 +1978,7 @@ export function LancamentoResultados() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       <input
                         type="checkbox"
-                        checked={amostrasParaExibir.length > 0 && amostrasParaExibir.every(a => selectedAmostras.includes(a.id))}
+                        checked={amostrasParaExibir.length > 0 && amostrasParaExibir.every((a: any) => selectedAmostras.includes(a.id))}
                         onChange={handleSelectAll}
                         className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       />
@@ -2044,7 +2044,7 @@ export function LancamentoResultados() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {amostrasParaExibir.map((amostra, index) => (
+                  {amostrasParaExibir.map((amostra: any, index: number) => (
                     <tr key={amostra.id} className={selectedAmostras.includes(amostra.id) ? 'bg-blue-50' : ''}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <input
@@ -2066,7 +2066,7 @@ export function LancamentoResultados() {
                       {getCamposNecessarios(tipoResultado).length > 0 ? (
                         getCamposNecessarios(tipoResultado).map(campo => {
                         // Verificar se já existe valor para este campo
-                        const temValorExistente = amostra.resultados?.some(r => {
+                        const temValorExistente = amostra.resultados?.some((r: any) => {
                           if (tipoResultado === 'H+Al') {
                             
                             // Para H+Al, verificar se existe resultado para Al ou H+Al
@@ -2338,7 +2338,7 @@ export function LancamentoResultados() {
             className="btn btn-primary flex items-center"
           >
             <Save className="w-4 h-4 mr-2" />
-            {createResultadosLote.isLoading ? 'Salvando...' : `Salvar ${selectedAmostras.filter(id => amostrasParaExibir.some(a => a.id === id)).length} Resultados`}
+            {createResultadosLote.isLoading ? 'Salvando...' : `Salvar ${selectedAmostras.filter((id: string) => amostrasParaExibir.some((a: any) => a.id === id)).length} Resultados`}
           </button>
         </div>
       )}
