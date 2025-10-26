@@ -727,7 +727,7 @@ export function Resultados() {
         // Mostrar tabela granulométrica quando apenas granulométrica estiver selecionada
         <GranulometriaTable 
           amostras={resultadosPorAmostra.map(r => r.amostra)}
-          resultados={data?.data || []}
+          resultados={data?.resultados || []}
           tipo="brutos"
         />
       ) : (

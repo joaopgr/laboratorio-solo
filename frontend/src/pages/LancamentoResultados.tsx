@@ -127,7 +127,7 @@ export function LancamentoResultados() {
   // Debug dos dados recebidos da API
   useEffect(() => {
     if (amostrasData?.amostras) {
-      const amostra03 = amostrasData.data.find((a: any) => a.codigo === '03')
+      const amostra03 = amostrasData.amostras.find((a: any) => a.codigo === '03')
       if (amostra03) {
       }
     }
@@ -149,7 +149,7 @@ export function LancamentoResultados() {
     }
     
     // Verificar se TODAS as amostras atualmente carregadas têm dados lançados para este tipo
-    const todasTemResultado = amostrasData.data.every((amostra: any) => {
+    const todasTemResultado = amostrasData.amostras.every((amostra: any) => {
       if (!amostra.resultados || amostra.resultados.length === 0) {
         return false
       }

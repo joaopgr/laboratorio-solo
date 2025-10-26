@@ -18,8 +18,6 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
 
   const { data: lotesData } = useLotes({ page: 1, limit: 1000 })
 
-  const lotes = lotesData?.lotes || []
-
   const handleGerarLaudos = async () => {
     if (!loteInicio || !loteFim) {
       toast.error('Selecione o intervalo de lotes')

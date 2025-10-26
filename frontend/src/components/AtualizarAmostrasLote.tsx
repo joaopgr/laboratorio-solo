@@ -39,12 +39,12 @@ export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmos
     useResultados({ amostraId })
   )
   const resultadosData = resultadosQueries.reduce((acc, query) => {
-    if (query.data?.data) {
-      acc.data = [...(acc.data || []), ...query.data.data]
+    if (query.data?.resultados) {
+      acc.resultados = [...(acc.resultados || []), ...query.data.resultados]
       acc.pagination = query.data.pagination
     }
     return acc
-  }, { data: [] as any[], pagination: null })
+  }, { resultados: [] as any[], pagination: null })
 
   // Calcular tipos existentes das amostras selecionadas
   const calcularTiposExistentes = () => {
@@ -121,7 +121,7 @@ export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmos
     const tiposResultado = tipoMap[tipo] || []
     
     // Verificar se alguma amostra selecionada tem resultados para esses tipos
-    return resultadosData.data?.some((resultado: any) => 
+    return resultadosData.resultados?.some((resultado: any) => 
       selectedAmostras.includes(resultado.amostraId) && 
       tiposResultado.includes(resultado.tipo)
     ) || false

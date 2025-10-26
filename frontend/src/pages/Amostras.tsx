@@ -41,7 +41,7 @@ export function Amostras() {
   }, [searchInput])
 
   // Usar dados diretamente do React Query
-  const amostras = data?.data || []
+  const amostras = data?.amostras || []
   const hasMore = amostras.length === filters.limit
 
   const handleDelete = async (id: string) => {
