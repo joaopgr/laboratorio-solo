@@ -127,7 +127,7 @@ export function LancamentoResultados() {
   // Debug dos dados recebidos da API
   useEffect(() => {
     if (amostrasData?.data) {
-      const amostra03 = amostrasData.data.find(a => a.codigo === '03')
+      const amostra03 = amostrasData.data.find((a: any) => a.codigo === '03')
       if (amostra03) {
       }
     }
@@ -149,7 +149,7 @@ export function LancamentoResultados() {
     }
     
     // Verificar se TODAS as amostras atualmente carregadas têm dados lançados para este tipo
-    const todasTemResultado = amostrasData.data.every(amostra => {
+    const todasTemResultado = amostrasData.data.every((amostra: any) => {
       if (!amostra.resultados || amostra.resultados.length === 0) {
         return false
       }
@@ -635,17 +635,17 @@ export function LancamentoResultados() {
     let amostrasParaSelecionar = amostrasParaExibir
     
     if (tipoResultado && tipoResultado !== '') {
-      amostrasParaSelecionar = amostrasParaExibir.filter(amostra => 
+      amostrasParaSelecionar = amostrasParaExibir.filter((amostra: any) => 
         amostraSolicitaAnalise(amostra, tipoResultado)
       )
     }
     
-    const amostrasVisiveis = amostrasParaSelecionar.map(a => a.id)
-    const todasSelecionadas = amostrasVisiveis.every(id => selectedAmostras.includes(id))
+    const amostrasVisiveis = amostrasParaSelecionar.map((a: any) => a.id)
+    const todasSelecionadas = amostrasVisiveis.every((id: string) => selectedAmostras.includes(id))
     
     if (todasSelecionadas) {
       // Desmarcar todas as amostras visíveis
-      setSelectedAmostras(prev => prev.filter(id => !amostrasVisiveis.includes(id)))
+      setSelectedAmostras(prev => prev.filter((id: string) => !amostrasVisiveis.includes(id)))
     } else {
       // Marcar todas as amostras visíveis
       setSelectedAmostras(prev => [...new Set([...prev, ...amostrasVisiveis])])

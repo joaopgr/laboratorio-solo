@@ -45,7 +45,7 @@ export function Amostras() {
   const hasMore = amostras.length === filters.limit
 
   const handleDelete = async (id: string) => {
-    const amostra = amostras.find(a => a.id === id)
+    const amostra = amostras.find((a: any) => a.id === id)
     if (!amostra) return
 
     try {
@@ -164,7 +164,7 @@ export function Amostras() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {amostras.map((amostra) => (
+                {amostras.map((amostra: any) => (
                   <tr key={amostra.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {amostra.codigo}

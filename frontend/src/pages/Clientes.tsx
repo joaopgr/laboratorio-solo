@@ -176,7 +176,7 @@ export function Clientes() {
                   </tr>
                 </thead>
                 <tbody className="table-body">
-                  {(allClientes.length > 0 ? allClientes : (data?.data || [])).map((cliente) => (
+                  {(allClientes.length > 0 ? allClientes : (data?.data || [])).map((cliente: any) => (
                     <tr key={cliente.id} className="table-row hover:bg-gray-50 cursor-pointer">
                       <td className="table-cell font-medium">
                         <Link 

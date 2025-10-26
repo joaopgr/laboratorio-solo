@@ -240,13 +240,13 @@ export function AmostraDetails() {
     
     if (resultado.tipo === 'GRAN_MASSA_FATOR_F') {
       const campos = []
-      if (resultado.massaLata !== null && resultado.massaLata !== undefined && resultado.massaLata !== '' && String(resultado.massaLata).trim() !== '') {
+      if (resultado.massaLata !== null && resultado.massaLata !== undefined) {
         campos.push(`M.Lata: ${resultado.massaLata}`)
       }
-      if (resultado.massaLataSu !== null && resultado.massaLataSu !== undefined && resultado.massaLataSu !== '' && String(resultado.massaLataSu).trim() !== '') {
+      if (resultado.massaLataSu !== null && resultado.massaLataSu !== undefined) {
         campos.push(`M.Lata+Su: ${resultado.massaLataSu}`)
       }
-      if (resultado.massaLataSs !== null && resultado.massaLataSs !== undefined && resultado.massaLataSs !== '' && String(resultado.massaLataSs).trim() !== '') {
+      if (resultado.massaLataSs !== null && resultado.massaLataSs !== undefined) {
         campos.push(`M.Lata+Ss: ${resultado.massaLataSs}`)
       }
       return campos.length > 0 ? campos.join(', ') : '-'
@@ -259,12 +259,12 @@ export function AmostraDetails() {
     if (resultado.tipo === 'DETERMINACAO_F') {
       // Verificar se há campos específicos preenchidos
       const temCamposEspecificos = (
-        (resultado.massaTrisR1 !== null && resultado.massaTrisR1 !== undefined && resultado.massaTrisR1 !== '' && String(resultado.massaTrisR1).trim() !== '') ||
-        (resultado.massaTrisR2 !== null && resultado.massaTrisR2 !== undefined && resultado.massaTrisR2 !== '' && String(resultado.massaTrisR2).trim() !== '') ||
-        (resultado.massaTrisR3 !== null && resultado.massaTrisR3 !== undefined && resultado.massaTrisR3 !== '' && String(resultado.massaTrisR3).trim() !== '') ||
-        (resultado.volumeTitR1 !== null && resultado.volumeTitR1 !== undefined && resultado.volumeTitR1 !== '' && String(resultado.volumeTitR1).trim() !== '') ||
-        (resultado.volumeTitR2 !== null && resultado.volumeTitR2 !== undefined && resultado.volumeTitR2 !== '' && String(resultado.volumeTitR2).trim() !== '') ||
-        (resultado.volumeTitR3 !== null && resultado.volumeTitR3 !== undefined && resultado.volumeTitR3 !== '' && String(resultado.volumeTitR3).trim() !== '')
+        (resultado.massaTrisR1 !== null && resultado.massaTrisR1 !== undefined) ||
+        (resultado.massaTrisR2 !== null && resultado.massaTrisR2 !== undefined) ||
+        (resultado.massaTrisR3 !== null && resultado.massaTrisR3 !== undefined) ||
+        (resultado.volumeTitR1 !== null && resultado.volumeTitR1 !== undefined) ||
+        (resultado.volumeTitR2 !== null && resultado.volumeTitR2 !== undefined) ||
+        (resultado.volumeTitR3 !== null && resultado.volumeTitR3 !== undefined)
       )
       
       // Só mostrar valor principal se não há campos específicos preenchidos
@@ -337,22 +337,22 @@ export function AmostraDetails() {
     // Campos da Determinação F (para módulo foliar)
     if (resultado.tipo === 'DETERMINACAO_F') {
       const determinacaoCampos = []
-      if (resultado.massaTrisR1 !== null && resultado.massaTrisR1 !== undefined && resultado.massaTrisR1 !== '' && String(resultado.massaTrisR1).trim() !== '') {
+      if (resultado.massaTrisR1 !== null && resultado.massaTrisR1 !== undefined) {
         determinacaoCampos.push(`Massa Tris R1: ${resultado.massaTrisR1}`)
       }
-      if (resultado.massaTrisR2 !== null && resultado.massaTrisR2 !== undefined && resultado.massaTrisR2 !== '' && String(resultado.massaTrisR2).trim() !== '') {
+      if (resultado.massaTrisR2 !== null && resultado.massaTrisR2 !== undefined) {
         determinacaoCampos.push(`Massa Tris R2: ${resultado.massaTrisR2}`)
       }
-      if (resultado.massaTrisR3 !== null && resultado.massaTrisR3 !== undefined && resultado.massaTrisR3 !== '' && String(resultado.massaTrisR3).trim() !== '') {
+      if (resultado.massaTrisR3 !== null && resultado.massaTrisR3 !== undefined) {
         determinacaoCampos.push(`Massa Tris R3: ${resultado.massaTrisR3}`)
       }
-      if (resultado.volumeTitR1 !== null && resultado.volumeTitR1 !== undefined && resultado.volumeTitR1 !== '' && String(resultado.volumeTitR1).trim() !== '') {
+      if (resultado.volumeTitR1 !== null && resultado.volumeTitR1 !== undefined) {
         determinacaoCampos.push(`Volume Tit R1: ${resultado.volumeTitR1}`)
       }
-      if (resultado.volumeTitR2 !== null && resultado.volumeTitR2 !== undefined && resultado.volumeTitR2 !== '' && String(resultado.volumeTitR2).trim() !== '') {
+      if (resultado.volumeTitR2 !== null && resultado.volumeTitR2 !== undefined) {
         determinacaoCampos.push(`Volume Tit R2: ${resultado.volumeTitR2}`)
       }
-      if (resultado.volumeTitR3 !== null && resultado.volumeTitR3 !== undefined && resultado.volumeTitR3 !== '' && String(resultado.volumeTitR3).trim() !== '') {
+      if (resultado.volumeTitR3 !== null && resultado.volumeTitR3 !== undefined) {
         determinacaoCampos.push(`Volume Tit R3: ${resultado.volumeTitR3}`)
       }
       if (determinacaoCampos.length > 0) {
