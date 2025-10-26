@@ -367,7 +367,7 @@ export function LancamentoResultados() {
     const newVolumeTitR2Resultado: Record<string, string> = {}
     const newVolumeTitR3Resultado: Record<string, string> = {}
     
-    amostrasData.data.forEach((amostra: any) => {
+    amostrasData.amostras.forEach((amostra: any) => {
       if (amostra.resultados && amostra.resultados.length > 0) {
         // Para H+Al, buscar resultado único com todos os campos
         if (tipo === 'H+Al') {
@@ -584,7 +584,7 @@ export function LancamentoResultados() {
       const novaDiluicao: Record<string, string> = {}
       const novaDilB: Record<string, string> = {}
       
-      amostrasData.data.forEach((amostra: any) => {
+      amostrasData.amostras.forEach((amostra: any) => {
         // Verificar se a amostra solicita este tipo de análise
         if (amostraSolicitaAnalise(amostra, tipoResultado)) {
           novaDiluicao[amostra.id] = diluicaoPadrao
@@ -611,7 +611,7 @@ export function LancamentoResultados() {
     if (tipoResultado === 'N' && amostrasData?.amostras) {
       const newFatorFResultado: Record<string, string> = {}
       
-      amostrasData.data.forEach((amostra: any) => {
+      amostrasData.amostras.forEach((amostra: any) => {
         const fatorFCalculado = calcularFatorF(amostra)
         if (fatorFCalculado) {
           newFatorFResultado[amostra.id] = fatorFCalculado

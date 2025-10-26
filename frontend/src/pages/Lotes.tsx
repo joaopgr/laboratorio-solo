@@ -45,15 +45,15 @@ export function Lotes() {
 
   // Filtrar lotes vazios (com 0 amostras)
   const lotesComAmostras = useMemo(() => {
-    if (!data?.data) return []
-    return data.data.filter((lote: any) => lote.amostras && lote.amostras.length > 0)
-  }, [data?.data])
+    if (!data?.lotes) return []
+    return data.lotes.filter((lote: any) => lote.amostras && lote.amostras.length > 0)
+    }, [data?.lotes])
 
   // Contar lotes vazios
   const lotesVazios = useMemo(() => {
-    if (!data?.data) return []
-    return data.data.filter((lote: any) => !lote.amostras || lote.amostras.length === 0)
-  }, [data?.data])
+    if (!data?.lotes) return []
+    return data.lotes.filter((lote: any) => !lote.amostras || lote.amostras.length === 0)
+    }, [data?.lotes])
 
   // Debounce para busca automática
   useEffect(() => {

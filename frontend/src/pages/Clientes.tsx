@@ -35,17 +35,17 @@ export function Clientes() {
 
   // Gerenciar clientes carregados
   useEffect(() => {
-    if (data?.data) {
+    if (data?.clientes) {
       if (filters.page === 1) {
         // Primeira página ou nova busca
-        setAllClientes(data.data)
+        setAllClientes(data.clientes)
       } else {
         // Páginas subsequentes - adicionar às existentes
-        setAllClientes(prev => [...prev, ...data.data])
+        setAllClientes(prev => [...prev, ...data.clientes])
       }
       
       // Verificar se há mais páginas
-      setHasMore(data.data.length === filters.limit)
+      setHasMore(data.clientes.length === filters.limit)
     }
   }, [data, filters.page, filters.limit])
 
@@ -137,12 +137,12 @@ export function Clientes() {
       </div>
 
       {/* Results info */}
-      {(allClientes.length > 0 || (data?.data && data.data.length > 0)) && (
+          {(allClientes.length > 0 || (data?.clientes && data.clientes.length > 0)) && (
         <div className="text-sm text-gray-600">
           {filters.search ? (
-            <span>Encontrados {allClientes.length || data?.data?.length || 0} cliente(s) para "{filters.search}"</span>
+            <span>Encontrados {allClientes.length || data?.clientes?.length || 0} cliente(s) para "{filters.search}"</span>
           ) : (
-            <span>Mostrando {allClientes.length || data?.data?.length || 0} cliente(s) carregados</span>
+            <span>Mostrando {allClientes.length || data?.clientes?.length || 0} cliente(s) carregados</span>
           )}
         </div>
       )}
@@ -155,7 +155,7 @@ export function Clientes() {
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
               <p className="mt-2 text-gray-600">Buscando clientes...</p>
             </div>
-          ) : (allClientes.length === 0 && (!data?.data || data.data.length === 0)) ? (
+          ) : (allClientes.length === 0 && (!data?.clientes || data.clientes.length === 0)) ? (
             <div className="p-6 text-center">
               <p className="text-gray-500">
                 {filters.search ? `Nenhum cliente encontrado para "${filters.search}"` : 'Nenhum cliente cadastrado'}
@@ -269,7 +269,7 @@ export function Clientes() {
           )}
           
           {/* Botão Mostrar Mais */}
-          {hasMore && (allClientes.length > 0 || (data?.data && data.data.length > 0)) && (
+          {hasMore && (allClientes.length > 0 || (data?.clientes && data.clientes.length > 0)) && (
             <div className="flex justify-center mt-6">
               <button
                 onClick={handleLoadMore}

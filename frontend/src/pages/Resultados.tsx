@@ -80,11 +80,11 @@ export function Resultados() {
 
   // Agrupar resultados por amostra
   const resultadosPorAmostra = useMemo(() => {
-    if (!data?.data) return []
+    if (!data?.resultados) return []
     
     const agrupados = new Map()
     
-    data.data.forEach((resultado: any) => {
+    data.resultados.forEach((resultado: any) => {
       const amostraId = resultado.amostraId
       if (!agrupados.has(amostraId)) {
         agrupados.set(amostraId, {
@@ -134,7 +134,7 @@ export function Resultados() {
       // Para outros códigos, usar comparação de strings
       return sortOrder === 'desc' ? codigoB.localeCompare(codigoA) : codigoA.localeCompare(codigoB)
     })
-  }, [data?.data, sortOrder])
+  }, [data?.resultados, sortOrder])
 
   // Função para atualizar filtros de tipos de análise
   const updateTipoAnalise = (tipo: string, checked: boolean) => {
