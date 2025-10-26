@@ -234,9 +234,9 @@ export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmos
   useEffect(() => {
     if (isOpen) {
       // Quando abre o modal
-      if (loteId && lotesData?.data) {
+      if (loteId && lotesData?.lotes) {
         // Se tem loteId, pré-selecionar o lote
-        const lote = lotesData.data.find(l => l.id === loteId)
+        const lote = lotesData.lotes.find((l: any) => l.id === loteId)
         if (lote) {
           setSelectedLote(lote)
         }
@@ -324,7 +324,7 @@ export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmos
               <select
                 value={selectedLote?.id || ''}
                 onChange={(e) => {
-                  const lote = lotesData?.data?.find(l => l.id === e.target.value)
+                  const lote = lotesData?.lotes?.find((l: any) => l.id === e.target.value)
                   setSelectedLote(lote || null)
                   setSelectedAmostras([])
                   setSearchTerm('')
@@ -333,7 +333,7 @@ export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmos
                 required
               >
                 <option value="">Selecione um lote...</option>
-                {lotesData?.data?.map(lote => (
+                {lotesData?.lotes?.map((lote: any) => (
                   <option key={lote.id} value={lote.id}>
                     {lote.codigo} - {lote.cliente?.nome} ({lote.amostras?.length || 0} amostras)
                   </option>

@@ -126,7 +126,7 @@ export function LancamentoResultados() {
   
   // Debug dos dados recebidos da API
   useEffect(() => {
-    if (amostrasData?.data) {
+    if (amostrasData?.amostras) {
       const amostra03 = amostrasData.data.find((a: any) => a.codigo === '03')
       if (amostra03) {
       }
@@ -144,7 +144,7 @@ export function LancamentoResultados() {
 
   // Função para verificar se todas as amostras CARREGADAS já têm dados lançados
   const verificarSeJaFoiLancado = (tipo: string) => {
-    if (!amostrasData?.data) {
+    if (!amostrasData?.amostras) {
       return false
     }
     
@@ -220,7 +220,7 @@ export function LancamentoResultados() {
     }
 
     // Pegar as amostras selecionadas
-    const amostrasSelecionadas = amostrasData?.data?.filter((a: any) => selectedAmostras.includes(a.id)) || []
+    const amostrasSelecionadas = amostrasData?.amostras?.filter((a: any) => selectedAmostras.includes(a.id)) || []
     
     if (amostrasSelecionadas.length === 0) {
       return tiposResultado
@@ -252,7 +252,7 @@ export function LancamentoResultados() {
     })
 
     return filtrados
-  }, [selectedAmostras, amostrasData?.data])
+  }, [selectedAmostras, amostrasData?.amostras])
 
   // Função para obter os campos necessários para um tipo de análise
   const getCamposNecessarios = (tipo: string) => {
@@ -325,7 +325,7 @@ export function LancamentoResultados() {
 
   // Função para carregar valores existentes das amostras
   const loadExistingValues = (tipo: string) => {
-    if (!amostrasData?.data) return
+    if (!amostrasData?.amostras) return
     
     const newValorResultado: Record<string, string> = {}
     const newDiluicaoResultado: Record<string, string> = {}
@@ -542,10 +542,10 @@ export function LancamentoResultados() {
 
   // Carregar valores existentes quando as amostras mudarem
   useEffect(() => {
-    if (amostrasData?.data && tipoResultado) {
+    if (amostrasData?.amostras && tipoResultado) {
       loadExistingValues(tipoResultado)
     }
-  }, [amostrasData?.data, tipoResultado])
+  }, [amostrasData?.amostras, tipoResultado])
 
   // Preencher valores padrão de diluição quando tipo de resultado muda
   useEffect(() => {
@@ -579,7 +579,7 @@ export function LancamentoResultados() {
     }
     
     const diluicaoPadrao = diluicoesPadrao[tipoAnalise]?.[tipoResultado]
-    if (diluicaoPadrao && amostrasData?.data) {
+    if (diluicaoPadrao && amostrasData?.amostras) {
       // Preencher diluição padrão para todas as amostras que solicitam este tipo
       const novaDiluicao: Record<string, string> = {}
       const novaDilB: Record<string, string> = {}
@@ -604,11 +604,11 @@ export function LancamentoResultados() {
         setDilBResultado(novaDilB)
       }
     }
-  }, [tipoResultado, amostrasData?.data, tipoAnalise])
+  }, [tipoResultado, amostrasData?.amostras, tipoAnalise])
 
   // Calcular Fator F automaticamente quando selecionar Nitrogênio
   useEffect(() => {
-    if (tipoResultado === 'N' && amostrasData?.data) {
+    if (tipoResultado === 'N' && amostrasData?.amostras) {
       const newFatorFResultado: Record<string, string> = {}
       
       amostrasData.data.forEach((amostra: any) => {
@@ -620,7 +620,7 @@ export function LancamentoResultados() {
       
       setFatorFResultado(newFatorFResultado)
     }
-  }, [tipoResultado, amostrasData?.data])
+  }, [tipoResultado, amostrasData?.amostras])
 
   const handleSelectAmostra = (amostraId: string) => {
     setSelectedAmostras(prev => 
@@ -694,7 +694,7 @@ export function LancamentoResultados() {
       }
     }
 
-    const amostrasNoRange = amostrasData?.data.filter((amostra: any) => {
+    const amostrasNoRange = amostrasData?.amostras.filter((amostra: any) => {
       const codigo = amostra.codigo
       
       // Para códigos numéricos, usar comparação numérica
@@ -1366,8 +1366,8 @@ export function LancamentoResultados() {
   // Filtrar amostras baseado no estado showOnlySelected e ordenar por código (menor para maior)
   const amostrasParaExibir = useMemo(() => {
     const step1 = showOnlySelected 
-    ? amostrasData?.data.filter((a: any) => selectedAmostras.includes(a.id)) || []
-    : amostrasData?.data || []
+    ? amostrasData?.amostras.filter((a: any) => selectedAmostras.includes(a.id)) || []
+    : amostrasData?.amostras || []
     
     // Aplicar filtro de tipo de análise
     const step2 = step1.filter((amostra: any) => {
@@ -1414,7 +1414,7 @@ export function LancamentoResultados() {
     })
     
     return step3
-  }, [amostrasData?.data, showOnlySelected, selectedAmostras, tipoResultado])
+  }, [amostrasData?.amostras, showOnlySelected, selectedAmostras, tipoResultado])
 
   return (
     <div className="space-y-6">
@@ -1516,7 +1516,7 @@ export function LancamentoResultados() {
               )}
             </div>
               <div className="text-xs text-gray-500 mt-2">
-              {selectedAmostras.length} de {amostrasData?.data.length || 0} amostras selecionadas
+              {selectedAmostras.length} de {amostrasData?.amostras.length || 0} amostras selecionadas
         </div>
       </div>
 

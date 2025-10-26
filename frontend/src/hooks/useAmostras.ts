@@ -25,7 +25,7 @@ export function useAmostras(filters: AmostraFilters = {}) {
         }
       })
       return {
-        data: response.data.data,
+        amostras: response.data.amostras,
         pagination: response.data.pagination
       }
     },

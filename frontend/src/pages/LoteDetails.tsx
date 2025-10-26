@@ -777,7 +777,7 @@ export function LoteDetails() {
           onClose={() => setIsGerarLaudoOpen(false)}
           lote={lote}
           amostras={lote.amostras || []}
-          resultados={resultadosData?.data || []}
+          resultados={resultadosData?.resultados || []}
         />
       )}
     </div>

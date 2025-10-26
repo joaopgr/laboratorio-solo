@@ -18,7 +18,7 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
 
   const { data: lotesData } = useLotes({ page: 1, limit: 1000 })
 
-  const lotes = lotesData?.data || []
+  const lotes = lotesData?.lotes || []
 
   const handleGerarLaudos = async () => {
     if (!loteInicio || !loteFim) {
@@ -35,7 +35,7 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
     }
 
     // Filtrar lotes no intervalo
-    const lotesSelecionados = lotes.filter(lote => {
+    const lotesSelecionados = (lotesData?.lotes || []).filter((lote: any) => {
       const numeroLote = parseInt(lote.codigo.split('-')[0])
       return numeroLote >= inicio && numeroLote <= fim
     })
@@ -55,7 +55,7 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          loteIds: lotesSelecionados.map(l => l.id),
+          loteIds: lotesSelecionados.map((l: any) => l.id),
           tipoAnalise
         }),
       })

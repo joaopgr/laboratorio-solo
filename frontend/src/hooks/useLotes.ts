@@ -23,7 +23,7 @@ export function useLotes(filters: LoteAmostraFilters = {}) {
         params
       })
       return {
-        data: response.data.data,
+        lotes: response.data.lotes,
         pagination: response.data.pagination
       }
     },

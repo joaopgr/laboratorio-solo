@@ -76,7 +76,7 @@ export function AmostraForm({ amostra, isOpen, onClose }: AmostraFormProps) {
   useEffect(() => {
     if (isEditing && amostra) {
       // Se estiver editando, carregar dados do cliente e lote
-      const loteSelecionado = lotesData?.data?.find(lote => lote.id === amostra.loteId)
+      const loteSelecionado = lotesData?.lotes?.find((lote: any) => lote.id === amostra.loteId)
       if (loteSelecionado) {
         setSelectedCliente(loteSelecionado.cliente || null)
       }
@@ -531,7 +531,7 @@ export function AmostraForm({ amostra, isOpen, onClose }: AmostraFormProps) {
               
               {clienteSearch && (
                 <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                  {clientesData?.data?.map((cliente) => (
+                  {clientesData?.clientes?.map((cliente: any) => (
                     <div
                       key={cliente.id}
                       onClick={() => handleClienteSelect(cliente)}

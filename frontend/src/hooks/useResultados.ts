@@ -33,7 +33,7 @@ export function useResultados(filters: ResultadoFilters = {}) {
         params
       })
       return {
-        data: response.data.data,
+        resultados: response.data.resultados,
         pagination: response.data.pagination
       }
     },

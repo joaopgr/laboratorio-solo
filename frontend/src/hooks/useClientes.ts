@@ -11,7 +11,7 @@ export function useClientes(filters: ClienteFilters = {}) {
         params: filters
       })
       return {
-        data: response.data.data,
+        clientes: response.data.clientes,
         pagination: response.data.pagination
       }
     },

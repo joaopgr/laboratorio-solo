@@ -22,7 +22,7 @@ export function ClienteLotes({ cliente }: ClienteLotesProps) {
   const { data: lotesData, isLoading } = useLotes({ clienteId: cliente.id, limit: 999 })
   const deleteLote = useDeleteLote()
 
-  const lotes = (lotesData?.data || []).sort((a, b) => 
+  const lotes = (lotesData?.lotes || []).sort((a: any, b: any) => 
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   )
 
@@ -39,7 +39,7 @@ export function ClienteLotes({ cliente }: ClienteLotesProps) {
     if (!loteToDelete) return
 
     try {
-      await deleteLote.mutateAsync(loteToDelete.id)
+      await deleteLote.mutateAsync({ id: loteToDelete.id })
     } catch (error) {
       console.error('Erro ao deletar lote:', error)
     }
@@ -151,7 +151,7 @@ export function ClienteLotes({ cliente }: ClienteLotesProps) {
         </div>
       ) : (
         <div className="space-y-4">
-          {lotes.map((lote) => {
+          {lotes.map((lote: any) => {
             const isExpanded = expandedLotes.has(lote.id)
             const amostras = lote.amostras || []
             
@@ -225,7 +225,7 @@ export function ClienteLotes({ cliente }: ClienteLotesProps) {
                         <p className="text-gray-500 text-sm">Nenhuma amostra cadastrada neste lote</p>
                       ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                          {amostras.map((amostra) => (
+                          {amostras.map((amostra: any) => (
                             <div key={amostra.id} className="border rounded-lg p-3 bg-gray-50">
                               <div className="flex items-center justify-between">
                                 <div>
