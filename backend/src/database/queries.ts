@@ -715,7 +715,8 @@ export const SQL_QUERIES = {
 
     // Criar atividade
     create: (data: {
-      titulo: string;
+      titulo?: string;
+      nome?: string;
       descricao?: string;
       tipo?: string;
       prioridade?: string;
@@ -729,7 +730,7 @@ export const SQL_QUERIES = {
         RETURNING *
       `,
       params: [
-        data.titulo,
+        data.titulo || data.nome || 'Sem título', // Usa titulo, nome ou fallback
         data.descricao,
         data.tipo || 'tarefa',
         data.prioridade || 'media',
