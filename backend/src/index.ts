@@ -21,39 +21,12 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" }
+  crossOriginResourcePolicy: false
 }));
 
-// Configurar CORS para aceitar múltiplas origens do Vercel
+// Configurar CORS - permitir tudo do Vercel
 app.use(cors({
-  origin: function (origin, callback) {
-    // Permitir requisições sem origin (mobile apps, Postman, etc)
-    if (!origin) return callback(null, true);
-    
-    const allowedPatterns = [
-      /^https:\/\/laboratorio-solo-frontend.*\.vercel\.app$/,
-      /^http:\/\/localhost:\d+$/,
-      'https://laboratorio-solo-frontend.vercel.app',
-      process.env.FRONTEND_URL
-    ].filter(Boolean);
-    
-    const isAllowed = allowedPatterns.some(pattern => {
-      if (typeof pattern === 'string') {
-        return origin === pattern;
-      }
-      if (pattern instanceof RegExp) {
-        return pattern.test(origin);
-      }
-      return false;
-    });
-    
-    // Permitir qualquer vercel.app em desenvolvimento ou produção
-    if (origin.includes('.vercel.app') || origin.includes('localhost')) {
-      return callback(null, true);
-    }
-    
-    callback(null, isAllowed);
-  },
+  origin: '*',
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization']
