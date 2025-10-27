@@ -21,8 +21,37 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(helmet());
+
+// Configurar CORS para aceitar múltiplas origens do Vercel
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://localhost:3000',
+  'https://laboratorio-solo-frontend.vercel.app',
+  /\.vercel\.app$/
+].filter(Boolean) as string[];
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    // Permitir requisições sem origin (como mobile apps, Postman, etc)
+    if (!origin) return callback(null, true);
+    
+    // Verificar se a origin está na lista permitida
+    if (allowedOrigins.some(allowed => {
+      if (typeof allowed === 'string') {
+        return origin === allowed;
+      }
+      return allowed.test(origin);
+    })) {
+      return callback(null, true);
+    }
+    
+    // Para desenvolvimento local, permitir qualquer origem
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 app.use(express.json());
