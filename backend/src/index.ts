@@ -1,6 +1,4 @@
 import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { db } from './database/connection';
 
@@ -78,20 +76,22 @@ app.use('*', (req, res) => {
 // Exportar app para uso no Vercel
 export default app;
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`🚀 Servidor rodando na porta ${PORT}`);
-});
+// Iniciar servidor (apenas em ambiente local, não no Vercel)
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Servidor rodando na porta ${PORT}`);
+  });
 
-// Graceful shutdown
-process.on('SIGINT', async () => {
-  console.log('\n🛑 Encerrando servidor...');
-  await db.close();
-  process.exit(0);
-});
+  // Graceful shutdown
+  process.on('SIGINT', async () => {
+    console.log('\n🛑 Encerrando servidor...');
+    await db.close();
+    process.exit(0);
+  });
 
-process.on('SIGTERM', async () => {
-  console.log('\n🛑 Encerrando servidor...');
-  await db.close();
-  process.exit(0);
-});
+  process.on('SIGTERM', async () => {
+    console.log('\n🛑 Encerrando servidor...');
+    await db.close();
+    process.exit(0);
+  });
+}
