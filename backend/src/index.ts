@@ -20,44 +20,43 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 
 // Middleware
-app.use(helmet());
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 // Configurar CORS para aceitar múltiplas origens do Vercel
-const allowedOrigins: (string | RegExp)[] = [
-  process.env.FRONTEND_URL,
-  'http://localhost:3000',
-  'https://laboratorio-solo-frontend.vercel.app',
-  /\.vercel\.app$/
-].filter(Boolean) as (string | RegExp)[];
-
 app.use(cors({
-  origin: (origin, callback) => {
-    // Permitir requisições sem origin (como mobile apps, Postman, etc)
+  origin: function (origin, callback) {
+    // Permitir requisições sem origin (mobile apps, Postman, etc)
     if (!origin) return callback(null, true);
     
-    // Verificar se a origin está na lista permitida
-    const isAllowed = allowedOrigins.some(allowed => {
-      if (typeof allowed === 'string') {
-        return origin === allowed;
+    const allowedPatterns = [
+      /^https:\/\/laboratorio-solo-frontend.*\.vercel\.app$/,
+      /^http:\/\/localhost:\d+$/,
+      'https://laboratorio-solo-frontend.vercel.app',
+      process.env.FRONTEND_URL
+    ].filter(Boolean);
+    
+    const isAllowed = allowedPatterns.some(pattern => {
+      if (typeof pattern === 'string') {
+        return origin === pattern;
       }
-      if (allowed instanceof RegExp) {
-        return allowed.test(origin);
+      if (pattern instanceof RegExp) {
+        return pattern.test(origin);
       }
       return false;
     });
     
-    if (isAllowed) {
+    // Permitir qualquer vercel.app em desenvolvimento ou produção
+    if (origin.includes('.vercel.app') || origin.includes('localhost')) {
       return callback(null, true);
     }
     
-    // Para desenvolvimento local, permitir qualquer origem
-    if (process.env.NODE_ENV !== 'production') {
-      return callback(null, true);
-    }
-    
-    callback(new Error('Not allowed by CORS'));
+    callback(null, isAllowed);
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
