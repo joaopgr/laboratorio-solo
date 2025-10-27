@@ -22,12 +22,12 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware CORS manual - adicionar headers em TODAS as respostas
 app.use((req, res, next) => {
+  // Headers CORS em TODAS as respostas
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
   
-  // Responder a OPTIONS imediatamente
+  // Responder a OPTIONS (preflight) imediatamente
   if (req.method === 'OPTIONS') {
     res.sendStatus(204);
     return;
