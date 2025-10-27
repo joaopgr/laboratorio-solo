@@ -21,6 +21,7 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(helmet());
+// Fix CORS
 
 // Configurar CORS para aceitar múltiplas origens do Vercel
 const allowedOrigins = [
