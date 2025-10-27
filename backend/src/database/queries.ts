@@ -724,7 +724,7 @@ export const SQL_QUERIES = {
       prazo?: Date;
     }) => ({
       query: `
-        INSERT INTO atividades (id, titulo, descricao, tipo, prioridade, status, responsavel, prazo, "createdAt", "updatedAt")
+        INSERT INTO atividades (id, nome, descricao, tipo, prioridade, status, responsavel, prazo, "createdAt", "updatedAt")
         VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
         RETURNING *
       `,
