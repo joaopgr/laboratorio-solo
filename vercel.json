@@ -1,14 +1,13 @@
 {
   "functions": {
-    "api/index.ts": {
+    "backend/api/index.ts": {
       "runtime": "@vercel/node"
     }
   },
   "rewrites": [
     {
       "source": "/(.*)",
-      "destination": "/api/index.ts"
+      "destination": "/backend/api/index.ts"
     }
   ]
 }
-

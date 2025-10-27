@@ -4,17 +4,17 @@
 // Importar e configurar Express
 import express from 'express';
 import dotenv from 'dotenv';
-import { db } from '../backend/src/database/connection';
+import { db } from '../src/database/connection';
 
 // Importar rotas
-import authRoutes from '../backend/src/routes/auth';
-import clienteRoutes from '../backend/src/routes/cliente';
-import amostraRoutes from '../backend/src/routes/amostra';
-import resultadoRoutes from '../backend/src/routes/resultado';
-import loteRoutes from '../backend/src/routes/lote';
-import relatorioRoutes from '../backend/src/routes/relatorio';
-import laudoRoutes from '../backend/src/routes/laudo';
-import atividadeRoutes from '../backend/src/routes/atividade';
+import authRoutes from '../src/routes/auth';
+import clienteRoutes from '../src/routes/cliente';
+import amostraRoutes from '../src/routes/amostra';
+import resultadoRoutes from '../src/routes/resultado';
+import loteRoutes from '../src/routes/lote';
+import relatorioRoutes from '../src/routes/relatorio';
+import laudoRoutes from '../src/routes/laudo';
+import atividadeRoutes from '../src/routes/atividade';
 
 // Configurar
 dotenv.config();
