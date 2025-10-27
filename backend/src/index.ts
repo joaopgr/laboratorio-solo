@@ -21,15 +21,14 @@ const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(helmet());
-// Fix CORS
 
 // Configurar CORS para aceitar múltiplas origens do Vercel
-const allowedOrigins = [
+const allowedOrigins: (string | RegExp)[] = [
   process.env.FRONTEND_URL,
   'http://localhost:3000',
   'https://laboratorio-solo-frontend.vercel.app',
   /\.vercel\.app$/
-].filter(Boolean) as string[];
+].filter(Boolean) as (string | RegExp)[];
 
 app.use(cors({
   origin: (origin, callback) => {
@@ -37,12 +36,17 @@ app.use(cors({
     if (!origin) return callback(null, true);
     
     // Verificar se a origin está na lista permitida
-    if (allowedOrigins.some(allowed => {
+    const isAllowed = allowedOrigins.some(allowed => {
       if (typeof allowed === 'string') {
         return origin === allowed;
       }
-      return allowed.test(origin);
-    })) {
+      if (allowed instanceof RegExp) {
+        return allowed.test(origin);
+      }
+      return false;
+    });
+    
+    if (isAllowed) {
       return callback(null, true);
     }
     
