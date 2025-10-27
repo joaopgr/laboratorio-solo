@@ -29,10 +29,11 @@ app.use((req, res, next) => {
   
   // Responder a OPTIONS imediatamente
   if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
+    res.sendStatus(204);
+    return;
   }
   
-  next();
+  return next();
 });
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
