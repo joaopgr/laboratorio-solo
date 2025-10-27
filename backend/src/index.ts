@@ -20,23 +20,20 @@ const PORT = process.env.PORT || 3001;
 // Middleware - REMOVIDO HELMET TEMPORARIAMENTE PARA DEBUG CORS
 // app.use(helmet());
 
-// Handler manual para OPTIONS (preflight)
-app.options('*', (req, res) => {
+// Middleware CORS manual - adicionar headers em TODAS as respostas
+app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
-  res.status(204).send();
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  
+  // Responder a OPTIONS imediatamente
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  
+  next();
 });
-
-// Configurar CORS - permitir tudo
-app.use(cors({
-  origin: '*', // Aceita qualquer origem
-  credentials: false, // Mudei para false pois origin * não aceita credentials
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  preflightContinue: false,
-  optionsSuccessStatus: 204
-}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
