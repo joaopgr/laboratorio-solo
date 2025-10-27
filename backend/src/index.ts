@@ -22,10 +22,18 @@ const PORT = process.env.PORT || 3001;
 // Middleware - REMOVIDO HELMET TEMPORARIAMENTE PARA DEBUG CORS
 // app.use(helmet());
 
+// Handler manual para OPTIONS (preflight)
+app.options('*', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.status(204).send();
+});
+
 // Configurar CORS - permitir tudo
 app.use(cors({
-  origin: true, // Aceita qualquer origem
-  credentials: true,
+  origin: '*', // Aceita qualquer origem
+  credentials: false, // Mudei para false pois origin * não aceita credentials
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   preflightContinue: false,
