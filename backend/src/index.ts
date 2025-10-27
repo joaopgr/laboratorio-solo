@@ -19,17 +19,17 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-// Middleware
-app.use(helmet({
-  crossOriginResourcePolicy: false
-}));
+// Middleware - REMOVIDO HELMET TEMPORARIAMENTE PARA DEBUG CORS
+// app.use(helmet());
 
-// Configurar CORS - permitir tudo do Vercel
+// Configurar CORS - permitir tudo
 app.use(cors({
   origin: true, // Aceita qualquer origem
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
