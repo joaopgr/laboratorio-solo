@@ -266,6 +266,8 @@ export interface CreateAmostraData {
   solicitante?: string;  // Nome do solicitante
   dataColeta?: string;
   observacoes?: string;
+  // Módulo da amostra (solo ou foliar)
+  modulo?: TipoAnalise;
   // Tipo de análise da amostra
   tipoAnalise: TipoAnalise;
   // Tipos de análise solicitados (solo)
