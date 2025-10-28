@@ -19,6 +19,7 @@ export function LancamentoResultados() {
     codigoFim: '',
     cultura: '',
     status: '',
+    tipoAnalise: tipoAnalise, // Filtrar por módulo
     limit: 100 // Aumentar limite para incluir todas as amostras
   })
   

@@ -24,18 +24,33 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
       return
     }
 
-    const inicio = parseInt(loteInicio)
-    const fim = parseInt(loteFim)
+    // Extrair prefixo e número dos códigos
+    const extrairNumero = (codigo: string) => {
+      // Remove o prefixo (ex: "F" de "F1", "F2")
+      const match = codigo.match(/(\d+)/)
+      return match ? parseInt(match[1]) : 0
+    }
+    
+    const inicio = extrairNumero(loteInicio)
+    const fim = extrairNumero(loteFim)
 
     if (inicio > fim) {
       toast.error('Lote inicial deve ser menor ou igual ao final')
       return
     }
+    
+    // Detectar prefixo baseado no módulo
+    const prefixo = modulo === 'foliar' ? 'F' : ''
+    
+    // Verificar se os códigos de entrada têm o prefixo correto
+    const inicioComPrefixo = inicio > 0 ? (prefixo ? `${prefixo}${inicio}` : `${inicio}`) : ''
+    const fimComPrefixo = fim > 0 ? (prefixo ? `${prefixo}${fim}` : `${fim}`) : ''
 
     // Filtrar lotes no intervalo
     const lotesSelecionados = (lotesData?.lotes || []).filter((lote: any) => {
-      const numeroLote = parseInt(lote.codigo.split('-')[0])
-      return numeroLote >= inicio && numeroLote <= fim
+      const numeroLote = extrairNumero(lote.codigo)
+      // Verificar se está no intervalo e se o módulo está correto
+      return numeroLote >= inicio && numeroLote <= fim && lote.modulo === modulo
     })
 
     if (lotesSelecionados.length === 0) {
@@ -129,12 +144,12 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
                 Lote Inicial
               </label>
               <input
-                type="number"
+                type="text"
                 value={loteInicio}
                 onChange={(e) => setLoteInicio(e.target.value)}
                 className="input w-full"
-                placeholder="Ex: 5"
-                min="1"
+                placeholder={modulo === 'foliar' ? "Ex: F1 ou 1" : "Ex: 5"}
+                pattern={modulo === 'foliar' ? "[Ff]?\\d+" : "\\d+"}
               />
             </div>
             <div>
@@ -142,12 +157,12 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
                 Lote Final
               </label>
               <input
-                type="number"
+                type="text"
                 value={loteFim}
                 onChange={(e) => setLoteFim(e.target.value)}
                 className="input w-full"
-                placeholder="Ex: 10"
-                min="1"
+                placeholder={modulo === 'foliar' ? "Ex: F2 ou 2" : "Ex: 10"}
+                pattern={modulo === 'foliar' ? "[Ff]?\\d+" : "\\d+"}
               />
             </div>
           </div>

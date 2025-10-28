@@ -189,7 +189,8 @@ export function useCreateResultadosLote() {
       onSuccess: (data) => {
         queryClient.invalidateQueries(['resultados'])
         queryClient.invalidateQueries(['amostras'])
-        toast.success(`${data.length} resultados criados com sucesso!`)
+        const count = Array.isArray(data) ? data.length : (data?.length || 0)
+        toast.success(`${count} resultados criados com sucesso!`)
       },
       onError: (error: any) => {
         const message = error.response?.data?.error || 'Erro ao criar resultados em lote'
