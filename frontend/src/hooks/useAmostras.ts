@@ -72,7 +72,7 @@ export function useCreateAmostra() {
     async (data: CreateAmostraData) => {
       const response = await api.post<Amostra>('/amostras', {
         ...data,
-        modulo
+        modulo: data.modulo || modulo // Usar o módulo do formulário, fallback para o módulo global
       })
       return response.data
     },
