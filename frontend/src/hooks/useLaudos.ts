@@ -10,8 +10,10 @@ interface GerarLaudoData {
 
 interface GerarLaudoResponse {
   success: boolean
-  arquivo: string
-  caminho: string
+  arquivo?: string
+  caminho?: string
+  html?: string
+  tipo?: string
 }
 
 export function useGerarLaudo() {
@@ -28,9 +30,22 @@ export function useGerarLaudo() {
     onSuccess: (data) => {
       toast.success('Laudo gerado com sucesso!')
       
-      // Download automático do PDF
-      if (data.arquivo && data.caminho) {
-        // Criar um link temporário para download
+      // Se retornou HTML, gerar PDF no frontend
+      if (data.tipo === 'html' && data.html) {
+        // Criar uma nova janela com o HTML
+        const printWindow = window.open('', '_blank')
+        if (printWindow) {
+          printWindow.document.write(data.html)
+          printWindow.document.close()
+          
+          // Aguardar o conteúdo carregar e então imprimir/salvar como PDF
+          setTimeout(() => {
+            printWindow.focus()
+            printWindow.print()
+          }, 250)
+        }
+      } else if (data.arquivo && data.caminho) {
+        // Download automático do PDF (comportamento antigo para compatibilidade)
         const link = document.createElement('a')
         link.href = data.caminho
         link.download = data.arquivo
