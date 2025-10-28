@@ -38,9 +38,6 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
       toast.error('Lote inicial deve ser menor ou igual ao final')
       return
     }
-    
-    // Detectar prefixo baseado no módulo
-    const prefixo = modulo === 'foliar' ? 'F' : ''
 
     // Filtrar lotes no intervalo
     const lotesSelecionados = (lotesData?.lotes || []).filter((lote: any) => {
