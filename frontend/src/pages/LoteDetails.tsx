@@ -670,11 +670,20 @@ export function LoteDetails() {
                 <div className="text-sm text-gray-500">
                   <p>Valor calculado baseado nos tipos de análise:</p>
                   <ul className="mt-1 space-y-1">
-                    {lote.rotina && <li>• Rotina: R$ 15,00 por amostra</li>}
-                    {lote.organica && <li>• Matéria Orgânica: R$ 10,00 por amostra</li>}
-                    {lote.micronutrientes && <li>• Micronutrientes: R$ 20,00 por amostra</li>}
-                    {lote.enxofre && <li>• Enxofre: R$ 10,00 por amostra</li>}
-                    {lote.prem && <li>• PREM: R$ 12,00 por amostra</li>}
+                    {(() => {
+                      const analiseValues = getAnaliseValues((lote.modulo || 'solo') as 'solo' | 'foliar')
+                      return (
+                        <>
+                          {lote.rotina && <li>• Rotina: R$ {analiseValues.rotina.toFixed(2).replace('.', ',')} por amostra</li>}
+                          {lote.organica && analiseValues.organica > 0 && <li>• Matéria Orgânica: R$ {analiseValues.organica.toFixed(2).replace('.', ',')} por amostra</li>}
+                          {lote.micronutrientes && <li>• Micronutrientes: R$ {analiseValues.micronutrientes.toFixed(2).replace('.', ',')} por amostra</li>}
+                          {lote.enxofre && <li>• Enxofre: R$ {analiseValues.enxofre.toFixed(2).replace('.', ',')} por amostra</li>}
+                          {lote.prem && analiseValues.prem > 0 && <li>• PREM: R$ {analiseValues.prem.toFixed(2).replace('.', ',')} por amostra</li>}
+                          {lote.nitrogenio && <li>• Nitrogênio: R$ {analiseValues.nitrogenio.toFixed(2).replace('.', ',')} por amostra</li>}
+                          {lote.granulometria && analiseValues.granulometria > 0 && <li>• Granulométrica: R$ {analiseValues.granulometria.toFixed(2).replace('.', ',')} por amostra</li>}
+                        </>
+                      )
+                    })()}
                   </ul>
                   <p className="mt-2">
                     Total: {lote.amostras?.length || 0} amostra(s) × tipos selecionados

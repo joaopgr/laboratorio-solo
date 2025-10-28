@@ -13,6 +13,7 @@ import {
   CheckSquare
 } from 'lucide-react'
 import { useState } from 'react'
+import { useAtividades } from '../hooks/useAtividades'
 
 const navigation = [
   { name: 'Dashboard', href: '/dashboard', icon: Home },
@@ -28,6 +29,11 @@ const navigation = [
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
+  
+  // Buscar atividades pendentes
+  const { data: atividadesData } = useAtividades({ status: 'pendente', limit: 1000 })
+  const atividadesPendentes = atividadesData?.data?.filter((a: any) => a.status === 'pendente') || []
+  const countPendentes = atividadesPendentes.length
 
   return (
     <div className={`bg-white/90 backdrop-blur-md shadow-xl border-r border-slate-200/60 transition-all duration-300 ${
@@ -57,18 +63,25 @@ export function Sidebar() {
                 key={item.name}
                 to={item.href}
                 className={({ isActive }) =>
-                  `flex items-center px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 group ${
+                  `flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 group ${
                     isActive
                       ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
                   }`
                 }
               >
-                <Icon className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 ${
-                  collapsed ? '' : 'group-hover:scale-110'
-                }`} />
-                {!collapsed && (
-                  <span className="ml-3 font-medium">{item.name}</span>
+                <div className="flex items-center">
+                  <Icon className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 ${
+                    collapsed ? '' : 'group-hover:scale-110'
+                  }`} />
+                  {!collapsed && (
+                    <span className="ml-3 font-medium">{item.name}</span>
+                  )}
+                </div>
+                {!collapsed && item.name === 'Atividades' && countPendentes > 0 && (
+                  <span className="bg-orange-500 text-white text-xs font-bold rounded-full px-2 py-0.5 min-w-[20px] text-center">
+                    {countPendentes}
+                  </span>
                 )}
               </NavLink>
             )

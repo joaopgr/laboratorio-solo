@@ -112,7 +112,9 @@ router.get('/', async (req, res): Promise<any> => {
       clienteId,
       ano,
       codigoInicio,
-      codigoFim
+      codigoFim,
+      pago,
+      concluido
     } = req.query;
     
     const pageNum = Number(page);
@@ -152,6 +154,24 @@ router.get('/', async (req, res): Promise<any> => {
       lotes = lotes.filter((lote: any) => {
         const loteAno = new Date(lote.dataEntrega).getFullYear();
         return loteAno === parseInt(ano as string);
+      });
+    }
+    
+    // Filtro por pagamento
+    if (pago !== undefined) {
+      const pagoBool = pago === 'true';
+      lotes = lotes.filter((lote: any) => lote.pago === pagoBool);
+    }
+    
+    // Filtro por conclusão
+    if (concluido !== undefined) {
+      const concluidoBool = concluido === 'true';
+      lotes = lotes.filter((lote: any) => {
+        if (concluidoBool) {
+          return lote.status === 'concluido' || lote.status === 'pago';
+        } else {
+          return lote.status !== 'concluido' && lote.status !== 'pago';
+        }
       });
     }
 
