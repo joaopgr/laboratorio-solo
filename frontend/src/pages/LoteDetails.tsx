@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useLoteById, useUpdateLote } from '../hooks/useLotes'
 import { useResultados } from '../hooks/useResultados'
+import { useQueryClient } from 'react-query'
 import { ArrowLeft, Calendar, Package, User, MapPin, FileText, CheckCircle, Clock, Edit3, DollarSign, Plus, Download, AlertCircle } from 'lucide-react'
 import { getAnaliseValues } from '../../../shared/types'
 import { AtualizarAmostrasLote } from '../components/AtualizarAmostrasLote'
@@ -11,6 +12,7 @@ import toast from 'react-hot-toast'
 
 export function LoteDetails() {
   const { id } = useParams<{ id: string }>()
+  const queryClient = useQueryClient()
   
   // Buscar o lote específico por ID (sem filtro de tipo)
   const { data: lote, isLoading } = useLoteById(id || '')
@@ -32,6 +34,13 @@ export function LoteDetails() {
   const { data: resultadosData } = useResultados({ 
     amostraId: amostraIdsStr || undefined 
   })
+  
+  // Invalidar resultados quando o lote mudar
+  useEffect(() => {
+    if (amostraIdsStr) {
+      queryClient.invalidateQueries(['resultados'])
+    }
+  }, [amostraIdsStr, queryClient])
 
   useEffect(() => {
     if (lote?.amostras && lote.amostras.length > 0) {
