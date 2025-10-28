@@ -1486,9 +1486,21 @@ router.post('/gerar', async (req, res): Promise<any> => {
       tipo: 'html'
     })
     return
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({ 
+        error: 'Dados inválidos',
+        details: error.errors
+      })
+    }
+    
+    console.error('Erro ao gerar laudo:', error)
+    return res.status(500).json({ error: 'Erro interno do servidor' })
+  }
+})
 
-    // Ordenar amostras por código para pegar a primeira corretamente
-    const amostrasOrdenadas = amostras.sort((a: any, b: any) => {
+// GET /api/laudos/:arquivo - Servir arquivo de laudo
+router.get('/:arquivo', async (req, res): Promise<any> => {
       const codigoA = a.codigo
       const codigoB = b.codigo
       
