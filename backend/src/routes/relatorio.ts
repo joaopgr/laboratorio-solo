@@ -843,8 +843,8 @@ router.get('/financeiro', async (req, res): Promise<any> => {
         if (amostra.foliar) valorBase += valoresAnalise.foliar;
       });
       
-      // Aplicar desconto (campo não existe no banco ainda)
-      const desconto = 0;
+      // Aplicar desconto
+      const desconto = parseFloat(lote.desconto) || 0;
       const valorComDesconto = valorBase * (1 - desconto / 100);
       
       // Determinar status financeiro

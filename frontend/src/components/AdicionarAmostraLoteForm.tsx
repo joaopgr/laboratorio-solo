@@ -27,13 +27,24 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
     observacoes: ''
   })
 
-  // Gerar próximo código baseado no lote
+  // Gerar próximo código baseado no lote e preencher com valores do lote
   useEffect(() => {
     if (lote?.amostras && lote.amostras.length > 0) {
       const ultimaAmostra = lote.amostras[lote.amostras.length - 1]
       const ultimoNumero = parseInt(ultimaAmostra.codigo.replace(/\D/g, '')) || 0
       const proximoCodigo = (ultimoNumero + 1).toString()
       setFormData(prev => ({ ...prev, codigo: proximoCodigo }))
+      
+      // Preencher com valores da primeira amostra do lote (padrão)
+      const primeiraAmostra = lote.amostras[0]
+      setFormData(prev => ({
+        ...prev,
+        localidade: primeiraAmostra.localidade || '',
+        propriedade: primeiraAmostra.propriedade || '',
+        solicitante: primeiraAmostra.solicitante || '',
+        dataColeta: primeiraAmostra.dataColeta || '',
+        observacoes: primeiraAmostra.observacoes || ''
+      }))
     } else {
       setFormData(prev => ({ ...prev, codigo: '1' }))
     }
@@ -127,46 +138,49 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Localidade
+              Localidade (opcional)
             </label>
             <input
               type="text"
               name="localidade"
               value={formData.localidade}
               onChange={handleChange}
+              placeholder="Padrão do lote"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Propriedade
+              Propriedade (opcional)
             </label>
             <input
               type="text"
               name="propriedade"
               value={formData.propriedade}
               onChange={handleChange}
+              placeholder="Padrão do lote"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Solicitante
+              Solicitante (opcional)
             </label>
             <input
               type="text"
               name="solicitante"
               value={formData.solicitante}
               onChange={handleChange}
+              placeholder="Padrão do lote"
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Data de Coleta
+              Data de Coleta (opcional)
             </label>
             <input
               type="date"
@@ -179,7 +193,7 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Observações
+              Observações (opcional)
             </label>
             <textarea
               name="observacoes"

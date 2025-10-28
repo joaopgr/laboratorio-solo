@@ -292,27 +292,6 @@ router.get('/', async (req, res): Promise<any> => {
     const resultadosResult = await query(baseQuery, params);
     const resultados = resultadosResult.rows;
 
-    // Adicionar dados do cliente para cada resultado
-    for (let i = 0; i < resultados.length; i++) {
-      const resultado = resultados[i];
-      try {
-        // Buscar dados do cliente usando a API de amostras
-        const amostraResponse = await fetch(`http://localhost:3001/api/amostras/${resultado.amostraId}`);
-        if (amostraResponse.ok) {
-          const amostraData = await amostraResponse.json() as any;
-          resultado.cliente_nome = amostraData.cliente_nome || '-';
-          resultado.cliente_cpf = amostraData.cliente_cpf || '-';
-        } else {
-          resultado.cliente_nome = '-';
-          resultado.cliente_cpf = '-';
-        }
-      } catch (error) {
-        console.error('Erro ao buscar cliente:', error);
-        resultado.cliente_nome = '-';
-        resultado.cliente_cpf = '-';
-      }
-    }
-
     res.json({
       resultados: resultados,
       pagination: {
