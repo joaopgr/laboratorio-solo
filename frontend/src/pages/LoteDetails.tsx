@@ -90,6 +90,10 @@ export function LoteDetails() {
         data: { desconto }
       })
       
+      // Invalidar queries para atualizar dados em tempo real
+      queryClient.invalidateQueries(['lote', lote.id])
+      queryClient.invalidateQueries(['lotes'])
+      
       setIsEditingDesconto(false)
       toast.success('Desconto atualizado com sucesso!')
     } catch (error) {

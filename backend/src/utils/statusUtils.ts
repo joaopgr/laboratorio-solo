@@ -68,6 +68,16 @@ export async function determinarStatusAmostra(amostraId: string): Promise<string
     return 'pendente';
   }
 
+  // Buscar resultados para verificar se tem algum
+  const { query: resultadosQuery, params: resultadosParams } = SQL_QUERIES.resultados.findByAmostra(amostraId);
+  const resultadosResult = await query(resultadosQuery, resultadosParams);
+  const resultados = resultadosResult.rows;
+  
+  // Se não tem resultados, está pendente
+  if (resultados.length === 0) {
+    return 'pendente';
+  }
+  
   // Verificar se está completa
   const completa = await verificarAmostraCompleta(amostraId);
   
