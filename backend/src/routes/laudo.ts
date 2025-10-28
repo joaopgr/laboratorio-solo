@@ -4,7 +4,8 @@ import { query } from '../database/connection'
 import { SQL_QUERIES } from '../database/queries'
 import * as path from 'path'
 import * as fs from 'fs'
-import pdf from 'html-pdf'
+import chromium from '@sparticuz/chromium'
+import puppeteer from 'puppeteer-core'
 import { getUfesLogoBase64, getLabLogoBase64, getSeloBase64, getAssinaturaBase64 } from '../utils/imageUtils'
 
 const router = Router()
@@ -1478,41 +1479,38 @@ router.post('/gerar', async (req, res): Promise<any> => {
     // Gerar PDF do laudo
     const htmlContent = await gerarPDFLaudoSobrio(lote, amostras, resultados, tipoAnalise, cliente, lote.modulo)
     
-    // Converter HTML para PDF
-    const options = {
-      format: 'A4' as const,
-      border: {
+    // Converter HTML para PDF usando Puppeteer
+    const isLocal = process.env.NODE_ENV === 'development' || !process.env.VERCEL
+    
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: isLocal ? [] : chromium.args,
+      executablePath: isLocal ? undefined : await chromium.executablePath(),
+      defaultViewport: chromium.defaultViewport,
+      ignoreHTTPSErrors: true
+    })
+    
+    const page = await browser.newPage()
+    await page.setContent(htmlContent, { waitUntil: 'networkidle0' })
+    
+    const pdfBuffer = await page.pdf({
+      format: 'A4',
+      margin: {
         top: '8mm',
         right: '8mm',
         bottom: '8mm',
         left: '8mm'
       },
-      header: {
-        height: '3mm',
-        contents: ''
-      },
-      footer: {
-        height: '8mm',
-        contents: `
-          <div style="text-align: center; font-size: 8px; color: #000;">
-            Página {{page}} de {{pages}} - Gerado em ${new Date().toLocaleDateString('pt-BR')}
-          </div>
-        `
-      },
-      renderDelay: 1000,
-      timeout: 30000
-    }
-    
-    const pdfBuffer = await new Promise<Buffer>((resolve, reject) => {
-      pdf.create(htmlContent, options).toBuffer((err: any, buffer: Buffer) => {
-        if (err) {
-          console.error('Erro ao gerar PDF:', err)
-          reject(err)
-        } else {
-          resolve(buffer)
-        }
-      })
+      displayHeaderFooter: true,
+      headerTemplate: '<div></div>',
+      footerTemplate: `
+        <div style="text-align: center; font-size: 8px; color: #000; width: 100%; padding: 0 8mm;">
+          Página <span class="pageNumber"></span> de <span class="totalPages"></span> - Gerado em ${new Date().toLocaleDateString('pt-BR')}
+        </div>
+      `
     })
+    
+    await browser.close()
 
     // Ordenar amostras por código para pegar a primeira corretamente
     const amostrasOrdenadas = amostras.sort((a: any, b: any) => {
