@@ -57,8 +57,9 @@ export interface LoteAmostra {
   status: 'pendente' | 'em_analise' | 'concluido' | 'pago';
   pago: boolean;
   desconto?: number; // Desconto em porcentagem
-  // Tipo de análise do lote
-  tipoAnalise: TipoAnalise;
+  // Tipo de análise do lote (sinônimos para compatibilidade)
+  tipoAnalise?: TipoAnalise; // Frontend usa este nome
+  modulo?: TipoAnalise; // Backend retorna este nome
   // Tipos de análise solicitados para o lote (solo)
   rotina: boolean;
   organica: boolean; // Matéria Orgânica
