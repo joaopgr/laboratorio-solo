@@ -251,11 +251,16 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
                 { key: 'granulometria', label: 'Granulométrica', solo: true },
               ]
                 .filter(tipo => {
-                  // Mostrar tipos apropriados para o módulo
-                  if (modulo === 'solo' && (tipo as any).solo) return true  // Módulo solo: mostrar os que têm .solo
-                  if (modulo === 'foliar' && !(tipo as any).solo) return true  // Módulo foliar: mostrar os que NÃO têm .solo
-                  if (modulo === 'solo' && !(tipo as any).solo && tipo.key !== 'rotina') return false  // Solo: excluir os que não têm .solo (exceto rotina)
-                  if (modulo === 'foliar' && (tipo as any).solo) return false  // Foliar: excluir os que têm .solo
+                  // Filtro por módulo:
+                  // - Em SOLO: mostrar apenas tipos SEM a flag .solo (rotina, micronutrientes, enxofre, nitrogenio)
+                  // - Em FOLIAR: mostrar apenas tipos SEM a flag .solo
+                  // - Excluir tipos COM flag .solo em FOLIAR
+                  // - Excluir tipos SEM flag .solo em SOLO (exceto rotina que serve para ambos)
+                  
+                  const isSoloOnly = (tipo as any).solo
+                  
+                  if (modulo === 'foliar' && isSoloOnly) return false  // Foliar: excluir tipos solo-only
+                  if (modulo === 'solo' && !isSoloOnly && tipo.key !== 'rotina' && tipo.key !== 'micronutrientes' && tipo.key !== 'enxofre' && tipo.key !== 'nitrogenio') return false  // Solo: excluir tipos foliar-only (não há, todos servem)
                   return true
                 })
                 .map(({ key, label }) => (
