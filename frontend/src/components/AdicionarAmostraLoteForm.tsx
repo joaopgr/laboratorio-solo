@@ -12,9 +12,12 @@ interface AdicionarAmostraLoteFormProps {
 }
 
 export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: AdicionarAmostraLoteFormProps) {
-  const { modulo } = useModule()
+  const { modulo: moduloGlobal } = useModule()
   const { data: lote } = useLoteById(loteId)
   const createAmostra = useCreateAmostra()
+  
+  // Usar o módulo do lote, mas fallback para o módulo global se lote ainda não carregou
+  const modulo = lote?.modulo || moduloGlobal
 
   const [formData, setFormData] = useState({
     codigo: '',
