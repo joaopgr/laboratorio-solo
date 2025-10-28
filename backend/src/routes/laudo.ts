@@ -4,8 +4,7 @@ import { query } from '../database/connection'
 import { SQL_QUERIES } from '../database/queries'
 import * as path from 'path'
 import * as fs from 'fs'
-import chromium from '@sparticuz/chromium'
-import puppeteer from 'puppeteer-core'
+// PDF será gerado no frontend
 import { getUfesLogoBase64, getLabLogoBase64, getSeloBase64, getAssinaturaBase64 } from '../utils/imageUtils'
 
 const router = Router()
@@ -1476,53 +1475,17 @@ router.post('/gerar', async (req, res): Promise<any> => {
       resultados.push(...resultadosResult.rows)
     }
 
-    // Gerar PDF do laudo
+    // Gerar HTML do laudo
     const htmlContent = await gerarPDFLaudoSobrio(lote, amostras, resultados, tipoAnalise, cliente, lote.modulo)
     
-    // Converter HTML para PDF usando Puppeteer
-    const isVercel = !!process.env.VERCEL
-    
-    // Configurar Chromium para Vercel
-    if (isVercel) {
-      chromium.setGraphicsMode = false
-    }
-    
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: isVercel ? [
-        ...chromium.args,
-        '--disable-gpu',
-        '--disable-dev-shm-usage',
-        '--disable-software-rasterizer',
-        '--disable-web-security',
-        '--disable-features=VizDisplayCompositor'
-      ] : ['--no-sandbox', '--disable-setuid-sandbox'],
-      executablePath: isVercel ? await chromium.executablePath() : undefined,
-      defaultViewport: { width: 1920, height: 1080 },
-      ignoreHTTPSErrors: true
+    // Retornar HTML para o frontend gerar o PDF
+    // O PDF será gerado no frontend usando jsPDF ou html2canvas
+    res.json({
+      success: true,
+      html: htmlContent,
+      tipo: 'html'
     })
-    
-    const page = await browser.newPage()
-    await page.setContent(htmlContent, { waitUntil: 'networkidle0' })
-    
-    const pdfBuffer = await page.pdf({
-      format: 'A4',
-      margin: {
-        top: '8mm',
-        right: '8mm',
-        bottom: '8mm',
-        left: '8mm'
-      },
-      displayHeaderFooter: true,
-      headerTemplate: '<div></div>',
-      footerTemplate: `
-        <div style="text-align: center; font-size: 8px; color: #000; width: 100%; padding: 0 8mm;">
-          Página <span class="pageNumber"></span> de <span class="totalPages"></span> - Gerado em ${new Date().toLocaleDateString('pt-BR')}
-        </div>
-      `
-    })
-    
-    await browser.close()
+    return
 
     // Ordenar amostras por código para pegar a primeira corretamente
     const amostrasOrdenadas = amostras.sort((a: any, b: any) => {
