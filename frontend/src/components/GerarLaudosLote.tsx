@@ -3,6 +3,7 @@ import { useLotes } from '../hooks/useLotes'
 import { useModule } from '../contexts/ModuleContext'
 import { FileText, Download, CheckCircle, XCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { api } from '../services/api'
 
 interface GerarLaudosLoteProps {
   onClose: () => void
@@ -55,22 +56,12 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
     setResultados([])
 
     try {
-      const response = await fetch('/api/laudos/gerar-lote', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          loteIds: lotesSelecionados.map((l: any) => l.id),
-          tipoAnalise
-        }),
+      const response = await api.post('/laudos/gerar-lote', {
+        loteIds: lotesSelecionados.map((l: any) => l.id),
+        tipoAnalise
       })
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
+      const data = response.data
 
       if (data.success) {
         setResultados(data.resultados)
