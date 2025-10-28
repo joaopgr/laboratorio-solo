@@ -249,12 +249,13 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
                 { key: 'prem', label: 'PREM', solo: true },
                 { key: 'nitrogenio', label: 'Nitrogênio' },
                 { key: 'granulometria', label: 'Granulométrica', solo: true },
-                { key: 'foliar', label: 'Análise Foliar', foliar: true },
               ]
                 .filter(tipo => {
                   // Mostrar tipos apropriados para o módulo
-                  if (modulo === 'solo' && tipo.foliar) return false
-                  if (modulo === 'foliar' && tipo.solo) return false
+                  if (modulo === 'solo' && (tipo as any).solo) return true  // Módulo solo: mostrar os que têm .solo
+                  if (modulo === 'foliar' && !(tipo as any).solo) return true  // Módulo foliar: mostrar os que NÃO têm .solo
+                  if (modulo === 'solo' && !(tipo as any).solo && tipo.key !== 'rotina') return false  // Solo: excluir os que não têm .solo (exceto rotina)
+                  if (modulo === 'foliar' && (tipo as any).solo) return false  // Foliar: excluir os que têm .solo
                   return true
                 })
                 .map(({ key, label }) => (
