@@ -250,8 +250,16 @@ router.get('/', async (req, res): Promise<any> => {
     // Filtros
     if (amostraId) {
       paramCount++;
-      conditions.push(`r."amostraId" = $${paramCount}`);
-      params.push(amostraId);
+      // Se amostraId contém vírgula, é múltiplos IDs
+      const amostraIdStr = String(amostraId);
+      if (amostraIdStr.includes(',')) {
+        const ids = amostraIdStr.split(',').filter((id: string) => id.trim());
+        conditions.push(`r."amostraId" = ANY($${paramCount})`);
+        params.push(ids);
+      } else {
+        conditions.push(`r."amostraId" = $${paramCount}`);
+        params.push(amostraIdStr);
+      }
     }
 
     if (tipo) {
