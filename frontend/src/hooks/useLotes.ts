@@ -12,9 +12,9 @@ export function useLotes(filters: LoteAmostraFilters = {}) {
     async () => {
       const params: any = { ...filters }
       
-      // Se modulo não foi explicitamente definido nos filtros, usar o do contexto
-      if (!('modulo' in filters)) {
-        params.modulo = modulo
+      // Se tipoAnalise não foi explicitamente definido nos filtros, usar o do contexto
+      if (!('tipoAnalise' in filters)) {
+        params.tipoAnalise = modulo
       }
       // Se foi definido como undefined, não adicionar o parâmetro (buscar todos)
       // Se foi definido com um valor específico, usar esse valor

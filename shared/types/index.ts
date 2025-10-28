@@ -11,15 +11,15 @@ export const ANALISE_VALUES_SOLO = {
   granulometria: 30, // Análise Granulométrica (dentro de solo)
 } as const;
 
-// Valores dos tipos de análise para FOLIAR
+// Valores dos tipos de análise para FOLIAR (TOTAL: 60)
 export const ANALISE_VALUES_FOLIAR = {
-  rotina: 15,
-  organica: 10, // Matéria Orgânica (não usado em foliar)
-  micronutrientes: 15, // Micronutrientes
-  prem: 12, // PREM (não usado em foliar)
-  enxofre: 15, // Enxofre
-  nitrogenio: 15, // Nitrogênio
-  granulometria: 30, // Análise Granulométrica (não usado em foliar)
+  rotina: 15,        // 15
+  organica: 0,       // Não usado em foliar
+  micronutrientes: 15, // 15
+  prem: 0,           // Não usado em foliar
+  enxofre: 15,       // 15
+  nitrogenio: 15,    // 15
+  granulometria: 0,  // Não usado em foliar
 } as const;
 
 // Função para obter valores baseados no tipo de análise

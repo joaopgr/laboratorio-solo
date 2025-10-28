@@ -813,13 +813,13 @@ router.get('/financeiro', async (req, res): Promise<any> => {
       // Usar valores corretos baseados no tipo de análise
       const valoresAnalise = tipoAnalise === 'foliar' ? {
         rotina: 15,
-        organica: 10, // Não usado em foliar
+        organica: 0,       // Não usado em foliar
         micronutrientes: 15,
         enxofre: 15,
-        prem: 12, // Não usado em foliar
+        prem: 0,           // Não usado em foliar
         nitrogenio: 15,
-        granulometria: 30, // Não usado em foliar
-        foliar: 60
+        granulometria: 0,  // Não usado em foliar
+        foliar: 0
       } : {
         rotina: 15,
         organica: 10,
@@ -828,7 +828,7 @@ router.get('/financeiro', async (req, res): Promise<any> => {
         prem: 12,
         nitrogenio: 10,
         granulometria: 30,
-        foliar: 60
+        foliar: 0
       };
       
       // Calcular valor para cada amostra
