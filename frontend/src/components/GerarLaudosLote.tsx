@@ -74,11 +74,19 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
           if (resultado.success && resultado.html) {
             setTimeout(async () => {
               try {
+                // Buscar informações do lote para gerar nome do arquivo
+                const lote = lotesData?.lotes?.find((l: any) => l.id === resultado.loteId)
+                const clienteNome = lote?.cliente?.nome?.replace(/\s+/g, '_') || 'laudo'
+                const codigoAmostra = lote?.amostras?.[0]?.codigo || (index + 1).toString()
+                const tipoSufixo = lote?.modulo === 'foliar' ? '_Foliar' : ''
+                const nomeArquivo = `${clienteNome}_${codigoAmostra}${tipoSufixo}.pdf`
+                
                 // Criar elemento temporário para renderizar o HTML
                 const tempDiv = document.createElement('div')
                 tempDiv.style.position = 'fixed'
                 tempDiv.style.left = '-9999px'
                 tempDiv.style.width = '210mm'
+                tempDiv.style.padding = '10mm'
                 tempDiv.innerHTML = resultado.html
                 document.body.appendChild(tempDiv)
                 
@@ -87,7 +95,9 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
                 const canvas = await html2canvas(tempDiv, {
                   scale: 2,
                   useCORS: true,
-                  logging: false
+                  logging: false,
+                  width: tempDiv.scrollWidth,
+                  height: tempDiv.scrollHeight
                 })
                 
                 const pdf = new jsPDF('p', 'mm', 'a4')
@@ -108,7 +118,7 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
                   heightLeft -= pageHeight
                 }
                 
-                pdf.save(`laudo-${index + 1}.pdf`)
+                pdf.save(nomeArquivo)
                 document.body.removeChild(tempDiv)
               } catch (error) {
                 console.error('Erro ao gerar PDF:', error)
