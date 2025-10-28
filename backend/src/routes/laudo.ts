@@ -1480,13 +1480,25 @@ router.post('/gerar', async (req, res): Promise<any> => {
     const htmlContent = await gerarPDFLaudoSobrio(lote, amostras, resultados, tipoAnalise, cliente, lote.modulo)
     
     // Converter HTML para PDF usando Puppeteer
-    const isLocal = process.env.NODE_ENV === 'development' || !process.env.VERCEL
+    const isVercel = !!process.env.VERCEL
+    
+    // Configurar Chromium para Vercel
+    if (isVercel) {
+      chromium.setGraphicsMode = false
+    }
     
     const browser = await puppeteer.launch({
-      headless: true,
-      args: isLocal ? [] : chromium.args,
-      executablePath: isLocal ? undefined : await chromium.executablePath(),
-      defaultViewport: chromium.defaultViewport,
+      headless: 'new',
+      args: isVercel ? [
+        ...chromium.args,
+        '--disable-gpu',
+        '--disable-dev-shm-usage',
+        '--disable-software-rasterizer',
+        '--disable-web-security',
+        '--disable-features=VizDisplayCompositor'
+      ] : ['--no-sandbox', '--disable-setuid-sandbox'],
+      executablePath: isVercel ? await chromium.executablePath() : undefined,
+      defaultViewport: { width: 1920, height: 1080 },
       ignoreHTTPSErrors: true
     })
     
