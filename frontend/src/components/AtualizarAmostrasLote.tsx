@@ -33,18 +33,13 @@ export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmos
   const { data: lotesData } = useLotes({ limit: 1000 })
   const updateAmostrasLote = useUpdateAmostrasLote()
   
-  // Buscar resultados das amostras selecionadas
-  // Como ResultadoFilters só aceita uma amostraId, vamos buscar para cada amostra
-  const resultadosQueries = selectedAmostras.map(amostraId => 
-    useResultados({ amostraId })
-  )
-  const resultadosData = resultadosQueries.reduce((acc, query) => {
-    if (query.data?.resultados) {
-      acc.resultados = [...(acc.resultados || []), ...query.data.resultados]
-      acc.pagination = query.data.pagination
-    }
-    return acc
-  }, { resultados: [] as any[], pagination: null })
+  // Buscar resultados das amostras selecionadas (usando string com vírgulas)
+  const amostraIdsStr = selectedAmostras.length > 0 
+    ? selectedAmostras.join(',') 
+    : ''
+  const { data: resultadosData } = useResultados({ 
+    amostraId: amostraIdsStr || undefined 
+  })
 
   // Calcular tipos existentes das amostras selecionadas
   const calcularTiposExistentes = () => {
@@ -106,7 +101,7 @@ export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmos
 
   // Verificar se há dados salvos para um tipo específico
   const verificarDadosSalvos = (tipo: string): boolean => {
-    if (!resultadosData) return false
+    if (!resultadosData?.resultados || !Array.isArray(resultadosData.resultados)) return false
     
     // Mapear tipos para tipos de resultado
     const tipoMap: Record<string, string[]> = {
@@ -121,10 +116,10 @@ export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmos
     const tiposResultado = tipoMap[tipo] || []
     
     // Verificar se alguma amostra selecionada tem resultados para esses tipos
-    return resultadosData.resultados?.some((resultado: any) => 
+    return resultadosData.resultados.some((resultado: any) => 
       selectedAmostras.includes(resultado.amostraId) && 
       tiposResultado.includes(resultado.tipo)
-    ) || false
+    )
   }
 
   // Atualizar tipos de análise

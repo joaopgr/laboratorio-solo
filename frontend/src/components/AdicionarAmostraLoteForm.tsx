@@ -54,8 +54,14 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
     e.preventDefault()
     
     try {
+      // Formatar data para yyyy-MM-dd antes de enviar
+      const dataColetaFormatted = formData.dataColeta 
+        ? formData.dataColeta.split('T')[0] 
+        : undefined
+      
       const amostraData: CreateAmostraData = {
         ...formData,
+        dataColeta: dataColetaFormatted,
         tipoAnalise: modulo,
         rotina: false,
         organica: false,
