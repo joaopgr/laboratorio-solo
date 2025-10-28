@@ -451,7 +451,7 @@ export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmos
               ]
                 .filter(tipo => {
                   // Filtrar tipos baseado no módulo do lote selecionado
-                  const loteModulo = selectedLote?.tipoAnalise || modulo
+                  const loteModulo = selectedLote?.modulo || modulo
                   if (loteModulo === 'solo' && (tipo as any).solo) return true
                   if (loteModulo === 'foliar') {
                     // Para foliar, excluir tipos solo-only
