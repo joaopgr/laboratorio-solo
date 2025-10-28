@@ -60,8 +60,8 @@ export function useResultadosByAmostra(amostraId: string) {
   return useQuery(
     ['resultados', 'amostra', amostraId],
     async () => {
-      const response = await api.get<{ data: Resultado[], pagination: any }>(`/resultados?amostraId=${amostraId}`)
-      return response.data.data
+      const response = await api.get<{ resultados: Resultado[], pagination: any }>(`/resultados?amostraId=${amostraId}`)
+      return response.data.resultados
     },
     {
       enabled: !!amostraId,
