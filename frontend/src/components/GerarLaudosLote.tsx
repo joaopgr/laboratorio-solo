@@ -4,6 +4,8 @@ import { useModule } from '../contexts/ModuleContext'
 import { FileText, Download, CheckCircle, XCircle } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { api } from '../services/api'
+import html2canvas from 'html2canvas'
+import { jsPDF } from 'jspdf'
 
 interface GerarLaudosLoteProps {
   onClose: () => void
@@ -68,18 +70,62 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
         toast.success(`${data.sucessos} laudos gerados com sucesso!`)
         
         // Download automático dos laudos gerados com sucesso
-        data.resultados.forEach((resultado: any, index: number) => {
-          if (resultado.success && resultado.arquivo) {
+        data.resultados.forEach(async (resultado: any, index: number) => {
+          if (resultado.success && resultado.html) {
+            setTimeout(async () => {
+              try {
+                // Criar elemento temporário para renderizar o HTML
+                const tempDiv = document.createElement('div')
+                tempDiv.style.position = 'fixed'
+                tempDiv.style.left = '-9999px'
+                tempDiv.style.width = '210mm'
+                tempDiv.innerHTML = resultado.html
+                document.body.appendChild(tempDiv)
+                
+                await new Promise(resolve => setTimeout(resolve, 500))
+                
+                const canvas = await html2canvas(tempDiv, {
+                  scale: 2,
+                  useCORS: true,
+                  logging: false
+                })
+                
+                const pdf = new jsPDF('p', 'mm', 'a4')
+                const imgData = canvas.toDataURL('image/png')
+                const imgWidth = 210
+                const pageHeight = 297
+                const imgHeight = (canvas.height * imgWidth) / canvas.width
+                let heightLeft = imgHeight
+                let position = 0
+                
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+                heightLeft -= pageHeight
+                
+                while (heightLeft >= 0) {
+                  position = heightLeft - imgHeight
+                  pdf.addPage()
+                  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+                  heightLeft -= pageHeight
+                }
+                
+                pdf.save(`laudo-${index + 1}.pdf`)
+                document.body.removeChild(tempDiv)
+              } catch (error) {
+                console.error('Erro ao gerar PDF:', error)
+                toast.error(`Erro ao baixar laudo ${index + 1}`)
+              }
+            }, index * 1000) // Delay entre downloads
+          } else if (resultado.success && resultado.arquivo) {
+            // Fallback para download direto de arquivo
             setTimeout(() => {
               const link = document.createElement('a')
               link.href = `/api/laudos/download/${resultado.arquivo}`
               link.download = resultado.arquivo
               link.target = '_blank'
-              
               document.body.appendChild(link)
               link.click()
               document.body.removeChild(link)
-            }, index * 500) // Delay entre downloads para evitar bloqueio
+            }, index * 500)
           }
         })
         
