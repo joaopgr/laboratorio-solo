@@ -14,7 +14,7 @@ export function useLotes(filters: LoteAmostraFilters = {}) {
       
       // Se tipoAnalise não foi explicitamente definido nos filtros, usar o do contexto
       if (!('tipoAnalise' in filters)) {
-        params.tipoAnalise = modulo
+        params.modulo = modulo  // Backend usa 'modulo', não 'tipoAnalise'
       }
       // Se foi definido como undefined, não adicionar o parâmetro (buscar todos)
       // Se foi definido com um valor específico, usar esse valor

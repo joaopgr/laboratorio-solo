@@ -448,7 +448,9 @@ export function LoteDetails() {
                     organica: false,
                     micronutrientes: false,
                     enxofre: false,
-                    prem: false
+                    prem: false,
+                    nitrogenio: false,
+                    granulometria: false,
                   }
                   
                   // Verificar se pelo menos uma amostra tem cada tipo
@@ -458,6 +460,8 @@ export function LoteDetails() {
                     if (amostra.micronutrientes) tiposExistentes.micronutrientes = true
                     if (amostra.enxofre) tiposExistentes.enxofre = true
                     if (amostra.prem) tiposExistentes.prem = true
+                    if (amostra.nitrogenio) tiposExistentes.nitrogenio = true
+                    if (amostra.granulometria) tiposExistentes.granulometria = true
                   })
                   
                   return (
@@ -485,6 +489,16 @@ export function LoteDetails() {
                       {tiposExistentes.prem && (
                         <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-pink-100 text-pink-800">
                           PREM
+                        </span>
+                      )}
+                      {tiposExistentes.nitrogenio && (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-cyan-100 text-cyan-800">
+                          Nitrogênio
+                        </span>
+                      )}
+                      {tiposExistentes.granulometria && (
+                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                          Granulométrica
                         </span>
                       )}
                     </>
