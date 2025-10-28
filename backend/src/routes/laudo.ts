@@ -1499,6 +1499,90 @@ router.post('/gerar', async (req, res): Promise<any> => {
   }
 })
 
+// POST /api/laudos/gerar-lote - Gerar laudos em lote
+router.post('/gerar-lote', async (req, res): Promise<any> => {
+  try {
+    const { loteIds, tipoAnalise } = req.body
+
+    if (!loteIds || !Array.isArray(loteIds) || loteIds.length === 0) {
+      return res.status(400).json({ error: 'Lista de lotes inválida' })
+    }
+
+    const resultados = []
+    let sucessos = 0
+    let falhas = 0
+
+    for (const loteId of loteIds) {
+      try {
+        // Gerar HTML para cada lote
+        const { query: loteQuery, params: loteParams } = SQL_QUERIES.lotes.findById(loteId)
+        const loteResult = await query(loteQuery, loteParams)
+        const lote = loteResult.rows[0]
+
+        if (!lote) {
+          resultados.push({ loteId, success: false, error: 'Lote não encontrado' })
+          falhas++
+          continue
+        }
+
+        let cliente
+        if (lote.cliente) {
+          cliente = lote.cliente
+        } else {
+          const { query: clienteQuery, params: clienteParams } = SQL_QUERIES.clientes.findById(lote.clienteId)
+          const clienteResult = await query(clienteQuery, clienteParams)
+          cliente = clienteResult.rows[0]
+        }
+
+        const { query: amostrasQuery, params: amostrasParams } = SQL_QUERIES.amostras.findByLote(loteId)
+        const amostrasResult = await query(amostrasQuery, amostrasParams)
+        const amostras = amostrasResult.rows
+
+        if (amostras.length === 0) {
+          resultados.push({ loteId, success: false, error: 'Lote não possui amostras' })
+          falhas++
+          continue
+        }
+
+        const amostraIds = amostras.map((a: any) => a.id)
+        const resultadosArray: any[] = []
+        for (const amostraId of amostraIds) {
+          const { query: resultadosQuery, params: resultadosParams } = SQL_QUERIES.resultados.findByAmostra(amostraId)
+          const resultadosResult = await query(resultadosQuery, resultadosParams)
+          resultadosArray.push(...resultadosResult.rows)
+        }
+
+        const htmlContent = await gerarPDFLaudoSobrio(lote, amostras, resultadosArray, tipoAnalise || 'geral', cliente, lote.modulo)
+
+        resultados.push({
+          loteId,
+      success: true,
+          html: htmlContent
+    })
+        sucessos++
+  } catch (error) {
+        console.error(`Erro ao gerar laudo para lote ${loteId}:`, error)
+        resultados.push({
+          loteId,
+          success: false,
+          error: error instanceof Error ? error.message : 'Erro desconhecido'
+        })
+        falhas++
+      }
+    }
+
+    res.json({
+      success: true,
+      resultados,
+      sucessos,
+      falhas
+    })
+  } catch (error) {
+    console.error('Erro ao gerar laudos em lote:', error)
+    return res.status(500).json({ error: 'Erro interno do servidor' })
+  }
+})
+
 // GET /api/laudos/:arquivo - Servir arquivo de laudo
 router.get('/:arquivo', (req, res) => {
   try {
