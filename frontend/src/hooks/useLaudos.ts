@@ -84,7 +84,7 @@ export function useGerarLaudo() {
             console.error('Erro ao gerar PDF:', error)
             // Fallback para impressão
             const printWindow = window.open('', '_blank')
-            if (printWindow) {
+            if (printWindow && data.html) {
               printWindow.document.write(data.html)
               printWindow.document.close()
               setTimeout(() => {
