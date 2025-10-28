@@ -16,6 +16,8 @@ interface GerarLaudoResponse {
   caminho?: string
   html?: string
   tipo?: string
+  lote?: any
+  tipoAnalise?: string
 }
 
 export function useGerarLaudo() {
@@ -34,11 +36,18 @@ export function useGerarLaudo() {
       
       // Se retornou HTML, gerar PDF no frontend
       if (data.tipo === 'html' && data.html) {
+        // Gerar nome do arquivo
+        const clienteNome = data.lote?.clienteNome?.replace(/\s+/g, '_') || 'laudo'
+        const codigoAmostra = data.lote?.codigo || 'N/A'
+        const tipoSufixo = data.tipoAnalise === 'granulometrica' ? '_Fisica' : (data.lote?.modulo === 'foliar' ? '_Foliar' : '')
+        const nomeArquivo = `${clienteNome}_${codigoAmostra}${tipoSufixo}.pdf`
+        
         // Criar elemento temporário para renderizar o HTML
         const tempDiv = document.createElement('div')
         tempDiv.style.position = 'fixed'
         tempDiv.style.left = '-9999px'
-        tempDiv.style.width = '210mm' // A4 width
+        tempDiv.style.width = '210mm'
+        tempDiv.style.padding = '10mm'
         tempDiv.innerHTML = data.html
         document.body.appendChild(tempDiv)
         
@@ -49,7 +58,9 @@ export function useGerarLaudo() {
             const canvas = await html2canvas(tempDiv, {
               scale: 2,
               useCORS: true,
-              logging: false
+              logging: false,
+              width: tempDiv.scrollWidth,
+              height: tempDiv.scrollHeight
             })
             
             // Criar PDF
@@ -74,7 +85,7 @@ export function useGerarLaudo() {
             }
             
             // Baixar o PDF
-            pdf.save('laudo.pdf')
+            pdf.save(nomeArquivo)
             
             // Remover elemento temporário
             document.body.removeChild(tempDiv)

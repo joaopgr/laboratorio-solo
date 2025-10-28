@@ -1568,7 +1568,13 @@ router.post('/gerar', async (req, res): Promise<any> => {
     res.json({
       success: true,
       html: htmlContent,
-      tipo: 'html'
+      tipo: 'html',
+      lote: {
+        clienteNome: cliente?.nome || '',
+        codigo: amostras[0]?.codigo || '',
+        modulo: lote.modulo
+      },
+      tipoAnalise
     })
     return
   } catch (error) {
