@@ -189,7 +189,7 @@ export function useCreateResultadosLote() {
       onSuccess: (data) => {
         queryClient.invalidateQueries(['resultados'])
         queryClient.invalidateQueries(['amostras'])
-        const count = Array.isArray(data) ? data.length : (data?.length || 0)
+        const count = Array.isArray(data) ? data.length : 0
         toast.success(`${count} resultados criados com sucesso!`)
       },
       onError: (error: any) => {

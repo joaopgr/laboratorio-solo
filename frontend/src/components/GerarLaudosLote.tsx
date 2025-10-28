@@ -41,10 +41,6 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
     
     // Detectar prefixo baseado no módulo
     const prefixo = modulo === 'foliar' ? 'F' : ''
-    
-    // Verificar se os códigos de entrada têm o prefixo correto
-    const inicioComPrefixo = inicio > 0 ? (prefixo ? `${prefixo}${inicio}` : `${inicio}`) : ''
-    const fimComPrefixo = fim > 0 ? (prefixo ? `${prefixo}${fim}` : `${fim}`) : ''
 
     // Filtrar lotes no intervalo
     const lotesSelecionados = (lotesData?.lotes || []).filter((lote: any) => {
