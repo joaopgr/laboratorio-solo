@@ -66,6 +66,10 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
         }),
       })
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`)
+      }
+
       const data = await response.json()
 
       if (data.success) {
@@ -95,8 +99,9 @@ export function GerarLaudosLote({ onClose }: GerarLaudosLoteProps) {
         toast.error('Erro ao gerar laudos')
       }
     } catch (error) {
-      console.error('Erro:', error)
-      toast.error('Erro ao gerar laudos')
+      console.error('Erro ao gerar laudos:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido ao gerar laudos'
+      toast.error(errorMessage)
     } finally {
       setIsGenerating(false)
     }

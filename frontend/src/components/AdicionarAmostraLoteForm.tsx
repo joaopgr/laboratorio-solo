@@ -90,6 +90,7 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
       const amostraData: CreateAmostraData = {
         ...formData,
         dataColeta: dataColetaFormatted,
+        modulo: modulo, // Usar o módulo do lote
         tipoAnalise: modulo,
         rotina: tiposAnalise.rotina,
         organica: tiposAnalise.organica,
