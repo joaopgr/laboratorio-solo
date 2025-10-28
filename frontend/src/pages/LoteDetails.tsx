@@ -28,7 +28,10 @@ export function LoteDetails() {
   
   // Buscar resultados das amostras do lote
   const amostraIds = lote?.amostras?.map(a => a.id) || []
-  const { data: resultadosData } = useResultados({ amostraId: amostraIds.join(',') })
+  const amostraIdsStr = amostraIds.join(',')
+  const { data: resultadosData } = useResultados({ 
+    amostraId: amostraIdsStr || undefined 
+  })
 
   useEffect(() => {
     if (lote?.amostras && lote.amostras.length > 0) {
