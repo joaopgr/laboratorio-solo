@@ -172,7 +172,7 @@ const createAmostraSchema = z.object({
   localidade: z.string().optional(),
   propriedade: z.string().optional(),
   solicitante: z.string().optional(),
-  dataColeta: z.string().datetime().optional(),
+  dataColeta: z.string().optional(),
   observacoes: z.string().optional(),
   // Tipo de análise da amostra
   modulo: z.enum(['solo', 'foliar']).default('solo'),
