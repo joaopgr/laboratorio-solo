@@ -1488,7 +1488,7 @@ router.post('/gerar', async (req, res): Promise<any> => {
     }
     
     const browser = await puppeteer.launch({
-      headless: 'new',
+      headless: true,
       args: isVercel ? [
         ...chromium.args,
         '--disable-gpu',
