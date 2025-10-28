@@ -314,7 +314,7 @@ router.get('/', async (req, res): Promise<any> => {
     }
 
     res.json({
-      data: resultados,
+      resultados: resultados,
       pagination: {
         page: pageNum,
         limit: limitNum,
