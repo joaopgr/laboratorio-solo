@@ -26,6 +26,17 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
     dataColeta: '',
     observacoes: ''
   })
+  
+  const [tiposAnalise, setTiposAnalise] = useState({
+    rotina: false,
+    organica: false,
+    micronutrientes: false,
+    enxofre: false,
+    prem: false,
+    nitrogenio: false,
+    granulometria: false,
+    foliar: false,
+  })
 
   // Gerar próximo código baseado no lote e preencher com valores do lote
   useEffect(() => {
@@ -63,14 +74,14 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
         ...formData,
         dataColeta: dataColetaFormatted,
         tipoAnalise: modulo,
-        rotina: false,
-        organica: false,
-        micronutrientes: false,
-        enxofre: false,
-        prem: false,
-        nitrogenio: false,
-        granulometria: false,
-        foliar: false,
+        rotina: tiposAnalise.rotina,
+        organica: tiposAnalise.organica,
+        micronutrientes: tiposAnalise.micronutrientes,
+        enxofre: tiposAnalise.enxofre,
+        prem: tiposAnalise.prem,
+        nitrogenio: tiposAnalise.nitrogenio,
+        granulometria: tiposAnalise.granulometria,
+        foliar: tiposAnalise.foliar,
         pago: false,
         loteId
       }
@@ -208,6 +219,45 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
               rows={3}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
+          </div>
+
+          {/* Tipos de Análise */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Tipos de Análise
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              {[
+                { key: 'rotina', label: 'Rotina' },
+                { key: 'organica', label: 'Matéria Orgânica', solo: true },
+                { key: 'micronutrientes', label: 'Micronutrientes' },
+                { key: 'enxofre', label: 'Enxofre' },
+                { key: 'prem', label: 'PREM', solo: true },
+                { key: 'nitrogenio', label: 'Nitrogênio' },
+                { key: 'granulometria', label: 'Granulométrica', solo: true },
+                { key: 'foliar', label: 'Análise Foliar', foliar: true },
+              ]
+                .filter(tipo => {
+                  // Mostrar tipos apropriados para o módulo
+                  if (modulo === 'solo' && tipo.foliar) return false
+                  if (modulo === 'foliar' && tipo.solo) return false
+                  return true
+                })
+                .map(({ key, label }) => (
+                  <label key={key} className="flex items-center space-x-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={tiposAnalise[key as keyof typeof tiposAnalise]}
+                      onChange={(e) => setTiposAnalise(prev => ({
+                        ...prev,
+                        [key]: e.target.checked
+                      }))}
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-700">{label}</span>
+                  </label>
+                ))}
+            </div>
           </div>
 
           <div className="flex gap-3 pt-4">
