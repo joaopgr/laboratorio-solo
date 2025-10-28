@@ -190,7 +190,9 @@ const createAmostraSchema = z.object({
   loteId: z.string().min(1, 'ID do lote é obrigatório'),
 });
 
-const updateAmostraSchema = createAmostraSchema.partial().omit({ loteId: true });
+const updateAmostraSchema = createAmostraSchema.partial().omit({ loteId: true }).extend({
+  modulo: z.enum(['solo', 'foliar']).optional(),
+});
 
 // Função para gerar próximo código de amostra
 async function getNextAmostraNumber(modulo: string = 'solo'): Promise<string> {
