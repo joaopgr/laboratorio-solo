@@ -46,8 +46,8 @@ export function LoteDetails() {
   const calcularValorLote = () => {
     if (!lote || !lote.amostras) return 0
     
-    // Obter valores corretos baseados no tipo de análise do lote
-    const analiseValues = getAnaliseValues(lote.tipoAnalise as 'solo' | 'foliar')
+    // Obter valores corretos baseados no módulo do lote (modulo é 'solo' ou 'foliar')
+    const analiseValues = getAnaliseValues(lote.modulo as 'solo' | 'foliar')
     let valorTotal = 0
     
     // Calcular valor baseado nas amostras individuais
