@@ -32,8 +32,8 @@ export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmos
   const [warningMessage, setWarningMessage] = useState('')
   const [pendingChange, setPendingChange] = useState<{tipo: string, checked: boolean} | null>(null)
 
-  // Buscar lotes do módulo atual - passar undefined como modulo para buscar todos
-  const { data: lotesData } = useLotes({ limit: 1000, modulo: undefined as any })
+  // Buscar lotes do módulo atual - passar undefined como tipoAnalise para buscar todos
+  const { data: lotesData } = useLotes({ limit: 1000, tipoAnalise: undefined })
   const updateAmostrasLote = useUpdateAmostrasLote()
   
   // Buscar resultados das amostras selecionadas (usando string com vírgulas)
@@ -451,7 +451,7 @@ export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmos
               ]
                 .filter(tipo => {
                   // Filtrar tipos baseado no módulo do lote selecionado
-                  const loteModulo = selectedLote?.modulo || modulo
+                  const loteModulo = selectedLote?.tipoAnalise || modulo
                   if (loteModulo === 'solo' && (tipo as any).solo) return true
                   if (loteModulo === 'foliar') {
                     // Para foliar, excluir tipos solo-only
