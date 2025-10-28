@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useLotes } from '../hooks/useLotes'
 import { useUpdateAmostrasLote } from '../hooks/useAmostras'
 import { useResultados } from '../hooks/useResultados'
+import { useModule } from '../contexts/ModuleContext'
 import { X, Check, Package, Search, AlertTriangle } from 'lucide-react'
 import { LoteAmostra } from '../../../shared/types'
 import toast from 'react-hot-toast'
@@ -13,6 +14,7 @@ interface AtualizarAmostrasLoteProps {
 }
 
 export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmostrasLoteProps) {
+  const { modulo } = useModule()
   const [selectedLote, setSelectedLote] = useState<LoteAmostra | null>(null)
   const [selectedAmostras, setSelectedAmostras] = useState<string[]>([])
   const [tiposAnalise, setTiposAnalise] = useState({
@@ -30,7 +32,8 @@ export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmos
   const [warningMessage, setWarningMessage] = useState('')
   const [pendingChange, setPendingChange] = useState<{tipo: string, checked: boolean} | null>(null)
 
-  const { data: lotesData } = useLotes({ limit: 1000 })
+  // Buscar lotes do módulo atual - passar undefined como modulo para buscar todos
+  const { data: lotesData } = useLotes({ limit: 1000, modulo: undefined as any })
   const updateAmostrasLote = useUpdateAmostrasLote()
   
   // Buscar resultados das amostras selecionadas (usando string com vírgulas)
@@ -439,13 +442,24 @@ export function AtualizarAmostrasLote({ isOpen, onClose, loteId }: AtualizarAmos
             <div className="grid grid-cols-2 gap-3">
               {[
                 { key: 'rotina', label: 'Rotina', color: 'bg-blue-100 text-blue-800' },
-                { key: 'organica', label: 'Matéria Orgânica', color: 'bg-green-100 text-green-800' },
+                { key: 'organica', label: 'Matéria Orgânica', color: 'bg-green-100 text-green-800', solo: true },
                 { key: 'micronutrientes', label: 'Micronutrientes', color: 'bg-purple-100 text-purple-800' },
                 { key: 'enxofre', label: 'Enxofre', color: 'bg-orange-100 text-orange-800' },
-                { key: 'prem', label: 'PREM', color: 'bg-pink-100 text-pink-800' },
+                { key: 'prem', label: 'PREM', color: 'bg-pink-100 text-pink-800', solo: true },
                 { key: 'nitrogenio', label: 'Nitrogênio', color: 'bg-cyan-100 text-cyan-800' },
-                { key: 'granulometria', label: 'Granulométrica', color: 'bg-indigo-100 text-indigo-800' },
-              ].map(({ key, label, color }) => (
+                { key: 'granulometria', label: 'Granulométrica', color: 'bg-indigo-100 text-indigo-800', solo: true },
+              ]
+                .filter(tipo => {
+                  // Filtrar tipos baseado no módulo do lote selecionado
+                  const loteModulo = selectedLote?.modulo || modulo
+                  if (loteModulo === 'solo' && (tipo as any).solo) return true
+                  if (loteModulo === 'foliar') {
+                    // Para foliar, excluir tipos solo-only
+                    return !(tipo as any).solo
+                  }
+                  return true
+                })
+                .map(({ key, label, color }) => (
                 <label key={key} className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
