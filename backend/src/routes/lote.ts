@@ -359,6 +359,51 @@ router.put('/:id', async (req, res): Promise<any> => {
   }
 });
 
+// DELETE /api/lotes/clean-empty - Deletar lotes vazios (DEVE VIR ANTES DE /:id!)
+router.delete('/clean-empty', async (req, res): Promise<any> => {
+  try {
+    // Buscar lotes sem amostras
+    const { query: lotesVaziosQuery, params: lotesVaziosParams } = SQL_QUERIES.lotes.findEmpty();
+    const lotesVaziosResult = await query(lotesVaziosQuery, lotesVaziosParams);
+    const lotesVazios = lotesVaziosResult.rows;
+
+    if (lotesVazios.length === 0) {
+      return res.json({ 
+        message: 'Nenhum lote vazio encontrado',
+        deletedCount: 0 
+      });
+    }
+
+    // Deletar lotes vazios
+    let deletedCount = 0;
+    for (const lote of lotesVazios) {
+      const { query: deleteQuery, params: deleteParams } = SQL_QUERIES.lotes.delete(lote.id);
+      await query(deleteQuery, deleteParams);
+      deletedCount++;
+    }
+
+    res.json({ 
+      message: `${deletedCount} lote(s) vazio(s) removido(s) com sucesso`,
+      deletedCount 
+    });
+  } catch (error) {
+    console.error('Erro ao limpar lotes vazios:', error);
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// GET /api/lotes/next-code/:modulo - Obter próximo código de lote
+router.get('/next-code/:modulo', async (req, res): Promise<any> => {
+  try {
+    const { modulo } = req.params;
+    const nextCode = await getNextLoteNumber(modulo);
+    res.json({ nextCode });
+  } catch (error) {
+    console.error('Erro ao gerar próximo código:', error);
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
 // DELETE /api/lotes/:id - Deletar lote
 router.delete('/:id', async (req, res): Promise<any> => {
   try {
@@ -424,51 +469,6 @@ router.delete('/:id', async (req, res): Promise<any> => {
     }
   } catch (error) {
     console.error('Erro ao deletar lote:', error);
-    return res.status(500).json({ error: 'Erro interno do servidor' });
-  }
-});
-
-// GET /api/lotes/next-code/:modulo - Obter próximo código de lote
-router.get('/next-code/:modulo', async (req, res): Promise<any> => {
-  try {
-    const { modulo } = req.params;
-    const nextCode = await getNextLoteNumber(modulo);
-    res.json({ nextCode });
-  } catch (error) {
-    console.error('Erro ao gerar próximo código:', error);
-    return res.status(500).json({ error: 'Erro interno do servidor' });
-  }
-});
-
-// DELETE /api/lotes/clean-empty - Deletar lotes vazios
-router.delete('/clean-empty', async (req, res): Promise<any> => {
-  try {
-    // Buscar lotes sem amostras
-    const { query: lotesVaziosQuery, params: lotesVaziosParams } = SQL_QUERIES.lotes.findEmpty();
-    const lotesVaziosResult = await query(lotesVaziosQuery, lotesVaziosParams);
-    const lotesVazios = lotesVaziosResult.rows;
-
-    if (lotesVazios.length === 0) {
-      return res.json({ 
-        message: 'Nenhum lote vazio encontrado',
-        deletedCount: 0 
-      });
-    }
-
-    // Deletar lotes vazios
-    let deletedCount = 0;
-    for (const lote of lotesVazios) {
-      const { query: deleteQuery, params: deleteParams } = SQL_QUERIES.lotes.delete(lote.id);
-      await query(deleteQuery, deleteParams);
-      deletedCount++;
-    }
-
-    res.json({ 
-      message: `${deletedCount} lote(s) vazio(s) removido(s) com sucesso`,
-      deletedCount 
-    });
-  } catch (error) {
-    console.error('Erro ao limpar lotes vazios:', error);
     return res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });

@@ -40,6 +40,20 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
 
   // Gerar próximo código baseado no lote e preencher com valores do lote
   useEffect(() => {
+    // Se módulo foliar, marcar os tipos automaticamente
+    if (modulo === 'foliar') {
+      setTiposAnalise({
+        rotina: true,
+        organica: false,
+        micronutrientes: true,
+        enxofre: true,
+        prem: false,
+        nitrogenio: true,
+        granulometria: false,
+        foliar: false,
+      })
+    }
+    
     if (lote?.amostras && lote.amostras.length > 0) {
       const ultimaAmostra = lote.amostras[lote.amostras.length - 1]
       const ultimoNumero = parseInt(ultimaAmostra.codigo.replace(/\D/g, '')) || 0
@@ -59,7 +73,7 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
     } else {
       setFormData(prev => ({ ...prev, codigo: '1' }))
     }
-  }, [lote])
+  }, [lote, modulo])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
