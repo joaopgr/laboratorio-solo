@@ -20,7 +20,7 @@ export function LancamentoResultados() {
     cultura: '',
     status: '',
     tipoAnalise: tipoAnalise, // Filtrar por módulo
-    limit: 100 // Aumentar limite para incluir todas as amostras
+    limit: 1000 // Aumentar limite para incluir todas as amostras
   })
   
   const [showOnlySelected, setShowOnlySelected] = useState(false)
