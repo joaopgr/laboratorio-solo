@@ -360,7 +360,7 @@ router.get('/', async (req, res): Promise<any> => {
     }
 
     res.json({
-      data: amostras,
+      amostras: amostras,
       pagination: {
         page: pageNum,
         limit: limitNum,

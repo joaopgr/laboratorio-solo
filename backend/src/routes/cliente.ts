@@ -86,7 +86,7 @@ router.get('/', async (req, res): Promise<any> => {
     }
 
     res.json({
-      data: clientes,
+      clientes: clientes,
       pagination: {
         page: pageNum,
         limit: limitNum,
