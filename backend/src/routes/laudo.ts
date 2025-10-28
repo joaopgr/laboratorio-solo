@@ -1500,66 +1500,6 @@ router.post('/gerar', async (req, res): Promise<any> => {
 })
 
 // GET /api/laudos/:arquivo - Servir arquivo de laudo
-router.get('/:arquivo', async (req, res): Promise<any> => {
-      const codigoA = a.codigo
-      const codigoB = b.codigo
-      
-      // Para códigos com F (foliar), extrair números
-      if (/^F\d+$/.test(codigoA) && /^F\d+$/.test(codigoB)) {
-        const numA = parseInt(codigoA.replace('F', ''))
-        const numB = parseInt(codigoB.replace('F', ''))
-        return numA - numB  // Ordem crescente para laudo
-      }
-      
-      // Para códigos numéricos
-      if (/^\d+$/.test(codigoA) && /^\d+$/.test(codigoB)) {
-        return parseInt(codigoA) - parseInt(codigoB)  // Ordem crescente para laudo
-      }
-      
-      // Para outros códigos, usar comparação de strings
-      return codigoA.localeCompare(codigoB)
-    })
-
-    // Criar nome do arquivo: nome_cliente - identificacao_primeira_amostra.pdf (ou - fisica para granulométrico)
-    const nomeCliente = cliente.nome.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')
-    const primeiraAmostra = amostrasOrdenadas[0]
-    const identificacaoAmostra = primeiraAmostra.identificacao ? 
-      primeiraAmostra.identificacao.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '') : 
-      primeiraAmostra.codigo.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9_]/g, '')
-    // Adicionar " - fisica" apenas para laudos granulométricos
-    const sufixoFisica = tipoAnalise === 'granulometrica' ? ' - fisica' : ''
-    const nomeArquivo = `${nomeCliente} - ${identificacaoAmostra}${sufixoFisica}.pdf`
-    const caminhoArquivo = path.join(pastaLaudos, nomeArquivo)
-
-    // Garantir que a pasta laudos existe
-    if (!fs.existsSync(pastaLaudos)) {
-      fs.mkdirSync(pastaLaudos, { recursive: true })
-    }
-    
-    // Salvar arquivo PDF
-    fs.writeFileSync(caminhoArquivo, pdfBuffer)
-
-    res.json({
-      success: true,
-      arquivo: nomeArquivo,
-      caminho: `/api/laudos/${nomeArquivo}`,
-      url: `/api/laudos/${nomeArquivo}`
-    })
-
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return res.status(400).json({ 
-        error: 'Dados inválidos',
-        details: error.errors
-      })
-    }
-    
-    console.error('Erro ao gerar laudo:', error)
-    return res.status(500).json({ error: 'Erro interno do servidor' })
-  }
-})
-
-// GET /api/laudos/:arquivo - Servir arquivo de laudo
 router.get('/:arquivo', (req, res) => {
   try {
     const { arquivo } = req.params
