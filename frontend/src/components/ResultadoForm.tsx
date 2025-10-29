@@ -619,17 +619,29 @@ export function ResultadoForm({
         amostraId: formData.amostraId,
         tipo: formData.tipo,
         categoria: modulo as 'solo' | 'foliar',
-        valor: formData.valor || undefined,
-        diluicao: formData.diluicao || undefined,
-        massa: formData.massa || undefined,
-        branco: formData.branco || undefined,
-        al: formData.al || undefined,
-        h_al: formData.h_al || undefined,
-        param_a: formData.param_a || undefined,
-        param_b: formData.param_b || undefined,
-        observacoes: formData.observacoes || undefined,
+        observacoes: formData.observacoes && formData.observacoes.trim() !== '' ? formData.observacoes : undefined,
         dataAnalise: convertDateToISO(formData.dataAnalise),
       }
+      
+      // Adicionar campos básicos apenas se tiverem valor preenchido
+      if (formData.valor && formData.valor.trim() !== '') {
+        submitData.valor = formData.valor
+      }
+      if (formData.diluicao && formData.diluicao.trim() !== '') {
+        submitData.diluicao = formData.diluicao
+      }
+      const massaNum = parseNumber(formData.massa)
+      if (massaNum !== undefined) submitData.massa = massaNum
+      const brancoNum = parseNumber(formData.branco)
+      if (brancoNum !== undefined) submitData.branco = brancoNum
+      const alNum = parseNumber(formData.al)
+      if (alNum !== undefined) submitData.al = alNum
+      const hAlNum = parseNumber(formData.h_al)
+      if (hAlNum !== undefined) submitData.h_al = hAlNum
+      const paramANum = parseNumber(formData.param_a)
+      if (paramANum !== undefined) submitData.param_a = paramANum
+      const paramBNum = parseNumber(formData.param_b)
+      if (paramBNum !== undefined) submitData.param_b = paramBNum
 
       // Adicionar campos específicos baseado no módulo
       if (modulo === 'solo') {
