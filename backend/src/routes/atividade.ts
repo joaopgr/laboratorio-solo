@@ -88,22 +88,43 @@ router.post('/', async (req, res): Promise<any> => {
       return res.status(400).json({ error: 'Título é obrigatório' });
     }
 
-    const { query: createQuery, params } = SQL_QUERIES.atividades.create({
-      titulo,
-      descricao,
-      tipo: tipo || 'tarefa',
-      prioridade: prioridade || 'media',
-      responsavel,
-      prazo: prazo ? new Date(prazo + 'T00:00:00Z') : undefined
-    });
-    
-    const result = await query(createQuery, params);
-    const atividade = result.rows[0];
+    try {
+      // Tentar criar com campo titulo
+      const { query: createQuery, params } = SQL_QUERIES.atividades.create({
+        titulo,
+        descricao,
+        tipo: tipo || 'tarefa',
+        prioridade: prioridade || 'media',
+        responsavel,
+        prazo: prazo ? new Date(prazo + 'T00:00:00Z') : undefined
+      });
+      
+      const result = await query(createQuery, params);
+      const atividade = result.rows[0];
 
-    res.status(201).json(atividade);
-  } catch (error) {
+      res.status(201).json(atividade);
+    } catch (dbError: any) {
+      // Se der erro de coluna não encontrada, tentar com nome (compatibilidade)
+      const errorMessage = dbError.message || '';
+      if (errorMessage.includes('column "titulo" does not exist') || 
+          errorMessage.includes('column "nome" does not exist')) {
+        console.warn('Estrutura da tabela atividades incompatível. Verifique se a migração foi executada.');
+        console.error('Erro detalhado:', errorMessage);
+        
+        return res.status(500).json({ 
+          error: 'Estrutura da tabela atividades incompatível. Execute o script MIGRAR_ATIVIDADES_COMPLETO.sql no banco de dados.',
+          details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
+        });
+      } else {
+        throw dbError;
+      }
+    }
+  } catch (error: any) {
     console.error('Erro ao criar atividade:', error);
-    return res.status(500).json({ error: 'Erro interno do servidor' });
+    return res.status(500).json({ 
+      error: 'Erro interno do servidor',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 

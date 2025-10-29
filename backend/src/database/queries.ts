@@ -723,22 +723,27 @@ export const SQL_QUERIES = {
       status?: string;
       responsavel?: string;
       prazo?: Date;
-    }) => ({
-      query: `
-        INSERT INTO atividades (id, titulo, descricao, tipo, prioridade, status, responsavel, prazo, "createdAt", "updatedAt")
-        VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
-        RETURNING *
-      `,
-      params: [
-        data.titulo || data.nome || 'Sem título', // Usa titulo, nome ou fallback
-        data.descricao,
-        data.tipo || 'tarefa',
-        data.prioridade || 'media',
-        data.status || 'pendente',
-        data.responsavel,
-        data.prazo
-      ]
-    }),
+    }) => {
+      // Tentar usar titulo se disponível, caso contrário usar nome (para compatibilidade)
+      const campoTitulo = data.titulo || data.nome || 'Sem título';
+      
+      return {
+        query: `
+          INSERT INTO atividades (id, titulo, descricao, tipo, prioridade, status, responsavel, prazo, "createdAt", "updatedAt")
+          VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+          RETURNING *
+        `,
+        params: [
+          campoTitulo,
+          data.descricao || null,
+          data.tipo || 'tarefa',
+          data.prioridade || 'media',
+          data.status || 'pendente',
+          data.responsavel || null,
+          data.prazo || null
+        ]
+      };
+    },
 
     // Atualizar atividade
     update: (id: string, data: Partial<{
