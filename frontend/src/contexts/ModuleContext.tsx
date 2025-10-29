@@ -20,7 +20,16 @@ interface ModuleProviderProps {
 }
 
 export function ModuleProvider({ children }: ModuleProviderProps) {
-  const [modulo, setModulo] = useState<TipoModulo>('solo')
+  // Persistir módulo no localStorage para não perder ao atualizar página
+  const [modulo, setModuloState] = useState<TipoModulo>(() => {
+    const saved = localStorage.getItem('modulo')
+    return (saved === 'foliar' || saved === 'solo') ? saved : 'solo'
+  })
+
+  const setModulo = (tipo: TipoModulo) => {
+    setModuloState(tipo)
+    localStorage.setItem('modulo', tipo)
+  }
 
   const getModuleInfo = (tipo: TipoModulo) => {
     const modules = {

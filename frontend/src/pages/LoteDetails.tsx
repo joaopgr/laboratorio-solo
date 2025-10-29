@@ -8,15 +8,26 @@ import { getAnaliseValues } from '../../../shared/types'
 import { AtualizarAmostrasLote } from '../components/AtualizarAmostrasLote'
 import { GerarLaudoModal } from '../components/GerarLaudoModal'
 import { AdicionarAmostraLoteForm } from '../components/AdicionarAmostraLoteForm'
+import { useModule } from '../contexts/ModuleContext'
 import toast from 'react-hot-toast'
 
 export function LoteDetails() {
   const { id } = useParams<{ id: string }>()
   const queryClient = useQueryClient()
+  const { modulo, setModulo } = useModule()
   
   // Buscar o lote específico por ID (sem filtro de tipo)
   const { data: lote, isLoading } = useLoteById(id || '')
   const updateLote = useUpdateLote()
+  
+  // Sincronizar módulo com o lote quando ele carregar (sem forçar mudança)
+  useEffect(() => {
+    if (lote?.modulo && lote.modulo !== modulo) {
+      // Só atualizar se o módulo do lote for diferente do atual
+      // Não forçar mudança, apenas sincronizar se necessário
+      setModulo(lote.modulo as 'solo' | 'foliar')
+    }
+  }, [lote?.modulo, modulo, setModulo])
   
   const [isEditingPayment, setIsEditingPayment] = useState(false)
   const [isEditingGlobalInfo, setIsEditingGlobalInfo] = useState(false)
