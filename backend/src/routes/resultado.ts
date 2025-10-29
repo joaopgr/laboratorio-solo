@@ -17,15 +17,39 @@ const resultadoBaseSchema = z.object({
   amostraId: z.string().min(1, 'ID da amostra é obrigatório'),
   tipo: z.string().min(1, 'Tipo é obrigatório'),
   categoria: z.enum(['solo', 'foliar']).default('solo'),
-  valor: z.string().optional(),
+  valor: z.union([z.string(), z.number()]).optional().transform(val => {
+    if (val === '' || val === null || val === undefined) return undefined;
+    return typeof val === 'number' ? val.toString() : val;
+  }),
   unidade: z.string().optional(),
-  diluicao: z.string().optional(),
-  massa: z.string().optional(),
-  branco: z.string().optional(),
-  al: z.string().optional(),
-  h_al: z.string().optional(),
-  param_a: z.string().optional(),
-  param_b: z.string().optional(),
+  diluicao: z.union([z.string(), z.number()]).optional().transform(val => {
+    if (val === '' || val === null || val === undefined) return undefined;
+    return typeof val === 'number' ? val.toString() : val;
+  }),
+  massa: z.union([z.string(), z.number()]).optional().transform(val => {
+    if (val === '' || val === null || val === undefined) return undefined;
+    return typeof val === 'number' ? val : typeof val === 'string' ? parseFloat(val.replace(',', '.')) : undefined;
+  }),
+  branco: z.union([z.string(), z.number()]).optional().transform(val => {
+    if (val === '' || val === null || val === undefined) return undefined;
+    return typeof val === 'number' ? val : typeof val === 'string' ? parseFloat(val.replace(',', '.')) : undefined;
+  }),
+  al: z.union([z.string(), z.number()]).optional().transform(val => {
+    if (val === '' || val === null || val === undefined) return undefined;
+    return typeof val === 'number' ? val : typeof val === 'string' ? parseFloat(val.replace(',', '.')) : undefined;
+  }),
+  h_al: z.union([z.string(), z.number()]).optional().transform(val => {
+    if (val === '' || val === null || val === undefined) return undefined;
+    return typeof val === 'number' ? val : typeof val === 'string' ? parseFloat(val.replace(',', '.')) : undefined;
+  }),
+  param_a: z.union([z.string(), z.number()]).optional().transform(val => {
+    if (val === '' || val === null || val === undefined) return undefined;
+    return typeof val === 'number' ? val : typeof val === 'string' ? parseFloat(val.replace(',', '.')) : undefined;
+  }),
+  param_b: z.union([z.string(), z.number()]).optional().transform(val => {
+    if (val === '' || val === null || val === undefined) return undefined;
+    return typeof val === 'number' ? val : typeof val === 'string' ? parseFloat(val.replace(',', '.')) : undefined;
+  }),
   dataAnalise: z.union([z.string().datetime(), z.string()]).optional().transform(val => {
     if (!val || val === '' || val === null || val === undefined) return undefined;
     // Se já está no formato ISO, retornar como está
