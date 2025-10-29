@@ -653,20 +653,36 @@ export function ResultadoForm({
         }
       } else if (modulo === 'foliar') {
         // Campos específicos do módulo foliar - apenas para módulo foliar
-        submitData.massaBFoliar = parseNumber(formData.massaB)
-        submitData.dilB = parseNumber(formData.dilB)
-        submitData.brancoB = parseNumber(formData.brancoB)
-        submitData.massaN = parseNumber(formData.massaN)
-        submitData.volumeN = parseNumber(formData.volumeN)
-        submitData.brancoN = parseNumber(formData.brancoN)
-        submitData.fatorF = parseNumber(formData.fatorF)
-        submitData.massaGeral = parseNumber(formData.massaGeral)
-        submitData.massaTrisR1 = parseNumber(formData.massaTrisR1)
-        submitData.massaTrisR2 = parseNumber(formData.massaTrisR2)
-        submitData.massaTrisR3 = parseNumber(formData.massaTrisR3)
-        submitData.volumeTitR1 = parseNumber(formData.volumeTitR1)
-        submitData.volumeTitR2 = parseNumber(formData.volumeTitR2)
-        submitData.volumeTitR3 = parseNumber(formData.volumeTitR3)
+        // Só adicionar se tiver valor (não undefined)
+        const massaBFoliar = parseNumber(formData.massaB)
+        const dilB = parseNumber(formData.dilB)
+        const brancoB = parseNumber(formData.brancoB)
+        const massaN = parseNumber(formData.massaN)
+        const volumeN = parseNumber(formData.volumeN)
+        const brancoN = parseNumber(formData.brancoN)
+        const fatorF = parseNumber(formData.fatorF)
+        const massaGeral = parseNumber(formData.massaGeral)
+        const massaTrisR1 = parseNumber(formData.massaTrisR1)
+        const massaTrisR2 = parseNumber(formData.massaTrisR2)
+        const massaTrisR3 = parseNumber(formData.massaTrisR3)
+        const volumeTitR1 = parseNumber(formData.volumeTitR1)
+        const volumeTitR2 = parseNumber(formData.volumeTitR2)
+        const volumeTitR3 = parseNumber(formData.volumeTitR3)
+        
+        if (massaBFoliar !== undefined) submitData.massaBFoliar = massaBFoliar
+        if (dilB !== undefined) submitData.dilB = dilB
+        if (brancoB !== undefined) submitData.brancoB = brancoB
+        if (massaN !== undefined) submitData.massaN = massaN
+        if (volumeN !== undefined) submitData.volumeN = volumeN
+        if (brancoN !== undefined) submitData.brancoN = brancoN
+        if (fatorF !== undefined) submitData.fatorF = fatorF
+        if (massaGeral !== undefined) submitData.massaGeral = massaGeral
+        if (massaTrisR1 !== undefined) submitData.massaTrisR1 = massaTrisR1
+        if (massaTrisR2 !== undefined) submitData.massaTrisR2 = massaTrisR2
+        if (massaTrisR3 !== undefined) submitData.massaTrisR3 = massaTrisR3
+        if (volumeTitR1 !== undefined) submitData.volumeTitR1 = volumeTitR1
+        if (volumeTitR2 !== undefined) submitData.volumeTitR2 = volumeTitR2
+        if (volumeTitR3 !== undefined) submitData.volumeTitR3 = volumeTitR3
       }
 
       if (isEditingExisting && existingResultadoId) {
