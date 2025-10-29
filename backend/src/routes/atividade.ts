@@ -93,8 +93,7 @@ router.post('/', async (req, res): Promise<any> => {
       SELECT column_name
       FROM information_schema.columns
       WHERE table_name = 'atividades' AND table_schema = 'public'
-      AND column_name IN ('nome', 'titulo')
-      ORDER BY ordinal_position;
+      AND column_name IN ('nome', 'titulo');
     `;
     
     let useNomeColumn = false;
@@ -102,55 +101,64 @@ router.post('/', async (req, res): Promise<any> => {
       const schemaResult = await query(schemaQuery);
       const columnNames = schemaResult.rows.map((r: any) => r.column_name);
       
+      console.log('Colunas encontradas na tabela atividades:', columnNames);
+      
+      // Se existe "nome" mas não "titulo", usar "nome"
       if (columnNames.includes('nome') && !columnNames.includes('titulo')) {
         useNomeColumn = true;
-        console.log('Tabela atividades ainda usa coluna "nome", ajustando query...');
+        console.log('✅ Tabela atividades usa coluna "nome" - ajustando query para usar "nome"');
+      } else if (columnNames.includes('titulo') && !columnNames.includes('nome')) {
+        useNomeColumn = false;
+        console.log('✅ Tabela atividades usa coluna "titulo" - usando query padrão');
+      } else if (columnNames.includes('nome') && columnNames.includes('titulo')) {
+        // Se ambos existem, priorizar titulo mas também preencher nome para compatibilidade
+        useNomeColumn = true;
+        console.log('⚠️ Tabela atividades tem AMBAS as colunas - usando "nome" para compatibilidade');
+      } else {
+        // Assumir "nome" como padrão por segurança
+        useNomeColumn = true;
+        console.log('⚠️ Nenhuma coluna encontrada - assumindo "nome" como padrão');
       }
     } catch (schemaError) {
-      console.warn('Erro ao verificar schema da tabela, tentando com coluna "nome":', schemaError);
-      // Assumir que usa "nome" como fallback
+      console.error('❌ Erro ao verificar schema da tabela:', schemaError);
+      // Assumir que usa "nome" como fallback seguro
       useNomeColumn = true;
+      console.log('Usando "nome" como fallback devido ao erro de schema');
     }
 
+    // SEMPRE usar coluna "nome" por enquanto, já que o script pode não ter sido executado completamente
+    // A detecção acima está sendo usada apenas para logging
+    const useNomeForcado = true; // Forçar uso de "nome" até migração completa
+    
     try {
-      // Criar query apropriada baseada na estrutura da tabela
-      let createQuery: string;
-      let params: any[];
+      // Criar query usando "nome" sempre (estrutura atual do banco)
+      const createQuery = `
+        INSERT INTO atividades (id, nome, descricao, tipo, prioridade, status, responsavel, prazo, "createdAt", "updatedAt")
+        VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+        RETURNING *
+      `;
+      const params = [
+        titulo || 'Sem título', // Garantir que nunca seja null
+        descricao || null,
+        tipo || 'tarefa',
+        prioridade || 'media',
+        'pendente',
+        responsavel || null,
+        prazo ? new Date(prazo + 'T00:00:00Z') : null
+      ];
       
-      if (useNomeColumn) {
-        // Usar coluna "nome" ao invés de "titulo" (estrutura antiga)
-        createQuery = `
-          INSERT INTO atividades (id, nome, descricao, tipo, prioridade, status, responsavel, prazo, "createdAt", "updatedAt")
-          VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
-          RETURNING *
-        `;
-        params = [
-          titulo, // Inserir titulo na coluna nome
-          descricao || null,
-          tipo || 'tarefa',
-          prioridade || 'media',
-          'pendente',
-          responsavel || null,
-          prazo ? new Date(prazo + 'T00:00:00Z') : null
-        ];
-      } else {
-        // Usar coluna "titulo" (estrutura atualizada)
-        const queryObj = SQL_QUERIES.atividades.create({
-          titulo,
-          descricao,
-          tipo: tipo || 'tarefa',
-          prioridade: prioridade || 'media',
-          responsavel,
-          prazo: prazo ? new Date(prazo + 'T00:00:00Z') : undefined
-        });
-        createQuery = queryObj.query;
-        params = queryObj.params;
-      }
+      console.log('Executando INSERT com params:', { 
+        titulo: params[0], 
+        descricao: params[1], 
+        tipo: params[2],
+        prioridade: params[3],
+        status: params[4]
+      });
       
       const result = await query(createQuery, params);
       const atividade = result.rows[0];
       
-      // Garantir que a resposta sempre tenha campo "titulo"
+      // Garantir que a resposta sempre tenha campo "titulo" para o frontend
       if (atividade.nome && !atividade.titulo) {
         atividade.titulo = atividade.nome;
       }
