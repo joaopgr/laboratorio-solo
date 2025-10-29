@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useAmostras } from '../hooks/useAmostras'
 import { useCreateResultadosLote } from '../hooks/useResultados'
 import { useModule } from '../contexts/ModuleContext'
+import { CulturaAutocomplete } from '../components/CulturaAutocomplete'
 import { Save } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -1452,12 +1453,11 @@ export function LancamentoResultados() {
                   <label className="block text-xs font-medium text-gray-600 mb-1">
                     Cultura
                   </label>
-                  <input
-                    type="text"
-                    value={filters.cultura}
-                    onChange={(e) => setFilters(prev => ({ ...prev, cultura: e.target.value }))}
+                  <CulturaAutocomplete
+                    value={filters.cultura || ''}
+                    onChange={(value) => setFilters(prev => ({ ...prev, cultura: value }))}
+                    placeholder="Digite a cultura"
                     className="input w-full text-sm"
-                    placeholder="Ex: Soja, Milho"
               />
             </div>
 
