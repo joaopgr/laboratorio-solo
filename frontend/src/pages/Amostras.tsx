@@ -270,7 +270,7 @@ export function Amostras() {
         message={deleteModal.message}
         confirmText="Sim, deletar tudo"
         cancelText="Cancelar"
-        isLoading={deleteAmostra.isLoading}
+        isLoading={deleteAmostra.isPending}
         type="danger"
       />
     </div>

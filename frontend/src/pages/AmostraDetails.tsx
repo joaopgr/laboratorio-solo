@@ -803,7 +803,7 @@ export function AmostraDetails() {
                           <button
                             onClick={() => handleDeleteResultado(resultado.id)}
                             className="text-red-600 hover:text-red-900"
-                            disabled={deleteResultado.isLoading}
+                            disabled={deleteResultado.isPending}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

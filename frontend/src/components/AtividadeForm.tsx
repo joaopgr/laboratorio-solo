@@ -233,11 +233,11 @@ export default function AtividadeForm({ atividade, onClose }: AtividadeFormProps
             </button>
             <button
               type="submit"
-              disabled={createAtividade.isLoading || updateAtividade.isLoading}
+              disabled={createAtividade.isPending || updateAtividade.isPending}
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <Save className="w-4 h-4" />
-              {createAtividade.isLoading || updateAtividade.isLoading ? 'Salvando...' : 'Salvar'}
+              {createAtividade.isPending || updateAtividade.isPending ? 'Salvando...' : 'Salvar'}
             </button>
           </div>
         </form>

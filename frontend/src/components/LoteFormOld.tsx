@@ -245,7 +245,7 @@ export function LoteForm({ lote, clienteId, isOpen, onClose }: LoteFormProps) {
             <button 
               type="submit" 
               className="btn btn-primary"
-              disabled={createLote.isLoading || updateLote.isLoading}
+              disabled={createLote.isPending || updateLote.isPending}
             >
               {lote ? 'Salvar Alterações' : 'Criar Lote'}
             </button>

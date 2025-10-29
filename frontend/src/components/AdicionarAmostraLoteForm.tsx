@@ -285,10 +285,10 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
           <div className="flex gap-3 pt-4">
             <button
               type="submit"
-              disabled={createAmostra.isLoading}
+              disabled={createAmostra.isPending}
               className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50"
             >
-              {createAmostra.isLoading ? 'Criando...' : 'Criar Amostra'}
+              {createAmostra.isPending ? 'Criando...' : 'Criar Amostra'}
             </button>
             <button
               type="button"

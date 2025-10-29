@@ -260,16 +260,16 @@ export function ClienteForm({ cliente, isOpen, onClose, onSuccess, onCancel, asM
               type="button"
               onClick={onCancel || onClose}
               className="btn btn-secondary"
-              disabled={createCliente.isLoading || updateCliente.isLoading}
+              disabled={createCliente.isPending || updateCliente.isPending}
             >
               Cancelar
             </button>
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={createCliente.isLoading || updateCliente.isLoading}
+              disabled={createCliente.isPending || updateCliente.isPending}
             >
-              {createCliente.isLoading || updateCliente.isLoading ? (
+              {createCliente.isPending || updateCliente.isPending ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
               ) : (
                 isEditing ? 'Atualizar' : 'Criar'

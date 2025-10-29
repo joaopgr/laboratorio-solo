@@ -347,9 +347,9 @@ export function GranulometriaResultadoForm({ amostraId, onSuccess, onCancel }: G
         <button
           type="submit"
           className="btn btn-primary"
-          disabled={createResultado.isLoading}
+          disabled={createResultado.isPending}
         >
-          {createResultado.isLoading ? 'Salvando...' : 'Salvar Resultado'}
+          {createResultado.isPending ? 'Salvando...' : 'Salvar Resultado'}
         </button>
       </div>
     </form>

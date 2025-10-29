@@ -328,15 +328,15 @@ export function Lotes() {
           {lotesVazios.length > 0 && (
             <button
               onClick={handleCleanEmptyLotes}
-              disabled={cleanEmptyLotes.isLoading}
+              disabled={cleanEmptyLotes.isPending}
               className="btn btn-outline btn-sm text-orange-600 border-orange-300 hover:bg-orange-50 flex items-center disabled:opacity-50"
             >
-              {cleanEmptyLotes.isLoading ? (
+              {cleanEmptyLotes.isPending ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-orange-600 mr-2"></div>
               ) : (
                 <AlertTriangle className="w-4 h-4 mr-2" />
               )}
-              {cleanEmptyLotes.isLoading ? 'Removendo...' : `Remover ${lotesVazios.length} lote(s) vazio(s)`}
+              {cleanEmptyLotes.isPending ? 'Removendo...' : `Remover ${lotesVazios.length} lote(s) vazio(s)`}
             </button>
           )}
         </div>
@@ -458,7 +458,7 @@ export function Lotes() {
                       }}
                       className="p-1 text-gray-400 hover:text-red-600"
                       title="Deletar lote"
-                      disabled={deleteLote.isLoading}
+                      disabled={deleteLote.isPending}
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -524,7 +524,7 @@ export function Lotes() {
         message={cascadeDeleteModal.message}
         confirmText="Sim, deletar tudo"
         cancelText="Cancelar"
-        isLoading={deleteLote.isLoading}
+        isLoading={deleteLote.isPending}
         type="danger"
       />
     </div>

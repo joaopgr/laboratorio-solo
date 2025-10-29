@@ -2335,11 +2335,11 @@ export function LancamentoResultados() {
         <div className="flex justify-end">
           <button
             onClick={handleSubmit}
-            disabled={createResultadosLote.isLoading}
+            disabled={createResultadosLote.isPending}
             className="btn btn-primary flex items-center"
           >
             <Save className="w-4 h-4 mr-2" />
-            {createResultadosLote.isLoading ? 'Salvando...' : `Salvar ${selectedAmostras.filter((id: string) => amostrasParaExibir.some((a: any) => a.id === id)).length} Resultados`}
+            {createResultadosLote.isPending ? 'Salvando...' : `Salvar ${selectedAmostras.filter((id: string) => amostrasParaExibir.some((a: any) => a.id === id)).length} Resultados`}
           </button>
         </div>
       )}

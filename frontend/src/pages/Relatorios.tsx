@@ -227,10 +227,10 @@ export function Relatorios() {
                 <button
                   onClick={() => handleGenerateReport('geral')}
                   className="btn btn-outline btn-sm"
-                  disabled={relatorioGeral.isLoading}
+                  disabled={relatorioGeral.isPending}
                 >
                   <Eye className="w-4 h-4 mr-1" />
-                  {relatorioGeral.isLoading ? 'Carregando...' : 'Ver'}
+                  {relatorioGeral.isPending ? 'Carregando...' : 'Ver'}
                 </button>
                 <button
                   onClick={() => handleSaveReport('geral')}
@@ -269,10 +269,10 @@ export function Relatorios() {
                 <button
                   onClick={() => handleGenerateReport('cliente')}
                   className="btn btn-outline btn-sm"
-                  disabled={relatorioCliente.isLoading}
+                  disabled={relatorioCliente.isPending}
                 >
                   <Eye className="w-4 h-4 mr-1" />
-                  {relatorioCliente.isLoading ? 'Carregando...' : 'Ver'}
+                  {relatorioCliente.isPending ? 'Carregando...' : 'Ver'}
                 </button>
                 <button
                   onClick={() => handleSaveReport('cliente')}
@@ -311,10 +311,10 @@ export function Relatorios() {
                 <button
                   onClick={() => handleGenerateReport('cultura')}
                   className="btn btn-outline btn-sm"
-                  disabled={relatorioCultura.isLoading}
+                  disabled={relatorioCultura.isPending}
                 >
                   <Eye className="w-4 h-4 mr-1" />
-                  {relatorioCultura.isLoading ? 'Carregando...' : 'Ver'}
+                  {relatorioCultura.isPending ? 'Carregando...' : 'Ver'}
                 </button>
                 <button
                   onClick={() => handleSaveReport('cultura')}
@@ -353,10 +353,10 @@ export function Relatorios() {
                 <button
                   onClick={() => handleGenerateReport('financeiro')}
                   className="btn btn-outline btn-sm"
-                  disabled={relatorioFinanceiro.isLoading}
+                  disabled={relatorioFinanceiro.isPending}
                 >
                   <Eye className="w-4 h-4 mr-1" />
-                  {relatorioFinanceiro.isLoading ? 'Carregando...' : 'Ver'}
+                  {relatorioFinanceiro.isPending ? 'Carregando...' : 'Ver'}
                 </button>
                 <button
                   onClick={() => handleSaveReport('financeiro')}
@@ -395,10 +395,10 @@ export function Relatorios() {
                 <button
                   onClick={() => handleGenerateReport('estatisticas')}
                   className="btn btn-outline btn-sm"
-                  disabled={relatorioEstatisticas.isLoading}
+                  disabled={relatorioEstatisticas.isPending}
                 >
                   <Eye className="w-4 h-4 mr-1" />
-                  {relatorioEstatisticas.isLoading ? 'Carregando...' : 'Ver'}
+                  {relatorioEstatisticas.isPending ? 'Carregando...' : 'Ver'}
                 </button>
                 <button
                   onClick={() => handleSaveReport('estatisticas')}
@@ -458,14 +458,14 @@ export function Relatorios() {
               </div>
             )}
 
-            {activeReport === 'geral' && !relatorioGeral.isLoading && !relatorioGeral.data && (
+            {activeReport === 'geral' && !relatorioGeral.isPending && !relatorioGeral.data && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                 <h4 className="font-semibold text-yellow-900">Nenhum dado encontrado</h4>
                 <p className="text-yellow-700">Não há dados para exibir no relatório geral.</p>
               </div>
             )}
 
-            {activeReport === 'geral' && relatorioGeral.isLoading && (
+            {activeReport === 'geral' && relatorioGeral.isPending && (
               <div className="flex items-center justify-center p-8">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
                 <span className="ml-2 text-gray-600">Carregando relatório...</span>
@@ -733,7 +733,7 @@ export function Relatorios() {
           <h3 className="card-title">Relatórios Recentes</h3>
         </div>
         <div className="card-content">
-          {historicoRelatorios.isLoading ? (
+          {historicoRelatorios.isPending ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
               <p className="text-gray-600">Carregando relatórios...</p>

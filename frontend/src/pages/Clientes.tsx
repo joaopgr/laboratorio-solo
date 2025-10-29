@@ -255,7 +255,7 @@ export function Clientes() {
                             }}
                             className="p-1 text-gray-400 hover:text-red-600"
                             title="Deletar cliente"
-                            disabled={deleteCliente.isLoading}
+                            disabled={deleteCliente.isPending}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>

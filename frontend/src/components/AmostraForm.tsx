@@ -877,16 +877,16 @@ export function AmostraForm({ amostra, isOpen, onClose }: AmostraFormProps) {
               type="button"
               onClick={onClose}
               className="px-4 py-2 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300"
-              disabled={createAmostra.isLoading || updateAmostra.isLoading}
+              disabled={createAmostra.isPending || updateAmostra.isPending}
             >
               Cancelar
             </button>
             <button
               type="submit"
               className="px-4 py-2 text-sm bg-blue-500 text-white rounded hover:bg-blue-600"
-              disabled={createAmostra.isLoading || updateAmostra.isLoading}
+              disabled={createAmostra.isPending || updateAmostra.isPending}
             >
-              {createAmostra.isLoading || updateAmostra.isLoading ? (
+              {createAmostra.isPending || updateAmostra.isPending ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
               ) : (
                 isEditing ? 'Atualizar' : `Salvar ${amostras.length > 1 ? `${amostras.length} Amostras` : 'Amostra'}`

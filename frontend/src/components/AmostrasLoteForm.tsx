@@ -664,9 +664,9 @@ export function AmostrasLoteForm({ cliente, isOpen, onClose }: AmostrasLoteFormP
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={amostras.length === 0 || createLote.isLoading || createAmostra.isLoading}
+              disabled={amostras.length === 0 || createLote.isPending || createAmostra.isPending}
             >
-              {createLote.isLoading || createAmostra.isLoading ? (
+              {createLote.isPending || createAmostra.isPending ? (
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
               ) : (
                 `Salvar ${amostras.length} Amostra${amostras.length > 1 ? 's' : ''}`

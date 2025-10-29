@@ -105,7 +105,7 @@ export function useUpdateLote() {
       // Invalidar query específica do lote
       queryClient.invalidateQueries({ queryKey: ['lote', variables.id] })
       // Atualizar cache do lote específico
-      queryClient.setQueryData({ queryKey: ['lote', variables.id] }, data)
+      queryClient.setQueryData(['lote', variables.id], data)
     },
   })
 }

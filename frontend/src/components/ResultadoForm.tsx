@@ -993,9 +993,9 @@ export function ResultadoForm({
               <button
                 type="submit"
                 className="btn btn-primary"
-                disabled={createResultado.isLoading || updateResultado.isLoading}
+                disabled={createResultado.isPending || updateResultado.isPending}
               >
-                {createResultado.isLoading || updateResultado.isLoading ? (
+                {createResultado.isPending || updateResultado.isPending ? (
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                 ) : (
                   isEditingExisting ? 'Atualizar' : 'Criar'

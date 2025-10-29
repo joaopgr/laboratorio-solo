@@ -102,7 +102,7 @@ export function LoteStatusEditor({ lote, onStatusUpdate }: LoteStatusEditorProps
         <div className="flex space-x-2">
           <button
             onClick={handleSave}
-            disabled={updateLote.isLoading}
+            disabled={updateLote.isPending}
             className="flex items-center px-3 py-1 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50"
           >
             <Check className="w-4 h-4 mr-1" />

@@ -38,7 +38,7 @@ export function LoteDetails() {
   // Invalidar resultados quando o lote mudar
   useEffect(() => {
     if (amostraIdsStr) {
-      queryClient.invalidateQueries(['resultados'])
+      queryClient.invalidateQueries({ queryKey: ['resultados'] })
     }
   }, [amostraIdsStr, queryClient])
 
@@ -91,8 +91,8 @@ export function LoteDetails() {
       })
       
       // Invalidar queries para atualizar dados em tempo real
-      queryClient.invalidateQueries(['lote', lote.id])
-      queryClient.invalidateQueries(['lotes'])
+      queryClient.invalidateQueries({ queryKey: ['lote', lote.id] })
+      queryClient.invalidateQueries({ queryKey: ['lotes'] })
       
       setIsEditingDesconto(false)
       toast.success('Desconto atualizado com sucesso!')
@@ -312,14 +312,14 @@ export function LoteDetails() {
                           <button
                             onClick={() => handleUpdatePayment(true)}
                             className="px-3 py-1 text-xs bg-green-600 text-white rounded hover:bg-green-700"
-                            disabled={updateLote.isLoading}
+                            disabled={updateLote.isPending}
                           >
                             Marcar como Pago
                           </button>
                           <button
                             onClick={() => handleUpdatePayment(false)}
                             className="px-3 py-1 text-xs bg-red-600 text-white rounded hover:bg-red-700"
-                            disabled={updateLote.isLoading}
+                            disabled={updateLote.isPending}
                           >
                             Marcar como Pendente
                           </button>
@@ -656,7 +656,7 @@ export function LoteDetails() {
                       <div className="flex space-x-2">
                         <button
                           onClick={handleUpdateDesconto}
-                          disabled={updateLote.isLoading}
+                          disabled={updateLote.isPending}
                           className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50"
                         >
                           Salvar

@@ -385,9 +385,9 @@ export function LoteFormNew({ lote, clienteId, isOpen, onClose }: LoteFormProps)
               <button
                 type="submit"
                 className="btn btn-primary"
-                disabled={createLote.isLoading || updateLote.isLoading}
+                disabled={createLote.isPending || updateLote.isPending}
               >
-                {createLote.isLoading || updateLote.isLoading ? 'Salvando...' : 'Salvar'}
+                {createLote.isPending || updateLote.isPending ? 'Salvando...' : 'Salvar'}
               </button>
             </div>
           </form>
