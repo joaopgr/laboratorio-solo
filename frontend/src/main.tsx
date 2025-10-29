@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { BrowserRouter } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import App from './App.tsx'
@@ -12,8 +12,7 @@ const queryClient = new QueryClient({
       retry: 1,
       refetchOnWindowFocus: false,
       staleTime: 5 * 60 * 1000, // 5 minutos - dados considerados "frescos" por 5 min
-      cacheTime: 10 * 60 * 1000, // 10 minutos - cache mantido por 10 min após não usar
-      keepPreviousData: true, // Manter dados anteriores enquanto carrega novos
+      gcTime: 10 * 60 * 1000, // 10 minutos - cache mantido por 10 min após não usar
     },
   },
 })
