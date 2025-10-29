@@ -186,6 +186,9 @@ export interface Resultado {
   massaBFoliar?: number;
   diluicaoBFoliar?: number;
   brancoBFoliar?: number;
+  // Campos alternativos do banco (dilB e brancoB)
+  dilB?: number;
+  brancoB?: number;
   massaN?: number;
   volumeN?: number;
   brancoN?: number;
