@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../services/api'
 import { useUsuarios } from '../hooks/useUsuarios'
-import { Search, Filter, Download, RefreshCw, User, Activity, Package, Trash2, Edit, Plus } from 'lucide-react'
+import { Filter, User, Activity, Package, Trash2, Edit, Plus } from 'lucide-react'
 
 interface Log {
   id: string
@@ -83,22 +83,19 @@ const getEntidadeLabel = (entidade: string) => {
 }
 
 function useLogs(page: number = 1, filters: any = {}) {
-  return useQuery<LogsResponse>(
-    ['logs', page, filters],
-    async () => {
+  return useQuery<LogsResponse>({
+    queryKey: ['logs', page, filters],
+    queryFn: async () => {
       const params: any = { page: page.toString(), limit: '50' }
       if (filters.usuarioId) params.usuarioId = filters.usuarioId
       if (filters.acao) params.acao = filters.acao
       if (filters.entidade) params.entidade = filters.entidade
       
       const response = await api.get('/logs', { params })
-      return response.data
+      return response.data as LogsResponse
     },
-    {
-      keepPreviousData: true,
-      refetchOnWindowFocus: false
-    }
-  )
+    refetchOnWindowFocus: false
+  })
 }
 
 export function Logs() {
@@ -109,8 +106,12 @@ export function Logs() {
     entidade: ''
   })
   
-  const { data: logsData, isLoading, refetch } = useLogs(page, filters)
+  const { data: logsData, isLoading } = useLogs(page, filters)
   const { data: usuariosData } = useUsuarios()
+  
+  const usuarios: any[] = Array.isArray(usuariosData) ? usuariosData : []
+  const logs: Log[] = logsData?.data || []
+  const pagination = logsData?.pagination
 
   const formatDate = (date: string) => {
     return new Date(date).toLocaleString('pt-BR', {
@@ -153,7 +154,7 @@ export function Logs() {
               className="input w-full"
             >
               <option value="">Todos os usuários</option>
-              {usuariosData?.map((usuario) => (
+              {usuarios.map((usuario) => (
                 <option key={usuario.id} value={usuario.id}>
                   {usuario.nome} ({usuario.email})
                 </option>
@@ -206,7 +207,7 @@ export function Logs() {
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
             <p className="mt-2 text-sm text-gray-500">Carregando logs...</p>
           </div>
-        ) : logsData?.data.length === 0 ? (
+        ) : (!logs || logs.length === 0) ? (
           <div className="p-8 text-center">
             <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500">Nenhum log encontrado</p>
@@ -235,7 +236,7 @@ export function Logs() {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {logsData?.data.map((log) => (
+                  {logs.map((log) => (
                     <tr key={log.id} className="hover:bg-gray-50">
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                         {formatDate(log.createdAt)}
@@ -288,12 +289,12 @@ export function Logs() {
             </div>
 
             {/* Paginação */}
-            {logsData && logsData.pagination.pages > 1 && (
+            {pagination && pagination.pages > 1 && (
               <div className="px-4 py-3 border-t bg-gray-50 flex items-center justify-between">
                 <div className="text-sm text-gray-700">
-                  Mostrando {((page - 1) * logsData.pagination.limit) + 1} a{' '}
-                  {Math.min(page * logsData.pagination.limit, logsData.pagination.total)} de{' '}
-                  {logsData.pagination.total} registros
+                  Mostrando {((page - 1) * pagination.limit) + 1} a{' '}
+                  {Math.min(page * pagination.limit, pagination.total)} de{' '}
+                  {pagination.total} registros
                 </div>
                 <div className="flex gap-2">
                   <button
@@ -304,11 +305,11 @@ export function Logs() {
                     Anterior
                   </button>
                   <span className="flex items-center px-3 text-sm text-gray-700">
-                    Página {page} de {logsData.pagination.pages}
+                    Página {page} de {pagination.pages}
                   </span>
                   <button
                     onClick={() => setPage(page + 1)}
-                    disabled={page >= logsData.pagination.pages}
+                    disabled={page >= pagination.pages}
                     className="btn btn-sm btn-outline"
                   >
                     Próxima
