@@ -1,4 +1,4 @@
-import { useMutation } from 'react-query'
+import { useMutation } from '@tanstack/react-query'
 import { api } from '../services/api'
 import { useModule } from '../contexts/ModuleContext'
 import toast from 'react-hot-toast'
@@ -125,3 +125,4 @@ export function useGerarLaudo() {
     }
   })
 }
+

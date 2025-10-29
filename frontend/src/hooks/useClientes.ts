@@ -1,12 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from 'react-query'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../services/api'
 import { Cliente, CreateClienteData, ClienteFilters } from '../../../shared/types'
 import toast from 'react-hot-toast'
 
 export function useClientes(filters: ClienteFilters = {}) {
-  return useQuery(
-    ['clientes', filters],
-    async () => {
+  return useQuery({
+    queryKey: ['clientes', filters],
+    queryFn: async () => {
       const response = await api.get<{ clientes: Cliente[], pagination: any }>('/clientes', {
         params: filters
       })
@@ -14,89 +14,79 @@ export function useClientes(filters: ClienteFilters = {}) {
         clientes: response.data.clientes,
         pagination: response.data.pagination
       }
-    },
-    {
-      keepPreviousData: true,
     }
-  )
+  })
 }
 
 export function useCliente(id: string) {
-  return useQuery(
-    ['cliente', id],
-    async () => {
+  return useQuery({
+    queryKey: ['cliente', id],
+    queryFn: async () => {
       const response = await api.get<Cliente>(`/clientes/${id}`, {
         params: { include: 'lotes' }
       })
       return response.data
     },
-    {
-      enabled: !!id,
-    }
-  )
+    enabled: !!id,
+  })
 }
 
 export function useCreateCliente() {
   const queryClient = useQueryClient()
 
-  return useMutation(
-    async (data: CreateClienteData) => {
+  return useMutation({
+    mutationFn: async (data: CreateClienteData) => {
       const response = await api.post<Cliente>('/clientes', data)
       return response.data
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['clientes'])
-        toast.success('Cliente criado com sucesso!')
-      },
-      onError: (error: any) => {
-        const message = error.response?.data?.error || 'Erro ao criar cliente'
-        toast.error(message)
-      },
-    }
-  )
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clientes'] })
+      toast.success('Cliente criado com sucesso!')
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.error || 'Erro ao criar cliente'
+      toast.error(message)
+    },
+  })
 }
 
 export function useUpdateCliente() {
   const queryClient = useQueryClient()
 
-  return useMutation(
-    async ({ id, data }: { id: string; data: Partial<CreateClienteData> }) => {
+  return useMutation({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<CreateClienteData> }) => {
       const response = await api.put<Cliente>(`/clientes/${id}`, data)
       return response.data
     },
-    {
-      onSuccess: (data) => {
-        queryClient.invalidateQueries(['clientes'])
-        queryClient.invalidateQueries(['cliente', data.id])
-        toast.success('Cliente atualizado com sucesso!')
-      },
-      onError: (error: any) => {
-        const message = error.response?.data?.error || 'Erro ao atualizar cliente'
-        toast.error(message)
-      },
-    }
-  )
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['clientes'] })
+      queryClient.invalidateQueries({ queryKey: ['cliente', data.id] })
+      toast.success('Cliente atualizado com sucesso!')
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.error || 'Erro ao atualizar cliente'
+      toast.error(message)
+    },
+  })
 }
 
 export function useDeleteCliente() {
   const queryClient = useQueryClient()
 
-  return useMutation(
-    async (id: string) => {
+  return useMutation({
+    mutationFn: async (id: string) => {
       await api.delete(`/clientes/${id}`)
     },
-    {
-      onSuccess: () => {
-        queryClient.invalidateQueries(['clientes'])
-        toast.success('Cliente deletado com sucesso!')
-      },
-      onError: (error: any) => {
-        const message = error.response?.data?.error || 'Erro ao deletar cliente'
-        toast.error(message)
-      },
-    }
-  )
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['clientes'] })
+      toast.success('Cliente deletado com sucesso!')
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.error || 'Erro ao deletar cliente'
+      toast.error(message)
+    },
+  })
 }
+
 
 
