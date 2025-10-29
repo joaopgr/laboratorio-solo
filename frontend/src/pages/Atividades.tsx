@@ -220,8 +220,8 @@ export default function Atividades() {
                         {atividade.prioridade}
                       </span>
                       
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[atividade.status as keyof typeof STATUS_COLORS]}`}>
-                        {atividade.status.replace('_', ' ')}
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[(atividade.status || 'pendente') as keyof typeof STATUS_COLORS]}`}>
+                        {atividade.status ? atividade.status.replace('_', ' ') : 'Pendente'}
                       </span>
                     </div>
 

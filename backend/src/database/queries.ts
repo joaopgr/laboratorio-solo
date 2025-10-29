@@ -725,7 +725,7 @@ export const SQL_QUERIES = {
       prazo?: Date;
     }) => ({
       query: `
-        INSERT INTO atividades (id, nome, descricao, tipo, prioridade, status, responsavel, prazo, "createdAt", "updatedAt")
+        INSERT INTO atividades (id, titulo, descricao, tipo, prioridade, status, responsavel, prazo, "createdAt", "updatedAt")
         VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
         RETURNING *
       `,
@@ -750,15 +750,36 @@ export const SQL_QUERIES = {
       responsavel: string;
       prazo: Date;
     }>) => {
-      const fields = Object.keys(data).map((key, index) => `"${key}" = $${index + 2}`);
+      const updates: string[] = [];
+      const values: any[] = [];
+      let paramIndex = 2;
+      
+      Object.entries(data).forEach(([key, value]) => {
+        if (value !== undefined && value !== null) {
+          updates.push(`"${key}" = $${paramIndex}`);
+          values.push(value);
+          paramIndex++;
+        }
+      });
+      
+      if (updates.length === 0) {
+        // Se não há nada para atualizar, retornar atividade original
+        return {
+          query: 'SELECT * FROM atividades WHERE id = $1',
+          params: [id]
+        };
+      }
+      
+      updates.push('"updatedAt" = NOW()');
+      
       return {
         query: `
           UPDATE atividades 
-          SET ${fields.join(', ')}, "updatedAt" = NOW()
+          SET ${updates.join(', ')}
           WHERE id = $1
           RETURNING *
         `,
-        params: [id, ...Object.values(data)]
+        params: [id, ...values]
       };
     },
 

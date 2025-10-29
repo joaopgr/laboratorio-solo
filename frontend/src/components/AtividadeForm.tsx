@@ -63,17 +63,22 @@ export default function AtividadeForm({ atividade, onClose }: AtividadeFormProps
       };
 
       if (isEditing) {
-        await updateAtividade.mutateAsync({
+        const response = await updateAtividade.mutateAsync({
           id: atividade!.id,
           data: data as UpdateAtividadeData
         });
+        console.log('Response da atualização:', response);
         toast.success('Atividade atualizada com sucesso!');
       } else {
-        await createAtividade.mutateAsync(data as CreateAtividadeData);
+        const response = await createAtividade.mutateAsync(data as CreateAtividadeData);
+        console.log('Response da criação:', response);
         toast.success('Atividade criada com sucesso!');
       }
 
-      onClose();
+      // Aguardar um pouco antes de fechar para garantir que as queries foram invalidadas
+      setTimeout(() => {
+        onClose();
+      }, 100);
     } catch (error) {
       console.error('Erro ao salvar atividade:', error);
       toast.error('Erro ao salvar atividade');
