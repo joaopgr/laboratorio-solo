@@ -78,6 +78,12 @@ export function useCreateResultado() {
 
   return useMutation({
     mutationFn: async (data: CreateResultadoData) => {
+      // Log dos dados antes de enviar (remover depois)
+      console.log('📤 Dados enviados para criar resultado:', JSON.stringify({
+        ...data,
+        categoria: modulo
+      }, null, 2))
+      
       const response = await api.post<Resultado>('/resultados', {
         ...data,
         categoria: modulo
@@ -94,8 +100,18 @@ export function useCreateResultado() {
       console.error('🔍 Debug: Erro completo no useCreateResultado:', error)
       console.error('🔍 Debug: Response data:', error.response?.data)
       console.error('🔍 Debug: Response status:', error.response?.status)
-      const message = error.response?.data?.error || 'Erro ao criar resultado'
-      toast.error(message)
+      
+      // Mostrar detalhes dos erros de validação
+      if (error.response?.data?.details) {
+        console.error('🔍 Debug: Detalhes dos erros de validação:', error.response.data.details)
+        const errosDetalhados = error.response.data.details.map((e: any) => 
+          `${e.path || 'campo'}: ${e.message}`
+        ).join(', ')
+        toast.error(`Erro de validação: ${errosDetalhados}`)
+      } else {
+        const message = error.response?.data?.error || 'Erro ao criar resultado'
+        toast.error(message)
+      }
     },
   })
 }
