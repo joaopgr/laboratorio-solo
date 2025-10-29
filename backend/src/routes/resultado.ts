@@ -351,7 +351,10 @@ router.get('/:id', async (req, res): Promise<any> => {
 // POST /api/resultados - Criar novo resultado
 router.post('/', async (req, res): Promise<any> => {
   try {
+    // Log para debug (remover depois)
+    console.log('📥 Dados recebidos no POST /resultados:', JSON.stringify(req.body, null, 2));
     const data = createResultadoSchema.parse(req.body);
+    console.log('✅ Dados validados com sucesso');
     
     // Verificar se amostra existe
     const { query: amostraQuery, params: amostraParams } = SQL_QUERIES.amostras.findById(data.amostraId);
