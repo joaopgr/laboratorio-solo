@@ -2,6 +2,7 @@ import express from 'express';
 import { z } from 'zod';
 import { query } from '../database/connection';
 import { SQL_QUERIES } from '../database/queries';
+import { registrarLog } from '../utils/logging';
 
 const router = express.Router();
 
@@ -195,6 +196,14 @@ router.post('/', async (req, res): Promise<any> => {
     const result = await query(createQuery, createParams);
     const cliente = result.rows[0];
 
+    // Registrar log
+    await registrarLog(req, {
+      acao: 'criar',
+      entidade: 'cliente',
+      entidadeId: cliente.id,
+      entidadeNome: cliente.nome
+    });
+
     res.status(201).json(cliente);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -238,6 +247,14 @@ router.put('/:id', async (req, res): Promise<any> => {
     const { query: updateQuery, params: updateParams } = SQL_QUERIES.clientes.update(id, data);
     const result = await query(updateQuery, updateParams);
     const cliente = result.rows[0];
+
+    // Registrar log
+    await registrarLog(req, {
+      acao: 'editar',
+      entidade: 'cliente',
+      entidadeId: cliente.id,
+      entidadeNome: cliente.nome
+    });
 
     res.json(cliente);
   } catch (error) {
@@ -286,6 +303,14 @@ router.delete('/:id', async (req, res): Promise<any> => {
 
     const { query: deleteQuery, params: deleteParams } = SQL_QUERIES.clientes.delete(id);
     await query(deleteQuery, deleteParams);
+
+    // Registrar log
+    await registrarLog(req, {
+      acao: 'deletar',
+      entidade: 'cliente',
+      entidadeId: id,
+      entidadeNome: existingCliente.nome
+    });
 
     res.status(204).send();
   } catch (error) {

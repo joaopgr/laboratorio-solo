@@ -34,28 +34,24 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const initAuth = async () => {
       const storedToken = localStorage.getItem('token')
       if (storedToken) {
-        setToken(storedToken)
-        // Simular um usuário para teste
-        setUser({
-          id: '1',
-          nome: 'Usuário Teste',
-          email: 'teste@laboratorio.com',
-          role: 'admin',
-          ativo: true,
-          createdAt: new Date().toISOString()
-        })
+        try {
+          setToken(storedToken)
+          api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`
+          
+          // Buscar dados do usuário autenticado
+          const response = await api.get('/auth/me')
+          setUser(response.data)
+        } catch (error) {
+          // Token inválido, limpar e forçar login
+          localStorage.removeItem('token')
+          setToken(null)
+          setUser(null)
+          delete api.defaults.headers.common['Authorization']
+        }
       } else {
-        // Se não há token, criar um usuário padrão para teste
-        setUser({
-          id: '1',
-          nome: 'Usuário Teste',
-          email: 'teste@laboratorio.com',
-          role: 'admin',
-          ativo: true,
-          createdAt: new Date().toISOString()
-        })
-        localStorage.setItem('token', 'test-token')
-        setToken('test-token')
+        // Sem token, não definir usuário (força login)
+        setUser(null)
+        setToken(null)
       }
       setLoading(false)
     }
@@ -63,26 +59,23 @@ export function AuthProvider({ children }: AuthProviderProps) {
     initAuth()
   }, [])
 
-  const login = async (email: string, _senha: string) => {
+  const login = async (email: string, senha: string) => {
     try {
       setLoading(true)
       
-      // Simular login para teste (remover quando o backend estiver funcionando)
-      const mockToken = 'mock-token-' + Date.now()
-      const mockUser = {
-        id: '1',
-        nome: 'Usuário Teste',
-        email: email,
-        role: 'admin' as const,
+      // Fazer login real via API
+      const response = await api.post('/auth/login', { email, senha })
+      const { token, usuario } = response.data
+      
+      localStorage.setItem('token', token)
+      setToken(token)
+      setUser({
+        ...usuario,
         ativo: true,
         createdAt: new Date().toISOString()
-      }
+      })
       
-      localStorage.setItem('token', mockToken)
-      setToken(mockToken)
-      setUser(mockUser)
-      
-      api.defaults.headers.common['Authorization'] = `Bearer ${mockToken}`
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`
       
       toast.success('Login realizado com sucesso!')
     } catch (error: any) {

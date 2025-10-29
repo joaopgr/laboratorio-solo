@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { query } from '../database/connection';
 import { SQL_QUERIES } from '../database/queries';
 import { determinarStatusAmostra, verificarLoteCompleto } from '../utils/statusUtils';
+import { registrarLog } from '../utils/logging';
 
 const router = express.Router();
 
@@ -458,6 +459,14 @@ router.post('/', async (req, res): Promise<any> => {
     const result = await query(createQuery, createParams);
     const amostra = result.rows[0];
 
+    // Registrar log
+    await registrarLog(req, {
+      acao: 'criar',
+      entidade: 'amostra',
+      entidadeId: amostra.id,
+      entidadeNome: amostra.codigo
+    });
+
     res.status(201).json(amostra);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -505,6 +514,14 @@ router.put('/:id', async (req, res): Promise<any> => {
     const result = await query(updateQuery, updateParams);
     const amostra = result.rows[0];
 
+    // Registrar log
+    await registrarLog(req, {
+      acao: 'editar',
+      entidade: 'amostra',
+      entidadeId: amostra.id,
+      entidadeNome: amostra.codigo
+    });
+
     res.json(amostra);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -543,8 +560,17 @@ router.delete('/:id', async (req, res): Promise<any> => {
         const { query: deleteResultadosQuery, params: deleteResultadosParams } = SQL_QUERIES.resultados.deleteByAmostra(id);
         await query(deleteResultadosQuery, deleteResultadosParams);
         
+        const existingAmostra = checkResult.rows[0];
         const { query: deleteQuery, params: deleteParams } = SQL_QUERIES.amostras.delete(id);
         await query(deleteQuery, deleteParams);
+        
+        // Registrar log
+        await registrarLog(req, {
+          acao: 'deletar',
+          entidade: 'amostra',
+          entidadeId: id,
+          entidadeNome: existingAmostra.codigo
+        });
         
         res.status(204).send();
       } else {
@@ -560,8 +586,17 @@ router.delete('/:id', async (req, res): Promise<any> => {
       }
     } else {
       // Deletar amostra normalmente (sem dados relacionados)
+      const existingAmostra = checkResult.rows[0];
       const { query: deleteQuery, params: deleteParams } = SQL_QUERIES.amostras.delete(id);
       await query(deleteQuery, deleteParams);
+      
+      // Registrar log
+      await registrarLog(req, {
+        acao: 'deletar',
+        entidade: 'amostra',
+        entidadeId: id,
+        entidadeNome: existingAmostra.codigo
+      });
       
       res.status(204).send();
     }

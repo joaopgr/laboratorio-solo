@@ -10,7 +10,8 @@ import {
   ChevronRight,
   Zap,
   Calculator,
-  CheckSquare
+  CheckSquare,
+  Activity
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAtividades } from '../hooks/useAtividades'
@@ -25,6 +26,7 @@ const navigation = [
   { name: 'Lançamento em Lote', href: '/lancamento-resultados', icon: Zap },
   { name: 'Relatórios', href: '/relatorios', icon: FileText },
   { name: 'Atividades', href: '/atividades', icon: CheckSquare },
+  { name: 'Registro de Atividades', href: '/logs', icon: Activity },
 ]
 
 export function Sidebar() {

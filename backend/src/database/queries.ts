@@ -551,6 +551,12 @@ export const SQL_QUERIES = {
 
   // ===== USUÁRIOS =====
   usuarios: {
+    // Buscar todos os usuários
+    findAll: () => ({
+      query: 'SELECT id, nome, email, role, ativo, "createdAt" FROM usuarios WHERE ativo = true ORDER BY nome',
+      params: []
+    }),
+
     // Buscar usuário por email
     findByEmail: (email: string) => ({
       query: 'SELECT * FROM usuarios WHERE email = $1',
@@ -602,20 +608,6 @@ export const SQL_QUERIES = {
           RETURNING id, nome, email, role, ativo, "createdAt"
         `,
         params: [id, ...Object.values(data)]
-      };
-    },
-
-    // Listar usuários
-    findAll: (page: number = 1, limit: number = 50) => {
-      const offset = (page - 1) * limit;
-      return {
-        query: `
-          SELECT id, nome, email, role, ativo, "createdAt"
-          FROM usuarios 
-          ORDER BY "createdAt" DESC 
-          LIMIT $1 OFFSET $2
-        `,
-        params: [limit, offset]
       };
     },
 
@@ -792,6 +784,133 @@ export const SQL_QUERIES = {
     delete: (id: string) => ({
       query: 'DELETE FROM atividades WHERE id = $1',
       params: [id]
+    })
+  },
+
+  // ===== LOGS =====
+  logs: {
+    // Buscar logs com filtros
+    findAll: (page: number = 1, limit: number = 50, filters?: {
+      usuarioId?: string;
+      acao?: string;
+      entidade?: string;
+      dataInicio?: string;
+      dataFim?: string;
+    }) => {
+      const offset = (page - 1) * limit;
+      let query = 'SELECT * FROM logs_sistema';
+      const params: any[] = [];
+      const conditions: string[] = [];
+      
+      if (filters?.usuarioId) {
+        conditions.push(`"usuarioId" = $${params.length + 1}`);
+        params.push(filters.usuarioId);
+      }
+      
+      if (filters?.acao) {
+        conditions.push(`acao = $${params.length + 1}`);
+        params.push(filters.acao);
+      }
+      
+      if (filters?.entidade) {
+        conditions.push(`entidade = $${params.length + 1}`);
+        params.push(filters.entidade);
+      }
+      
+      if (filters?.dataInicio) {
+        conditions.push(`"createdAt" >= $${params.length + 1}`);
+        params.push(filters.dataInicio);
+      }
+      
+      if (filters?.dataFim) {
+        conditions.push(`"createdAt" <= $${params.length + 1}`);
+        params.push(filters.dataFim);
+      }
+      
+      if (conditions.length > 0) {
+        query += ` WHERE ${conditions.join(' AND ')}`;
+      }
+      
+      query += ` ORDER BY "createdAt" DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
+      params.push(limit, offset);
+      
+      return { query, params };
+    },
+    
+    // Contar logs
+    count: (filters?: {
+      usuarioId?: string;
+      acao?: string;
+      entidade?: string;
+      dataInicio?: string;
+      dataFim?: string;
+    }) => {
+      let query = 'SELECT COUNT(*) as total FROM logs_sistema';
+      const params: any[] = [];
+      const conditions: string[] = [];
+      
+      if (filters?.usuarioId) {
+        conditions.push(`"usuarioId" = $${params.length + 1}`);
+        params.push(filters.usuarioId);
+      }
+      
+      if (filters?.acao) {
+        conditions.push(`acao = $${params.length + 1}`);
+        params.push(filters.acao);
+      }
+      
+      if (filters?.entidade) {
+        conditions.push(`entidade = $${params.length + 1}`);
+        params.push(filters.entidade);
+      }
+      
+      if (filters?.dataInicio) {
+        conditions.push(`"createdAt" >= $${params.length + 1}`);
+        params.push(filters.dataInicio);
+      }
+      
+      if (filters?.dataFim) {
+        conditions.push(`"createdAt" <= $${params.length + 1}`);
+        params.push(filters.dataFim);
+      }
+      
+      if (conditions.length > 0) {
+        query += ` WHERE ${conditions.join(' AND ')}`;
+      }
+      
+      return { query, params };
+    },
+    
+    // Criar log
+    create: (data: {
+      usuarioId?: string;
+      usuarioNome?: string;
+      usuarioEmail?: string;
+      acao: string;
+      entidade: string;
+      entidadeId?: string;
+      entidadeNome?: string;
+      detalhes?: string;
+      ip?: string;
+      userAgent?: string;
+    }) => ({
+      query: `
+        INSERT INTO logs_sistema (id, "usuarioId", "usuarioNome", "usuarioEmail", acao, entidade, "entidadeId", "entidadeNome", detalhes, ip, "userAgent", "createdAt", "updatedAt")
+        VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, NOW(), NOW())
+        RETURNING *
+      `,
+      params: [
+        data.usuarioId || null,
+        data.usuarioNome || null,
+        data.usuarioEmail || null,
+        data.acao,
+        data.entidade,
+        data.entidadeId || null,
+        data.entidadeNome || null,
+        data.detalhes || null,
+        data.ip || null,
+        data.userAgent || null
+      ]
     })
   },
 

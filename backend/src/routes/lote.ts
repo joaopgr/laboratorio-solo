@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { query } from '../database/connection';
 import { SQL_QUERIES } from '../database/queries';
+import { registrarLog } from '../utils/logging';
 
 const router = Router();
 
@@ -322,6 +323,14 @@ router.post('/', async (req, res): Promise<any> => {
     const result = await query(createQuery, createParams);
     const lote = result.rows[0];
 
+    // Registrar log
+    await registrarLog(req, {
+      acao: 'criar',
+      entidade: 'lote',
+      entidadeId: lote.id,
+      entidadeNome: lote.codigo
+    });
+
     res.status(201).json(lote);
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -364,6 +373,14 @@ router.put('/:id', async (req, res): Promise<any> => {
     const { query: updateQuery, params: updateParams } = SQL_QUERIES.lotes.update(id, data);
     const result = await query(updateQuery, updateParams);
     const lote = result.rows[0];
+
+    // Registrar log
+    await registrarLog(req, {
+      acao: 'editar',
+      entidade: 'lote',
+      entidadeId: lote.id,
+      entidadeNome: lote.codigo
+    });
 
     res.json(lote);
   } catch (error) {
@@ -456,8 +473,17 @@ router.delete('/:id', async (req, res): Promise<any> => {
         }
         
         // Deletar lote
+        const existingLote = checkResult.rows[0];
         const { query: deleteQuery, params: deleteParams } = SQL_QUERIES.lotes.delete(id);
         await query(deleteQuery, deleteParams);
+        
+        // Registrar log
+        await registrarLog(req, {
+          acao: 'deletar',
+          entidade: 'lote',
+          entidadeId: id,
+          entidadeNome: existingLote.codigo
+        });
         
         res.status(204).send();
       } else {
@@ -482,8 +508,17 @@ router.delete('/:id', async (req, res): Promise<any> => {
       }
     } else {
       // Deletar lote normalmente (sem amostras relacionadas)
+      const existingLote = checkResult.rows[0];
       const { query: deleteQuery, params: deleteParams } = SQL_QUERIES.lotes.delete(id);
       await query(deleteQuery, deleteParams);
+      
+      // Registrar log
+      await registrarLog(req, {
+        acao: 'deletar',
+        entidade: 'lote',
+        entidadeId: id,
+        entidadeNome: existingLote.codigo
+      });
       
       res.status(204).send();
     }

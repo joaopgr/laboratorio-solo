@@ -17,6 +17,7 @@ import { ResultadosCalculados } from './pages/ResultadosCalculados'
 import { Relatorios } from './pages/Relatorios'
 import { LancamentoResultados } from './pages/LancamentoResultados'
 import Atividades from './pages/Atividades'
+import { Logs } from './pages/Logs'
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
           <Route path="lancamento-resultados" element={<LancamentoResultados />} />
           <Route path="relatorios" element={<Relatorios />} />
           <Route path="atividades" element={<Atividades />} />
+          <Route path="logs" element={<Logs />} />
           </Route>
         </Routes>
       </ModuleProvider>

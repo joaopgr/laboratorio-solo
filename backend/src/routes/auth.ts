@@ -52,9 +52,8 @@ router.post('/login', async (req, res): Promise<any> => {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
-    // Verificar senha
-    const senhaValida = await bcrypt.compare(senha, usuario.senha);
-    if (!senhaValida) {
+    // Verificar senha (comparação direta, sem hash)
+    if (senha !== usuario.senha) {
       return res.status(401).json({ error: 'Credenciais inválidas' });
     }
 
@@ -105,13 +104,10 @@ router.post('/register', async (req, res): Promise<any> => {
       return res.status(400).json({ error: 'Email já cadastrado' });
     }
 
-    // Criptografar senha
-    const senhaHash = await bcrypt.hash(data.senha, 10);
-
-    // Criar usuário
+    // Criar usuário (senha em texto plano)
     const { query: createQuery, params: createParams } = SQL_QUERIES.usuarios.create({
       ...data,
-      senha: senhaHash
+      senha: data.senha // Sem hash
     });
     const createResult = await query(createQuery, createParams);
     const usuario = createResult.rows[0];
@@ -151,6 +147,27 @@ router.get('/me', authenticateToken, async (req: any, res): Promise<any> => {
 // POST /api/auth/logout - Logout (apenas para invalidar token no frontend)
 router.post('/logout', (req, res): any => {
   res.json({ message: 'Logout realizado com sucesso' });
+});
+
+// GET /api/auth/users - Listar todos os usuários (apenas para listagem de logs)
+router.get('/users', authenticateToken, async (req, res): Promise<any> => {
+  try {
+    const { query: usersQuery, params } = SQL_QUERIES.usuarios.findAll();
+    const result = await query(usersQuery, params);
+    
+    const usuarios = result.rows.map((u: any) => ({
+      id: u.id,
+      nome: u.nome,
+      email: u.email,
+      role: u.role,
+      ativo: u.ativo
+    }));
+    
+    res.json(usuarios);
+  } catch (error) {
+    console.error('Erro ao buscar usuários:', error);
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
 });
 
 export default router;
