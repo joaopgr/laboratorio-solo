@@ -231,10 +231,10 @@ export function Relatorios() {
                 <button
                   onClick={() => handleGenerateReport('geral')}
                   className="btn btn-outline btn-sm"
-                  disabled={relatorioGeral.isPending}
+                  disabled={relatorioGeral.isPending && activeReport === 'geral'}
                 >
                   <Eye className="w-4 h-4 mr-1" />
-                  {relatorioGeral.isPending ? 'Carregando...' : 'Ver'}
+                  {relatorioGeral.isPending && activeReport === 'geral' ? 'Carregando...' : 'Ver'}
                 </button>
                 <button
                   onClick={() => handleSaveReport('geral')}
@@ -315,10 +315,10 @@ export function Relatorios() {
                 <button
                   onClick={() => handleGenerateReport('cultura')}
                   className="btn btn-outline btn-sm"
-                  disabled={relatorioCultura.isPending}
+                  disabled={relatorioCultura.isPending && activeReport === 'cultura'}
                 >
                   <Eye className="w-4 h-4 mr-1" />
-                  {relatorioCultura.isPending ? 'Carregando...' : 'Ver'}
+                  {relatorioCultura.isPending && activeReport === 'cultura' ? 'Carregando...' : 'Ver'}
                 </button>
                 <button
                   onClick={() => handleSaveReport('cultura')}
@@ -357,10 +357,10 @@ export function Relatorios() {
                 <button
                   onClick={() => handleGenerateReport('financeiro')}
                   className="btn btn-outline btn-sm"
-                  disabled={relatorioFinanceiro.isPending}
+                  disabled={relatorioFinanceiro.isPending && activeReport === 'financeiro'}
                 >
                   <Eye className="w-4 h-4 mr-1" />
-                  {relatorioFinanceiro.isPending ? 'Carregando...' : 'Ver'}
+                  {relatorioFinanceiro.isPending && activeReport === 'financeiro' ? 'Carregando...' : 'Ver'}
                 </button>
                 <button
                   onClick={() => handleSaveReport('financeiro')}
@@ -399,10 +399,10 @@ export function Relatorios() {
                 <button
                   onClick={() => handleGenerateReport('estatisticas')}
                   className="btn btn-outline btn-sm"
-                  disabled={relatorioEstatisticas.isPending}
+                  disabled={relatorioEstatisticas.isPending && activeReport === 'estatisticas'}
                 >
                   <Eye className="w-4 h-4 mr-1" />
-                  {relatorioEstatisticas.isPending ? 'Carregando...' : 'Ver'}
+                  {relatorioEstatisticas.isPending && activeReport === 'estatisticas' ? 'Carregando...' : 'Ver'}
                 </button>
                 <button
                   onClick={() => handleSaveReport('estatisticas')}
