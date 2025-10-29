@@ -4,6 +4,7 @@ import { useLotes, useCreateLote } from '../hooks/useLotes'
 import { useClientes } from '../hooks/useClientes'
 import { useModule } from '../contexts/ModuleContext'
 import { Amostra, CreateAmostraData, Cliente } from '../../../shared/types'
+import { CulturaAutocomplete } from './CulturaAutocomplete'
 import { X, Plus, Search, Trash2 } from 'lucide-react'
 
 interface AmostraFormProps {
@@ -755,12 +756,12 @@ export function AmostraForm({ amostra, isOpen, onClose }: AmostraFormProps) {
                         <label className="block text-xs font-medium text-gray-600 mb-1">
                   Cultura *
                 </label>
-                <input
-                  type="text"
-                          value={amostra.cultura}
-                          onChange={(e) => handleAmostraChange(index, 'cultura', e.target.value)}
-                          className={`input w-full text-sm ${errors.cultura ? 'border-red-500' : ''}`}
-                          placeholder="Soja, Milho, etc."
+                <CulturaAutocomplete
+                  value={amostra.cultura}
+                  onChange={(value) => handleAmostraChange(index, 'cultura', value)}
+                  placeholder="Digite a cultura"
+                  className={`input w-full text-sm ${errors.cultura ? 'border-red-500' : ''}`}
+                  required
                 />
                 {errors.cultura && (
                   <p className="text-red-500 text-xs mt-1">{errors.cultura}</p>

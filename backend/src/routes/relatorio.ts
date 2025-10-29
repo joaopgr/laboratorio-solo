@@ -305,6 +305,114 @@ router.get('/clientes', async (req, res): Promise<any> => {
   }
 });
 
+// GET /api/relatorios/culturas - Relatório agrupado por cultura
+router.get('/culturas', async (req, res): Promise<any> => {
+  try {
+    const filters = relatorioFiltersSchema.parse(req.query);
+    
+    // Buscar todas as amostras
+    const { query: amostrasQuery, params: amostrasParams } = SQL_QUERIES.amostras.findAll(1, 10000);
+    const amostrasResult = await query(amostrasQuery, amostrasParams);
+    let amostras = amostrasResult.rows;
+
+    // Aplicar filtros básicos
+    if (filters.modulo) {
+      amostras = amostras.filter((amostra: any) => amostra.modulo === filters.modulo);
+    }
+
+    if (filters.cultura) {
+      amostras = amostras.filter((amostra: any) => 
+        amostra.cultura && amostra.cultura.toLowerCase().includes(filters.cultura!.toLowerCase())
+      );
+    }
+
+    if (filters.localidade) {
+      amostras = amostras.filter((amostra: any) => 
+        amostra.localidade && amostra.localidade.toLowerCase().includes(filters.localidade!.toLowerCase())
+      );
+    }
+
+    // Buscar dados do lote e cliente para cada amostra
+    for (const amostra of amostras) {
+      const { query: loteQuery, params: loteParams } = SQL_QUERIES.lotes.findById(amostra.loteId);
+      const loteResult = await query(loteQuery, loteParams);
+      const lote = loteResult.rows[0];
+
+      if (lote) {
+        const { query: clienteQuery, params: clienteParams } = SQL_QUERIES.clientes.findById(lote.clienteId);
+        const clienteResult = await query(clienteQuery, clienteParams);
+        const cliente = clienteResult.rows[0];
+
+        amostra.lote = { ...lote, cliente };
+      }
+    }
+
+    // Aplicar filtros de data e cliente
+    if (filters.dataInicio || filters.dataFim || filters.clienteId) {
+      amostras = amostras.filter((amostra: any) => {
+        if (filters.clienteId && amostra.lote?.clienteId !== filters.clienteId) {
+          return false;
+        }
+        if (filters.dataInicio && amostra.lote?.dataEntrega && new Date(amostra.lote.dataEntrega) < new Date(filters.dataInicio)) {
+          return false;
+        }
+        if (filters.dataFim && amostra.lote?.dataEntrega && new Date(amostra.lote.dataEntrega) > new Date(filters.dataFim)) {
+          return false;
+        }
+        return true;
+      });
+    }
+
+    // Agrupar por cultura
+    const culturasMap = new Map<string, { total: number; concluidas: number; pendentes: number; amostras: any[] }>();
+
+    for (const amostra of amostras) {
+      const cultura = amostra.cultura || 'Não informado';
+      
+      if (!culturasMap.has(cultura)) {
+        culturasMap.set(cultura, { total: 0, concluidas: 0, pendentes: 0, amostras: [] });
+      }
+      
+      const culturaData = culturasMap.get(cultura)!;
+      culturaData.total++;
+      culturaData.amostras.push(amostra);
+      
+      // Verificar se a amostra está concluída (tem pelo menos um resultado)
+      const { query: resultadosQuery, params: resultadosParams } = SQL_QUERIES.resultados.findByAmostra(amostra.id);
+      const resultadosResult = await query(resultadosQuery, resultadosParams);
+      const resultados = resultadosResult.rows;
+      
+      // Considerar concluída se tem pelo menos um resultado
+      const temTodosResultados = resultados.length > 0;
+      
+      if (temTodosResultados) {
+        culturaData.concluidas++;
+      } else {
+        culturaData.pendentes++;
+      }
+    }
+
+    // Converter Map para objeto
+    const culturas: Record<string, { total: number; concluidas: number; pendentes: number }> = {};
+    culturasMap.forEach((value, key) => {
+      culturas[key] = {
+        total: value.total,
+        concluidas: value.concluidas,
+        pendentes: value.pendentes
+      };
+    });
+
+    res.json({
+      culturas,
+      totalCulturas: culturasMap.size,
+      totalAmostras: amostras.length
+    });
+  } catch (error) {
+    console.error('Erro ao gerar relatório por cultura:', error);
+    return res.status(500).json({ error: 'Erro ao gerar relatório por cultura' });
+  }
+});
+
 // GET /api/relatorios/analises - Relatório por tipos de análise
 router.get('/analises', async (req, res): Promise<any> => {
   try {

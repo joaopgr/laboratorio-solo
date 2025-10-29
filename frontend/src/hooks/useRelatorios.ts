@@ -62,7 +62,7 @@ export function useRelatorioCultura(filters: RelatorioFilters = {}, enabled: boo
   return useQuery(
     ['relatorios', 'cultura', filters, modulo],
     async () => {
-      const response = await api.get('/relatorios/analises', {
+      const response = await api.get('/relatorios/culturas', {
         params: {
           ...filters,
           modulo

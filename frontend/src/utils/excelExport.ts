@@ -96,16 +96,13 @@ export function exportRelatorioCliente(relatorioData: any) {
 
 // Função específica para relatório por cultura
 export function exportRelatorioCultura(relatorioData: any) {
-  if (!relatorioData) return
+  if (!relatorioData || !relatorioData.culturas) return
 
-  const { relatorioPorCultura } = relatorioData
-  
-  const culturasData = relatorioPorCultura.map((culturaData: any) => ({
-    'Cultura': culturaData.cultura,
-    'Total Lotes': culturaData.totalLotes,
-    'Total Amostras': culturaData.totalAmostras,
-    'Total Clientes': culturaData.totalClientes,
-    'Total Resultados': culturaData.totalResultados
+  const culturasData = Object.entries(relatorioData.culturas).map(([cultura, dados]: [string, any]) => ({
+    'Cultura': cultura,
+    'Total': dados.total,
+    'Concluídas': dados.concluidas,
+    'Pendentes': dados.pendentes
   }))
   
   const filename = `Relatorio_Culturas_${new Date().toISOString().split('T')[0]}`

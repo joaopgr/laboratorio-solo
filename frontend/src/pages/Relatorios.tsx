@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { FileText, Download, Filter, Eye, BarChart3, Users, DollarSign, TrendingUp } from 'lucide-react'
 import { useRelatorioGeral, useRelatorioCliente, useRelatorioCultura, useRelatorioFinanceiro, useRelatorioEstatisticas, useSalvarRelatorio, useHistoricoRelatorios, RelatorioFilters } from '../hooks/useRelatorios'
 import { exportRelatorioGeral, exportRelatorioCliente, exportRelatorioCultura, exportRelatorioFinanceiro, exportRelatorioEstatisticas } from '../utils/excelExport'
+import { CulturaAutocomplete } from '../components/CulturaAutocomplete'
 import { useModule } from '../contexts/ModuleContext'
 import toast from 'react-hot-toast'
 
@@ -183,12 +184,11 @@ export function Relatorios() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Cultura
               </label>
-              <input
-                type="text"
-                className="input w-full"
+              <CulturaAutocomplete
+                value={filters.cultura || ''}
+                onChange={(value) => setFilters({ ...filters, cultura: value })}
                 placeholder="Digite a cultura"
-                value={filters.cultura}
-                onChange={(e) => setFilters({ ...filters, cultura: e.target.value })}
+                className="input w-full"
               />
             </div>
           </div>
@@ -594,26 +594,25 @@ export function Relatorios() {
                 <div className="bg-white border rounded-lg">
                   <div className="p-4 border-b">
                     <h4 className="font-semibold text-gray-900">Relatório por Cultura</h4>
+                    <p className="text-sm text-gray-600 mt-1">Total de culturas: {relatorioCultura.data.totalCulturas || 0} | Total de amostras: {relatorioCultura.data.totalAmostras || 0}</p>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead className="bg-gray-50">
                         <tr>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Tipo de Análise</th>
+                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Cultura</th>
                           <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Total</th>
                           <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Concluídas</th>
                           <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Pendentes</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Total Amostras</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-gray-200">
-                        {relatorioCultura.data.tiposAnalise && Object.entries(relatorioCultura.data.tiposAnalise).map(([tipo, dados]: [string, any], index: number) => (
+                        {relatorioCultura.data.culturas && Object.entries(relatorioCultura.data.culturas).map(([cultura, dados]: [string, any], index: number) => (
                           <tr key={index}>
-                            <td className="px-4 py-3 text-sm font-medium text-gray-900">{tipo}</td>
+                            <td className="px-4 py-3 text-sm font-medium text-gray-900">{cultura}</td>
                             <td className="px-4 py-3 text-sm text-gray-700">{dados.total}</td>
                             <td className="px-4 py-3 text-sm text-gray-700">{dados.concluidas}</td>
                             <td className="px-4 py-3 text-sm text-gray-700">{dados.pendentes}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{relatorioCultura.data.totalAmostras}</td>
                           </tr>
                         ))}
                       </tbody>

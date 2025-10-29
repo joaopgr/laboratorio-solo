@@ -3,6 +3,7 @@ import { useModule } from '../contexts/ModuleContext'
 import { useCreateAmostra } from '../hooks/useAmostras'
 import { useLoteById } from '../hooks/useLotes'
 import { CreateAmostraData } from '../../../shared/types'
+import { CulturaAutocomplete } from './CulturaAutocomplete'
 import { X } from 'lucide-react'
 
 interface AdicionarAmostraLoteFormProps {
@@ -161,11 +162,10 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Cultura
             </label>
-            <input
-              type="text"
-              name="cultura"
+            <CulturaAutocomplete
               value={formData.cultura}
-              onChange={handleChange}
+              onChange={(value) => setFormData(prev => ({ ...prev, cultura: value }))}
+              placeholder="Digite a cultura"
               required
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
