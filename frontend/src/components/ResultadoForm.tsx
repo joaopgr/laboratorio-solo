@@ -275,8 +275,9 @@ export function ResultadoForm({
         mlata_ss: resultado.massaLataSs?.toString() || '',
         // Campos específicos para módulo foliar
         massaB: resultado.massaBFoliar?.toString() || '',
-        dilB: resultado.diluicaoBFoliar?.toString() || '',
-        brancoB: resultado.brancoBFoliar?.toString() || '',
+        // Tentar ambos os nomes de campos (dilB/brancoB do banco e diluicaoBFoliar/brancoBFoliar do schema)
+        dilB: (resultado.dilB?.toString() || resultado.diluicaoBFoliar?.toString()) || '',
+        brancoB: (resultado.brancoB?.toString() || resultado.brancoBFoliar?.toString()) || '',
         massaN: resultado.massaN?.toString() || '',
         volumeN: resultado.volumeN?.toString() || '',
         brancoN: resultado.brancoN?.toString() || '',
@@ -402,9 +403,11 @@ export function ResultadoForm({
       case 'massa_b_foliar':
         return resultadoExistente.massaBFoliar?.toString()
       case 'dil_b':
-        return resultadoExistente.diluicaoBFoliar?.toString()
+        // Tentar ambos os nomes de campos
+        return (resultadoExistente.dilB?.toString() || resultadoExistente.diluicaoBFoliar?.toString()) || ''
       case 'branco_b':
-        return resultadoExistente.brancoBFoliar?.toString()
+        // Tentar ambos os nomes de campos
+        return (resultadoExistente.brancoB?.toString() || resultadoExistente.brancoBFoliar?.toString()) || ''
       case 'massa_n':
         return resultadoExistente.massaN?.toString()
       case 'volume_n':
