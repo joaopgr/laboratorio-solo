@@ -424,11 +424,15 @@ export function Resultados() {
       return '-'
     }
     
-    // Caso especial para Boro no módulo foliar - buscar brancoBFoliar
+    // Caso especial para Boro no módulo foliar - buscar brancoB ou brancoBFoliar
     if (tipo === 'B' && modulo === 'foliar') {
       const resultado = resultados.find(r => r.tipo === tipo)
-      if (resultado && resultado.brancoBFoliar) {
-        return resultado.brancoBFoliar
+      if (resultado) {
+        // Tentar ambos os nomes de campos (brancoB do banco e brancoBFoliar do schema)
+        const brancoBValue = resultado.brancoB || resultado.brancoBFoliar
+        if (brancoBValue !== null && brancoBValue !== undefined && brancoBValue !== '') {
+          return brancoBValue
+        }
       }
       return '-'
     }

@@ -275,9 +275,9 @@ export function ResultadoForm({
         mlata_ss: resultado.massaLataSs?.toString() || '',
         // Campos específicos para módulo foliar
         massaB: resultado.massaBFoliar?.toString() || '',
-        // Tentar ambos os nomes de campos (dilB/brancoB do banco e diluicaoBFoliar/brancoBFoliar do schema)
-        dilB: (resultado.dilB?.toString() || resultado.diluicaoBFoliar?.toString()) || '',
-        brancoB: (resultado.brancoB?.toString() || resultado.brancoBFoliar?.toString()) || '',
+        // Tentar ambos os nomes de campos (priorizar dilB/brancoB que são salvos no banco)
+        dilB: (resultado.dilB !== null && resultado.dilB !== undefined ? resultado.dilB.toString() : resultado.diluicaoBFoliar?.toString()) || '',
+        brancoB: (resultado.brancoB !== null && resultado.brancoB !== undefined ? resultado.brancoB.toString() : resultado.brancoBFoliar?.toString()) || '',
         massaN: resultado.massaN?.toString() || '',
         volumeN: resultado.volumeN?.toString() || '',
         brancoN: resultado.brancoN?.toString() || '',
