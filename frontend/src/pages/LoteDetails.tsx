@@ -616,21 +616,20 @@ export function LoteDetails() {
                   </span>
                 </div>
                 
-                {/* Informações sobre desconto */}
-                {lote.desconto && lote.desconto > 0 && (
+                {/* Botão para adicionar/editar desconto - EXIBIR SEMPRE */}
+                <button
+                  onClick={() => setIsEditingDesconto(true)}
+                  className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <Edit3 className="w-4 h-4" />
+                  {lote.desconto && lote.desconto > 0 ? 'Editar Desconto' : 'Aplicar Desconto'}
+                </button>
+                
+                {/* Informações sobre desconto aplicado */}
+                {lote.desconto && lote.desconto > 0 && !isEditingDesconto && (
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                     <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-sm font-medium text-blue-900">Desconto aplicado: {lote.desconto}%</span>
-                        {!isEditingDesconto && (
-                          <button
-                            onClick={() => setIsEditingDesconto(true)}
-                            className="ml-2 text-blue-600 hover:text-blue-800 text-sm"
-                          >
-                            <Edit3 className="w-4 h-4 inline" />
-                          </button>
-                        )}
-                      </div>
+                      <span className="text-sm font-medium text-blue-900">Desconto aplicado: {lote.desconto}%</span>
                     </div>
                   </div>
                 )}
@@ -671,16 +670,6 @@ export function LoteDetails() {
                       </div>
                     </div>
                   </div>
-                )}
-                
-                {/* Botão para adicionar desconto (se não houver desconto) */}
-                {(!lote.desconto || lote.desconto === 0) && !isEditingDesconto && (
-                  <button
-                    onClick={() => setIsEditingDesconto(true)}
-                    className="w-full py-2 px-4 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 hover:text-gray-800 transition-colors"
-                  >
-                    + Adicionar Desconto
-                  </button>
                 )}
                 
                 <div className="text-sm text-gray-500">
