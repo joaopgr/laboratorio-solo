@@ -16,7 +16,7 @@ ADD COLUMN IF NOT EXISTS "cu" DECIMAL,
 ADD COLUMN IF NOT EXISTS "mn" DECIMAL,
 ADD COLUMN IF NOT EXISTS "b" DECIMAL,
 
--- Campos de Boro foliar (usando nomes do backend: dilB e brancoB)
+-- Campos de Boro foliar (usando nomes do backend: dilB e brancoB, mas manter compatibilidade com diluicaoBFoliar e brancoBFoliar também)
 ADD COLUMN IF NOT EXISTS "dilB" DECIMAL,
 ADD COLUMN IF NOT EXISTS "brancoB" DECIMAL,
 
