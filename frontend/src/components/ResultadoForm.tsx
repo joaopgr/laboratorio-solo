@@ -631,12 +631,14 @@ export function ResultadoForm({
       }
       
       // Adicionar campos básicos apenas se tiverem valor preenchido
+      // valor e diluicao são enviados como string
       if (formData.valor && formData.valor.trim() !== '') {
         submitData.valor = formData.valor
       }
       if (formData.diluicao && formData.diluicao.trim() !== '') {
         submitData.diluicao = formData.diluicao
       }
+      // massa, branco, al, h_al, param_a, param_b são enviados como números
       const massaNum = parseNumber(formData.massa)
       if (massaNum !== undefined) submitData.massa = massaNum
       const brancoNum = parseNumber(formData.branco)
