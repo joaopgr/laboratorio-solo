@@ -26,7 +26,20 @@ const resultadoBaseSchema = z.object({
   h_al: z.string().optional(),
   param_a: z.string().optional(),
   param_b: z.string().optional(),
-  dataAnalise: z.string().datetime().optional(),
+  dataAnalise: z.union([z.string().datetime(), z.string()]).optional().transform(val => {
+    if (!val || val === '' || val === null || val === undefined) return undefined;
+    // Se já está no formato ISO, retornar como está
+    if (val.includes('T') && val.includes('Z')) return val;
+    // Se está no formato YYYY-MM-DD, converter para ISO
+    if (val.match(/^\d{4}-\d{2}-\d{2}$/)) return `${val}T12:00:00.000Z`;
+    // Tentar validar como datetime
+    try {
+      new Date(val);
+      return val;
+    } catch {
+      return undefined;
+    }
+  }),
   observacoes: z.string().optional(),
   // Campos granulométricos
   massaRecipienteAreiaGrossa: z.union([z.number(), z.string()]).optional().transform(val => {
