@@ -958,8 +958,8 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
         
         .contact {
             font-size: 10px;
-            margin-top: 5px;
-            margin-bottom: 3px;
+            margin-top: 2px;
+            margin-bottom: 8px;
             color: #000;
             font-weight: 600;
             line-height: 1.4;
@@ -969,7 +969,8 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
             display: flex;
             justify-content: space-between;
             margin: 6px 0;
-            padding: 5px;
+            padding: 8px 5px;
+            padding-bottom: 10px;
             background-color: white;
             border-radius: 3px;
             border: 1px solid #000;
@@ -985,8 +986,9 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
         }
         
         .client-row {
-            margin: 2px 0;
+            margin: 3px 0;
             font-size: 10px;
+            line-height: 1.3;
         }
         
         .client-label {
@@ -1451,40 +1453,40 @@ router.post('/gerar-lote', async (req, res): Promise<any> => {
     for (const loteId of loteIds) {
       try {
         // Gerar HTML para cada lote
-        const { query: loteQuery, params: loteParams } = SQL_QUERIES.lotes.findById(loteId)
-        const loteResult = await query(loteQuery, loteParams)
-        const lote = loteResult.rows[0]
+    const { query: loteQuery, params: loteParams } = SQL_QUERIES.lotes.findById(loteId)
+    const loteResult = await query(loteQuery, loteParams)
+    const lote = loteResult.rows[0]
 
-        if (!lote) {
+    if (!lote) {
           resultados.push({ loteId, success: false, error: 'Lote não encontrado' })
           falhas++
           continue
-        }
+    }
 
-        let cliente
-        if (lote.cliente) {
-          cliente = lote.cliente
-        } else {
-          const { query: clienteQuery, params: clienteParams } = SQL_QUERIES.clientes.findById(lote.clienteId)
-          const clienteResult = await query(clienteQuery, clienteParams)
-          cliente = clienteResult.rows[0]
-        }
+    let cliente
+    if (lote.cliente) {
+      cliente = lote.cliente
+    } else {
+      const { query: clienteQuery, params: clienteParams } = SQL_QUERIES.clientes.findById(lote.clienteId)
+      const clienteResult = await query(clienteQuery, clienteParams)
+      cliente = clienteResult.rows[0]
+    }
 
-        const { query: amostrasQuery, params: amostrasParams } = SQL_QUERIES.amostras.findByLote(loteId)
-        const amostrasResult = await query(amostrasQuery, amostrasParams)
-        const amostras = amostrasResult.rows
+    const { query: amostrasQuery, params: amostrasParams } = SQL_QUERIES.amostras.findByLote(loteId)
+    const amostrasResult = await query(amostrasQuery, amostrasParams)
+    const amostras = amostrasResult.rows
 
-        if (amostras.length === 0) {
+    if (amostras.length === 0) {
           resultados.push({ loteId, success: false, error: 'Lote não possui amostras' })
           falhas++
           continue
-        }
+    }
 
-        const amostraIds = amostras.map((a: any) => a.id)
+    const amostraIds = amostras.map((a: any) => a.id)
         const resultadosArray: any[] = []
-        for (const amostraId of amostraIds) {
-          const { query: resultadosQuery, params: resultadosParams } = SQL_QUERIES.resultados.findByAmostra(amostraId)
-          const resultadosResult = await query(resultadosQuery, resultadosParams)
+    for (const amostraId of amostraIds) {
+      const { query: resultadosQuery, params: resultadosParams } = SQL_QUERIES.resultados.findByAmostra(amostraId)
+      const resultadosResult = await query(resultadosQuery, resultadosParams)
           resultadosArray.push(...resultadosResult.rows)
         }
 
