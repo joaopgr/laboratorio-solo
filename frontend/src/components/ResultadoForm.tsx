@@ -276,8 +276,17 @@ export function ResultadoForm({
         // Campos específicos para módulo foliar
         massaB: resultado.massaBFoliar?.toString() || '',
         // Tentar ambos os nomes de campos (priorizar dilB/brancoB que são salvos no banco)
-        dilB: (resultado.dilB !== null && resultado.dilB !== undefined ? resultado.dilB.toString() : resultado.diluicaoBFoliar?.toString()) || '',
-        brancoB: (resultado.brancoB !== null && resultado.brancoB !== undefined ? resultado.brancoB.toString() : resultado.brancoBFoliar?.toString()) || '',
+        // IMPORTANTE: usar !== null e !== undefined porque 0 é um valor válido mas é falsy
+        dilB: (resultado.dilB !== null && resultado.dilB !== undefined 
+          ? resultado.dilB.toString() 
+          : (resultado.diluicaoBFoliar !== null && resultado.diluicaoBFoliar !== undefined 
+            ? resultado.diluicaoBFoliar.toString() 
+            : '')) || '',
+        brancoB: (resultado.brancoB !== null && resultado.brancoB !== undefined 
+          ? resultado.brancoB.toString() 
+          : (resultado.brancoBFoliar !== null && resultado.brancoBFoliar !== undefined 
+            ? resultado.brancoBFoliar.toString() 
+            : '')) || '',
         massaN: resultado.massaN?.toString() || '',
         volumeN: resultado.volumeN?.toString() || '',
         brancoN: resultado.brancoN?.toString() || '',
@@ -403,11 +412,23 @@ export function ResultadoForm({
       case 'massa_b_foliar':
         return resultadoExistente.massaBFoliar?.toString()
       case 'dil_b':
-        // Tentar ambos os nomes de campos
-        return (resultadoExistente.dilB?.toString() || resultadoExistente.diluicaoBFoliar?.toString()) || ''
+        // Tentar ambos os nomes de campos (dilB é priorizado porque é salvo no banco)
+        if (resultadoExistente.dilB !== null && resultadoExistente.dilB !== undefined) {
+          return resultadoExistente.dilB.toString()
+        }
+        if (resultadoExistente.diluicaoBFoliar !== null && resultadoExistente.diluicaoBFoliar !== undefined) {
+          return resultadoExistente.diluicaoBFoliar.toString()
+        }
+        return ''
       case 'branco_b':
-        // Tentar ambos os nomes de campos
-        return (resultadoExistente.brancoB?.toString() || resultadoExistente.brancoBFoliar?.toString()) || ''
+        // Tentar ambos os nomes de campos (brancoB é priorizado porque é salvo no banco)
+        if (resultadoExistente.brancoB !== null && resultadoExistente.brancoB !== undefined) {
+          return resultadoExistente.brancoB.toString()
+        }
+        if (resultadoExistente.brancoBFoliar !== null && resultadoExistente.brancoBFoliar !== undefined) {
+          return resultadoExistente.brancoBFoliar.toString()
+        }
+        return ''
       case 'massa_n':
         return resultadoExistente.massaN?.toString()
       case 'volume_n':
