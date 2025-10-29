@@ -88,36 +88,80 @@ router.post('/', async (req, res): Promise<any> => {
       return res.status(400).json({ error: 'Título é obrigatório' });
     }
 
+    // Verificar estrutura da tabela para determinar qual coluna usar
+    const schemaQuery = `
+      SELECT column_name
+      FROM information_schema.columns
+      WHERE table_name = 'atividades' AND table_schema = 'public'
+      AND column_name IN ('nome', 'titulo')
+      ORDER BY ordinal_position;
+    `;
+    
+    let useNomeColumn = false;
     try {
-      // Tentar criar com campo titulo
-      const { query: createQuery, params } = SQL_QUERIES.atividades.create({
-        titulo,
-        descricao,
-        tipo: tipo || 'tarefa',
-        prioridade: prioridade || 'media',
-        responsavel,
-        prazo: prazo ? new Date(prazo + 'T00:00:00Z') : undefined
-      });
+      const schemaResult = await query(schemaQuery);
+      const columnNames = schemaResult.rows.map((r: any) => r.column_name);
+      
+      if (columnNames.includes('nome') && !columnNames.includes('titulo')) {
+        useNomeColumn = true;
+        console.log('Tabela atividades ainda usa coluna "nome", ajustando query...');
+      }
+    } catch (schemaError) {
+      console.warn('Erro ao verificar schema da tabela, tentando com coluna "nome":', schemaError);
+      // Assumir que usa "nome" como fallback
+      useNomeColumn = true;
+    }
+
+    try {
+      // Criar query apropriada baseada na estrutura da tabela
+      let createQuery: string;
+      let params: any[];
+      
+      if (useNomeColumn) {
+        // Usar coluna "nome" ao invés de "titulo" (estrutura antiga)
+        createQuery = `
+          INSERT INTO atividades (id, nome, descricao, tipo, prioridade, status, responsavel, prazo, "createdAt", "updatedAt")
+          VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+          RETURNING *
+        `;
+        params = [
+          titulo, // Inserir titulo na coluna nome
+          descricao || null,
+          tipo || 'tarefa',
+          prioridade || 'media',
+          'pendente',
+          responsavel || null,
+          prazo ? new Date(prazo + 'T00:00:00Z') : null
+        ];
+      } else {
+        // Usar coluna "titulo" (estrutura atualizada)
+        const queryObj = SQL_QUERIES.atividades.create({
+          titulo,
+          descricao,
+          tipo: tipo || 'tarefa',
+          prioridade: prioridade || 'media',
+          responsavel,
+          prazo: prazo ? new Date(prazo + 'T00:00:00Z') : undefined
+        });
+        createQuery = queryObj.query;
+        params = queryObj.params;
+      }
       
       const result = await query(createQuery, params);
       const atividade = result.rows[0];
+      
+      // Garantir que a resposta sempre tenha campo "titulo"
+      if (atividade.nome && !atividade.titulo) {
+        atividade.titulo = atividade.nome;
+      }
 
       res.status(201).json(atividade);
     } catch (dbError: any) {
-      // Se der erro de coluna não encontrada, tentar com nome (compatibilidade)
-      const errorMessage = dbError.message || '';
-      if (errorMessage.includes('column "titulo" does not exist') || 
-          errorMessage.includes('column "nome" does not exist')) {
-        console.warn('Estrutura da tabela atividades incompatível. Verifique se a migração foi executada.');
-        console.error('Erro detalhado:', errorMessage);
-        
-        return res.status(500).json({ 
-          error: 'Estrutura da tabela atividades incompatível. Execute o script MIGRAR_ATIVIDADES_COMPLETO.sql no banco de dados.',
-          details: process.env.NODE_ENV === 'development' ? errorMessage : undefined
-        });
-      } else {
-        throw dbError;
-      }
+      console.error('Erro ao criar atividade:', dbError);
+      return res.status(500).json({ 
+        error: 'Erro interno do servidor',
+        details: process.env.NODE_ENV === 'development' ? dbError.message : undefined
+      });
     }
   } catch (error: any) {
     console.error('Erro ao criar atividade:', error);
