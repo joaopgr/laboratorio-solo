@@ -47,6 +47,10 @@ export function Relatorios() {
   }
 
   const handleGenerateReport = (reportType: string) => {
+    // Se os filtros ainda não foram aplicados, aplicar automaticamente
+    if (Object.keys(filtersApplied).length === 0 || Object.values(filtersApplied).every(v => !v)) {
+      setFiltersApplied(filters)
+    }
     setActiveReport(reportType)
     toast.success(`Visualizando relatório ${reportType}...`)
   }
@@ -269,10 +273,10 @@ export function Relatorios() {
                 <button
                   onClick={() => handleGenerateReport('cliente')}
                   className="btn btn-outline btn-sm"
-                  disabled={relatorioCliente.isPending}
+                  disabled={relatorioCliente.isPending && activeReport === 'cliente'}
                 >
                   <Eye className="w-4 h-4 mr-1" />
-                  {relatorioCliente.isPending ? 'Carregando...' : 'Ver'}
+                  {relatorioCliente.isPending && activeReport === 'cliente' ? 'Carregando...' : 'Ver'}
                 </button>
                 <button
                   onClick={() => handleSaveReport('cliente')}

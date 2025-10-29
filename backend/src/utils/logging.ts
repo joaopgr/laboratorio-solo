@@ -18,10 +18,27 @@ export async function registrarLog(req: Request, logData: LogData): Promise<void
   try {
     const usuario = (req as any).user; // Dados do usuário do JWT
     
+    // Buscar nome completo do usuário se tiver ID mas não tiver nome
+    let usuarioNome = logData.usuarioNome;
+    let usuarioEmail = logData.usuarioEmail;
+    
+    if (usuario?.id && !usuarioNome) {
+      try {
+        const { query: userQuery, params: userParams } = SQL_QUERIES.usuarios.findById(usuario.id);
+        const userResult = await query(userQuery, userParams);
+        if (userResult.rows[0]) {
+          usuarioNome = userResult.rows[0].nome;
+          usuarioEmail = userResult.rows[0].email;
+        }
+      } catch (err) {
+        console.error('Erro ao buscar nome do usuário:', err);
+      }
+    }
+    
     const { query: logQuery, params } = SQL_QUERIES.logs.create({
       usuarioId: usuario?.id || logData.usuarioId,
-      usuarioNome: usuario?.nome || logData.usuarioNome,
-      usuarioEmail: usuario?.email || logData.usuarioEmail,
+      usuarioNome: usuarioNome || usuario?.nome,
+      usuarioEmail: usuarioEmail || usuario?.email,
       acao: logData.acao,
       entidade: logData.entidade,
       entidadeId: logData.entidadeId,

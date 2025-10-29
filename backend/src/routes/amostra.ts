@@ -4,8 +4,12 @@ import { query } from '../database/connection';
 import { SQL_QUERIES } from '../database/queries';
 import { determinarStatusAmostra, verificarLoteCompleto } from '../utils/statusUtils';
 import { registrarLog } from '../utils/logging';
+import { authenticateToken } from './auth';
 
 const router = express.Router();
+
+// Aplicar autenticação em todas as rotas
+router.use(authenticateToken);
 
 // Função para gerar variações de busca para cobrir acentos
 function generateSearchVariations(term: string): string[] {
