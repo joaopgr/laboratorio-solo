@@ -958,10 +958,11 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
         
         .contact {
             font-size: 10px;
-            margin-top: 3px;
+            margin-top: 5px;
+            margin-bottom: 3px;
             color: #000;
             font-weight: 600;
-            line-height: 1.1;
+            line-height: 1.4;
         }
         
         .client-info {

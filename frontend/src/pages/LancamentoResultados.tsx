@@ -1538,7 +1538,7 @@ export function LancamentoResultados() {
                   const jaFoiLancado = verificarSeJaFoiLancado(tipo.value)
                   return (
                     <option key={tipo.value} value={tipo.value}>
-                      {tipo.label} ({tipo.categoria}){jaFoiLancado ? ' - Já lançado' : ''}
+                      {jaFoiLancado ? '🟠 ' : ''}{tipo.label} ({tipo.categoria}){jaFoiLancado ? ' - Já lançado' : ''}
                     </option>
                   )
                 })}
