@@ -4,6 +4,18 @@ import { SQL_QUERIES } from '../database/queries';
 
 const router = Router();
 
+// Função helper para mapear nome -> titulo nas respostas
+function mapearAtividadeParaFrontend(atividade: any): any {
+  if (!atividade) return atividade;
+  
+  const atividadMapeada = { ...atividade };
+  // Se tem nome mas não tem titulo, copiar nome para titulo
+  if (atividadMapeada.nome && !atividadMapeada.titulo) {
+    atividadMapeada.titulo = atividadMapeada.nome;
+  }
+  return atividadMapeada;
+}
+
 // GET /api/atividades - Listar todas as atividades
 router.get('/', async (req, res): Promise<any> => {
   try {
@@ -41,7 +53,7 @@ router.get('/', async (req, res): Promise<any> => {
       query(countQuery, countParams)
     ]);
 
-    const atividades = atividadesResult.rows;
+    const atividades = atividadesResult.rows.map(mapearAtividadeParaFrontend);
     const total = parseInt(countResult.rows[0].total);
 
     res.json({
@@ -72,7 +84,7 @@ router.get('/:id', async (req, res): Promise<any> => {
       return res.status(404).json({ error: 'Atividade não encontrada' });
     }
 
-    res.json(atividade);
+    res.json(mapearAtividadeParaFrontend(atividade));
   } catch (error) {
     console.error('Erro ao buscar atividade:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
@@ -157,13 +169,8 @@ router.post('/', async (req, res): Promise<any> => {
       
       const result = await query(createQuery, params);
       const atividade = result.rows[0];
-      
-      // Garantir que a resposta sempre tenha campo "titulo" para o frontend
-      if (atividade.nome && !atividade.titulo) {
-        atividade.titulo = atividade.nome;
-      }
 
-      res.status(201).json(atividade);
+      res.status(201).json(mapearAtividadeParaFrontend(atividade));
     } catch (dbError: any) {
       console.error('Erro ao criar atividade:', dbError);
       return res.status(500).json({ 
@@ -194,21 +201,47 @@ router.put('/:id', async (req, res): Promise<any> => {
       return res.status(404).json({ error: 'Atividade não encontrada' });
     }
 
-    // Atualizar atividade
-    const { query: updateQuery, params: updateParams } = SQL_QUERIES.atividades.update(id, {
-      titulo,
-      descricao,
-      tipo,
-      prioridade,
-      status,
-      responsavel,
-      prazo: prazo ? new Date(prazo + 'T00:00:00Z') : undefined
+    // Atualizar atividade - usar "nome" ao invés de "titulo"
+    const updateData: any = {};
+    if (titulo !== undefined) updateData.nome = titulo; // Mapear titulo -> nome
+    if (descricao !== undefined) updateData.descricao = descricao;
+    if (tipo !== undefined) updateData.tipo = tipo;
+    if (prioridade !== undefined) updateData.prioridade = prioridade;
+    if (status !== undefined) updateData.status = status;
+    if (responsavel !== undefined) updateData.responsavel = responsavel;
+    if (prazo !== undefined) updateData.prazo = prazo ? new Date(prazo + 'T00:00:00Z') : null;
+    
+    const updates: string[] = [];
+    const values: any[] = [];
+    let paramIndex = 2;
+    
+    Object.entries(updateData).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        updates.push(`"${key}" = $${paramIndex}`);
+        values.push(value);
+        paramIndex++;
+      }
     });
     
-    const result = await query(updateQuery, updateParams);
+    if (updates.length === 0) {
+      // Se não há nada para atualizar, retornar atividade original
+      const { query: findQuery, params: findParams } = SQL_QUERIES.atividades.findById(id);
+      const findResult = await query(findQuery, findParams);
+      return res.json(mapearAtividadeParaFrontend(findResult.rows[0]));
+    }
+    
+    updates.push('"updatedAt" = NOW()');
+    
+    const updateQuery = `
+      UPDATE atividades 
+      SET ${updates.join(', ')}
+      WHERE id = $1
+      RETURNING *
+    `;
+    const result = await query(updateQuery, [id, ...values]);
     const atividade = result.rows[0];
 
-    res.json(atividade);
+    res.json(mapearAtividadeParaFrontend(atividade));
   } catch (error) {
     console.error('Erro ao atualizar atividade:', error);
     return res.status(500).json({ error: 'Erro interno do servidor' });
@@ -258,11 +291,16 @@ router.patch('/:id/status', async (req, res): Promise<any> => {
     }
 
     // Atualizar apenas o status
-    const { query: updateQuery, params: updateParams } = SQL_QUERIES.atividades.update(id, { status });
-    const result = await query(updateQuery, updateParams);
+    const updateQuery = `
+      UPDATE atividades 
+      SET status = $2, "updatedAt" = NOW()
+      WHERE id = $1
+      RETURNING *
+    `;
+    const result = await query(updateQuery, [id, status]);
     const atividade = result.rows[0];
 
-    res.json(atividade);
+    res.json(mapearAtividadeParaFrontend(atividade));
   } catch (error) {
     console.error('Erro ao atualizar status:', error);
     return res.status(500).json({ error: 'Erro interno do servidor' });
