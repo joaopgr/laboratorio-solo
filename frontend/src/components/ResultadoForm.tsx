@@ -619,8 +619,15 @@ export function ResultadoForm({
         amostraId: formData.amostraId,
         tipo: formData.tipo,
         categoria: modulo as 'solo' | 'foliar',
-        observacoes: formData.observacoes && formData.observacoes.trim() !== '' ? formData.observacoes : undefined,
-        dataAnalise: convertDateToISO(formData.dataAnalise),
+      }
+      
+      // Adicionar campos opcionais apenas se tiverem valor
+      if (formData.observacoes && formData.observacoes.trim() !== '') {
+        submitData.observacoes = formData.observacoes
+      }
+      const dataAnaliseISO = convertDateToISO(formData.dataAnalise)
+      if (dataAnaliseISO) {
+        submitData.dataAnalise = dataAnaliseISO
       }
       
       // Adicionar campos básicos apenas se tiverem valor preenchido

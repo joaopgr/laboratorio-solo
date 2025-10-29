@@ -385,9 +385,16 @@ router.post('/', async (req, res): Promise<any> => {
     res.status(201).json(resultado);
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error('❌ Erro de validação Zod:');
+      console.error('Erros detalhados:', JSON.stringify(error.errors, null, 2));
+      console.error('Dados recebidos:', JSON.stringify(req.body, null, 2));
       return res.status(400).json({ 
         error: 'Dados inválidos',
-        details: error.errors
+        details: error.errors.map(e => ({
+          path: e.path.join('.'),
+          message: e.message,
+          code: e.code
+        }))
       });
     }
     
