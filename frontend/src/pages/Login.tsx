@@ -115,15 +115,7 @@ export function Login() {
             </button>
           </div>
 
-          <div className="text-center">
-            <p className="text-sm text-gray-600">
-              Usuários de teste:
-            </p>
-            <div className="mt-2 space-y-1 text-xs text-gray-500">
-              <p>Admin: admin@laboratorio.com / admin123</p>
-              <p>Analista: analista@laboratorio.com / analista123</p>
-            </div>
-          </div>
+          {/* Bloco de usuários de teste removido */}
         </form>
       </div>
     </div>

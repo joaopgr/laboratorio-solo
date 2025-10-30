@@ -401,98 +401,28 @@ export function calcularResultadosFoliar(dadosBrutos: DadosBrutos): CalculadosRe
     const diluicaoSBruto = dadosBrutos.s_dil
     const massaGeralBruto = dadosBrutos.massaGeralBruto
     
-    const parte1 = ((valorSBruto - paramBS) / paramAS)
-    const parte2 = ((brancoSBruto - paramBS) / paramAS)
-    const resultadoS = ((parte1 - parte2) * ((21 / massaGeralBruto) * 2) * diluicaoSBruto) / 1000
+    const resultadoS = (((valorSBruto - paramBS) / paramAS) - ((brancoSBruto - paramBS) / paramAS)) * ((21 / massaGeralBruto) * 2) * diluicaoSBruto / 1000
     resultados.s = resultadoS
   }
   
-  // Fe = SE(Massa Geral Bruto="";"";((21/Massa Geral Bruto)*Valor Fe Bruto*Dil Fe Bruto))
-  if (dadosBrutos.fe !== undefined && dadosBrutos.massaGeralBruto !== undefined && 
-      dadosBrutos.massaGeralBruto > 0 && dadosBrutos.fe_dil !== undefined) {
-    
-    const valorFeBruto = dadosBrutos.fe
-    const diluicaoFeBruto = dadosBrutos.fe_dil
-    const massaGeralBruto = dadosBrutos.massaGeralBruto
-    
-    const resultadoFe = ((21 / massaGeralBruto) * valorFeBruto * diluicaoFeBruto)
-    resultados.fe = resultadoFe
-  }
-  
-  // Cu = SE(Massa Geral Bruto="";"";((21/Massa Geral Bruto)*Valor Cu Bruto*Dil Cu Bruto))
-  if (dadosBrutos.cu !== undefined && dadosBrutos.massaGeralBruto !== undefined && 
-      dadosBrutos.massaGeralBruto > 0 && dadosBrutos.cu_dil !== undefined) {
-    
-    const valorCuBruto = dadosBrutos.cu
-    const diluicaoCuBruto = dadosBrutos.cu_dil
-    const massaGeralBruto = dadosBrutos.massaGeralBruto
-    
-    const resultadoCu = ((21 / massaGeralBruto) * valorCuBruto * diluicaoCuBruto)
-    resultados.cu = resultadoCu
-  }
-  
-  // Zn = SE(Massa Geral Bruto="";"";((21/Massa Geral Bruto)*Valor Zn Bruto*Dil Zn Bruto))
-  if (dadosBrutos.zn !== undefined && dadosBrutos.massaGeralBruto !== undefined && 
-      dadosBrutos.massaGeralBruto > 0 && dadosBrutos.zn_dil !== undefined) {
-    
-    const valorZnBruto = dadosBrutos.zn
-    const diluicaoZnBruto = dadosBrutos.zn_dil
-    const massaGeralBruto = dadosBrutos.massaGeralBruto
-    
-    const resultadoZn = ((21 / massaGeralBruto) * valorZnBruto * diluicaoZnBruto)
-    resultados.zn = resultadoZn
-  }
-  
-  // Mn = SE(Massa Geral Bruto="";"";((21/Massa Geral Bruto)*Valor Mn Bruto*Dil Mn Bruto))
-  if (dadosBrutos.mn !== undefined && dadosBrutos.massaGeralBruto !== undefined && 
-      dadosBrutos.massaGeralBruto > 0 && dadosBrutos.mn_dil !== undefined) {
-    
-    const valorMnBruto = dadosBrutos.mn
-    const diluicaoMnBruto = dadosBrutos.mn_dil
-    const massaGeralBruto = dadosBrutos.massaGeralBruto
-    
-    const resultadoMn = ((21 / massaGeralBruto) * valorMnBruto * diluicaoMnBruto)
-    resultados.mn = resultadoMn
-  }
-  
-  // B = SEERRO((((2-LOG10(Valor B Bruto)-B do B bruto)/A do B Bruto)-((2-LOG10(Branco do B Bruto)-B do B Bruto)/A do B Bruto))*((25/Massa do B Bruto)*(6/4))*Dil B Bruto;"")
-  if (dadosBrutos.b !== undefined && dadosBrutos.massaBFoliar !== undefined && 
-      dadosBrutos.massaBFoliar > 0 && dadosBrutos.b_param_a !== undefined && 
-      dadosBrutos.b_param_b !== undefined && dadosBrutos.b_branco !== undefined && 
-      dadosBrutos.b_dil !== undefined) {
-    
-    try {
-      const valorBBruto = dadosBrutos.b
-      const brancoBBruto = dadosBrutos.b_branco
-      const paramAB = dadosBrutos.b_param_a
-      const paramBB = dadosBrutos.b_param_b
-      const diluicaoBBruto = dadosBrutos.b_dil
-      const massaBBruto = dadosBrutos.massaBFoliar
-      
-      const parte1 = ((2 - Math.log10(valorBBruto) - paramBB) / paramAB)
-      const parte2 = ((2 - Math.log10(brancoBBruto) - paramBB) / paramAB)
-      const resultadoB = ((parte1 - parte2) * ((25 / massaBBruto) * (6 / 4)) * diluicaoBBruto)
-      resultados.b = resultadoB
-    } catch (error) {
-      console.error('Erro ao calcular B Foliar:', error)
-      resultados.b = 0
+  // B (Foliar): usar mesma fórmula-base do solo quando parâmetros estiverem disponíveis
+  // (((2-LOG10(valor boro)-B do boro)/A do boro)-((2-LOG10(branco do boro)-B do boro)/A do boro)) * 6/4 * 2
+  if (dadosBrutos.b !== undefined && dadosBrutos.b_branco !== undefined && 
+      dadosBrutos.b_param_a !== undefined && dadosBrutos.b_param_b !== undefined) {
+    const valorBoro = dadosBrutos.b
+    const brancoBoro = dadosBrutos.b_branco
+    const paramA = dadosBrutos.b_param_a
+    const paramB = dadosBrutos.b_param_b
+    if (valorBoro > 0 && brancoBoro > 0 && paramA !== 0) {
+      const parte1 = (2 - Math.log10(valorBoro) - paramB) / paramA
+      const parte2 = (2 - Math.log10(brancoBoro) - paramB) / paramA
+      resultados.b = (parte1 - parte2) * (6/4) * 2
+    } else {
+      // Fallback: se faltar parâmetro, mostrar o valor de leitura bruto
+      resultados.b = valorBoro
     }
   }
   
-  // N = SE(Massa N Bruto="";"";((Valor N Bruto-Branco do Fator N Bruto)*Fator F calculado*1,4)/Massa N Bruto)
-  if (dadosBrutos.massaN !== undefined && dadosBrutos.volumeN !== undefined && 
-      dadosBrutos.brancoN !== undefined && dadosBrutos.fatorF !== undefined) {
-    
-    const massaNBruto = dadosBrutos.massaN
-    const valorNBruto = dadosBrutos.volumeN
-    const brancoFatorNBruto = dadosBrutos.brancoN
-    const fatorFCalculado = dadosBrutos.fatorF
-    
-    if (massaNBruto && massaNBruto > 0) {
-      const resultadoN = ((valorNBruto - brancoFatorNBruto) * fatorFCalculado * 1.4) / massaNBruto
-      resultados.n = resultadoN
-    }
-  }
-  
+  // PREM (mantém solo)
   return resultados
 }
