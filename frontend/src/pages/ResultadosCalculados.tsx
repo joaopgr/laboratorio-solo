@@ -303,7 +303,14 @@ export function ResultadosCalculados() {
       }
     }
     
-    resultados.forEach((resultado: any) => {
+    // Ordenar por data de criação para que o último lançamento prevaleça em caso de duplicados
+    const resultadosOrdenados = [...resultados].sort((a: any, b: any) => {
+      const aTime = a?.createdAt ? new Date(a.createdAt).getTime() : 0
+      const bTime = b?.createdAt ? new Date(b.createdAt).getTime() : 0
+      return aTime - bTime // ascendente: o mais novo fica por último
+    })
+
+    resultadosOrdenados.forEach((resultado: any) => {
       const { tipo, valor, diluicao, massa, al, h_al, param_a, param_b } = resultado
       
       // Função para obter o valor do branco com lógica especial (igual à aba Resultados)
