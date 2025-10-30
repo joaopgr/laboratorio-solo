@@ -306,9 +306,14 @@ export function Resultados() {
         return resultado.diluicaoP.toString()
       }
       
-      // Para Boro, buscar no campo específico diluicaoBFoliar
-      if (tipo === 'B' && resultado.diluicaoBFoliar !== null && resultado.diluicaoBFoliar !== undefined) {
-        return resultado.diluicaoBFoliar.toString()
+      // Para Boro, aceitar tanto dilB (coluna do banco) quanto diluicaoBFoliar (compatibilidade)
+      if (tipo === 'B') {
+        if (resultado.dilB !== null && resultado.dilB !== undefined) {
+          return resultado.dilB.toString()
+        }
+        if (resultado.diluicaoBFoliar !== null && resultado.diluicaoBFoliar !== undefined) {
+          return resultado.diluicaoBFoliar.toString()
+        }
       }
       
       // Para outros tipos, usar o campo flexível diluicao
