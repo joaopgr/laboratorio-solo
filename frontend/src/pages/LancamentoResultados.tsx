@@ -699,7 +699,26 @@ export function LancamentoResultados() {
     const amostrasNoRange = amostrasData?.amostras.filter((amostra: any) => {
       const codigo = amostra.codigo
       
-      // Para códigos numéricos, usar comparação numérica
+      // Para módulo foliar: se o usuário digitou apenas números (1, 2, 3) mas as amostras têm prefixo F (F1, F2, F3)
+      // Comparar extraindo apenas os números
+      if (tipoAnalise === 'foliar' && /^F\d+$/.test(codigo)) {
+        // Se inicio e fim já têm F (usuário digitou F1, F2)
+        if (/^F\d+$/.test(inicio) && /^F\d+$/.test(fim)) {
+          const codigoNum = parseInt(codigo.replace('F', ''))
+          const inicioNum = parseInt(inicio.replace('F', ''))
+          const fimNum = parseInt(fim.replace('F', ''))
+          return codigoNum >= inicioNum && codigoNum <= fimNum
+        }
+        // Se início e fim são apenas números (usuário digitou 1, 2, 3)
+        else if (/^\d+$/.test(inicio) && /^\d+$/.test(fim)) {
+          const codigoNum = parseInt(codigo.replace('F', ''))
+          const inicioNum = parseInt(inicio)
+          const fimNum = parseInt(fim)
+          return codigoNum >= inicioNum && codigoNum <= fimNum
+        }
+      }
+      
+      // Para códigos numéricos (módulo solo), usar comparação numérica
       if (/^\d+$/.test(codigo) && /^\d+$/.test(inicio) && /^\d+$/.test(fim)) {
         const codigoNum = parseInt(codigo)
         const inicioNum = parseInt(inicio)

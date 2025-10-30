@@ -326,6 +326,7 @@ export function AmostraForm({ amostra, isOpen, onClose }: AmostraFormProps) {
         const novoLote = await createLote.mutateAsync(loteData)
         
         // Criar todas as amostras
+        let amostrasSalvas = 0
         for (const amostraData of amostras) {
           const amostraParaEnviar: CreateAmostraData = {
             codigo: amostraData.codigo,
@@ -362,7 +363,13 @@ export function AmostraForm({ amostra, isOpen, onClose }: AmostraFormProps) {
           }
           
           await createAmostra.mutateAsync(amostraParaEnviar)
+          amostrasSalvas++
         }
+        
+        // Mostrar mensagem de sucesso com o número correto de amostras
+        toast.success(`${amostrasSalvas} amostra(s) salva(s) com sucesso!`, {
+          duration: 3000
+        })
       }
 
       onClose()

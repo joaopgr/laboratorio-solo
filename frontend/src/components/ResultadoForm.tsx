@@ -141,8 +141,17 @@ export function ResultadoForm({
           param_b: resultadoExistente.param_b || '',
           // Campos específicos do módulo foliar
           massaB: resultadoExistente.massaBFoliar?.toString() || '',
-          dilB: resultadoExistente.diluicaoBFoliar?.toString() || '',
-          brancoB: resultadoExistente.brancoBFoliar?.toString() || '',
+          // Verificar ambos os nomes de campos (priorizar dilB/brancoB que são salvos no banco)
+          dilB: (resultadoExistente.dilB !== null && resultadoExistente.dilB !== undefined 
+            ? resultadoExistente.dilB.toString() 
+            : (resultadoExistente.diluicaoBFoliar !== null && resultadoExistente.diluicaoBFoliar !== undefined 
+              ? resultadoExistente.diluicaoBFoliar.toString() 
+              : '')) || '',
+          brancoB: (resultadoExistente.brancoB !== null && resultadoExistente.brancoB !== undefined 
+            ? resultadoExistente.brancoB.toString() 
+            : (resultadoExistente.brancoBFoliar !== null && resultadoExistente.brancoBFoliar !== undefined 
+              ? resultadoExistente.brancoBFoliar.toString() 
+              : '')) || '',
           massaN: resultadoExistente.massaN?.toString() || '',
           volumeN: resultadoExistente.volumeN?.toString() || '',
           brancoN: resultadoExistente.brancoN?.toString() || '',
