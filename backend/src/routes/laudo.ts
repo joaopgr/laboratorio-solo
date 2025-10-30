@@ -97,6 +97,10 @@ function calcularResultadosFoliar(resultados: any[]) {
         if (brancoBFoliar && brancoBFoliar !== 'null' && brancoBFoliar !== null && String(brancoBFoliar).trim() !== '') {
           dadosBrutos.b_branco = parseFloat(brancoBFoliar)
         }
+        // Priorizar brancoB (nome atual no banco)
+        if ((resultado as any).brancoB !== undefined && (resultado as any).brancoB !== null && String((resultado as any).brancoB).trim() !== '') {
+          dadosBrutos.b_branco = parseFloat(String((resultado as any).brancoB))
+        }
         if (param_a && param_a !== 'null' && param_a !== null && String(param_a).trim() !== '') {
           dadosBrutos.b_param_a = parseFloat(param_a)
         }
@@ -112,6 +116,10 @@ function calcularResultadosFoliar(resultados: any[]) {
         // Também verificar se há diluicaoBFoliar no resultado
         if (diluicaoBFoliar && diluicaoBFoliar !== 'null' && diluicaoBFoliar !== null && String(diluicaoBFoliar).trim() !== '') {
           dadosBrutos.b_dil = parseFloat(diluicaoBFoliar)
+        }
+        // Priorizar dilB (nome atual no banco)
+        if ((resultado as any).dilB !== undefined && (resultado as any).dilB !== null && String((resultado as any).dilB).trim() !== '') {
+          dadosBrutos.b_dil = parseFloat(String((resultado as any).dilB))
         }
         break
       case 'N':
