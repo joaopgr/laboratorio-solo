@@ -746,62 +746,18 @@ export function ResultadoForm({
         })
         toast.success('Resultado atualizado com sucesso!')
       } else {
-        await createResultado.mutateAsync(submitData)
+        const created = await createResultado.mutateAsync(submitData)
         toast.success('Resultado criado com sucesso!')
+        // Entrar em modo edição imediatamente para evitar duplicações em novos salvamentos
+        if (created && (created as any).id) {
+          setIsEditingExisting(true)
+          setExistingResultadoId((created as any).id)
+        }
       }
 
       onSuccess?.()
-      
-      // Resetar formulário para permitir criar outro resultado
-      setFormData({
-        amostraId,
-        tipo: '',
-        valor: '',
-        diluicao: '',
-        massa: '',
-        branco: '',
-        al: '',
-        h_al: '',
-        param_a: '',
-        param_b: '',
-        observacoes: '',
-        dataAnalise: new Date().toISOString().split('T')[0],
-        // Campos granulométricos
-        agrossa: '',
-        afina: '',
-        silte_argila: '',
-        argila: '',
-        agrossa_part: '',
-        afina_part: '',
-        silte_argila_part: '',
-        argila_part: '',
-        tfsa: '',
-        mlata: '',
-        mlata_su: '',
-        mlata_ss: '',
-        // Campos específicos do módulo foliar
-        massaB: '',
-        dilB: '',
-        brancoB: '',
-        massaN: '',
-        volumeN: '',
-        brancoN: '',
-        fatorF: '',
-        massaTrisR1: '',
-        massaTrisR2: '',
-        massaTrisR3: '',
-        volumeTitR1: '',
-        volumeTitR2: '',
-        volumeTitR3: '',
-        massaGeral: '',
-      })
-      
-      // Resetar estado de edição
-      setIsEditingExisting(false)
-      setExistingResultadoId(null)
+      // Manter valores e modo de edição ativo
       setErrors({})
-      
-      // Não fechar o formulário - manter aberto para criar outro resultado
     } catch (error) {
       console.error('Erro ao salvar resultado:', error)
       toast.error('Erro ao salvar resultado')
