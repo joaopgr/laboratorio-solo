@@ -532,6 +532,14 @@ export function ResultadosCalculados() {
             calculado: calculados?.b
           })
         }
+        if (dbg.dadosBrutos && (dbg.dadosBrutos as any).k !== undefined) {
+          console.log('[ResultadosCalculados][DEBUG][K]', {
+            amostra: (dbg as any).amostra?.codigo,
+            k: (dbg.dadosBrutos as any).k,
+            k_dil: (dbg.dadosBrutos as any).k_dil,
+            calculado: calculados?.k
+          })
+        }
       } catch {}
     }
     

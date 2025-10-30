@@ -540,10 +540,23 @@ router.post('/lote', async (req, res): Promise<any> => {
         return res.status(400).json({ error: `Amostra ${validatedData.amostraId} não encontrada` });
       }
 
-      // Criar resultado
-      const { query: createQuery, params: createParams } = SQL_QUERIES.resultados.create(validatedData);
-      const result = await query(createQuery, createParams);
-      const resultado = result.rows[0];
+      // Upsert: se já existir resultado para mesmo (amostraId, tipo, categoria), atualizar em vez de criar
+      const checkExisting = await query(
+        'SELECT id FROM resultados WHERE "amostraId" = $1 AND tipo = $2 AND categoria = $3 ORDER BY "createdAt" DESC LIMIT 1',
+        [validatedData.amostraId, validatedData.tipo, validatedData.categoria]
+      );
+
+      let resultado;
+      if (checkExisting.rows[0]?.id) {
+        const existingId = checkExisting.rows[0].id as string;
+        const { query: updateQuery, params: updateParams } = SQL_QUERIES.resultados.update(existingId, validatedData);
+        const upd = await query(updateQuery, updateParams);
+        resultado = upd.rows[0];
+      } else {
+        const { query: createQuery, params: createParams } = SQL_QUERIES.resultados.create(validatedData);
+        const ins = await query(createQuery, createParams);
+        resultado = ins.rows[0];
+      }
 
       resultadosCriados.push(resultado);
       amostrasAfetadas.add(validatedData.amostraId);
