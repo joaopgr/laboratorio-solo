@@ -405,7 +405,7 @@ export function calcularResultadosFoliar(dadosBrutos: DadosBrutos): CalculadosRe
     resultados.s = resultadoS
   }
   
-  // B (Foliar): usar mesma fórmula-base do solo quando parâmetros estiverem disponíveis
+  // B (Foliar): usar fórmula-base quando parâmetros disponíveis; caso contrário, não exibir (undefined)
   // (((2-LOG10(valor boro)-B do boro)/A do boro)-((2-LOG10(branco do boro)-B do boro)/A do boro)) * 6/4 * 2
   if (dadosBrutos.b !== undefined && dadosBrutos.b_branco !== undefined && 
       dadosBrutos.b_param_a !== undefined && dadosBrutos.b_param_b !== undefined) {
@@ -418,8 +418,38 @@ export function calcularResultadosFoliar(dadosBrutos: DadosBrutos): CalculadosRe
       const parte2 = (2 - Math.log10(brancoBoro) - paramB) / paramA
       resultados.b = (parte1 - parte2) * (6/4) * 2
     } else {
-      // Fallback: se faltar parâmetro, mostrar o valor de leitura bruto
-      resultados.b = valorBoro
+      resultados.b = undefined
+    }
+  }
+  
+  // Micronutrientes (Fe, Zn, Cu, Mn) padrão: valor * diluição
+  if (dadosBrutos.fe !== undefined && dadosBrutos.fe_dil !== undefined) {
+    resultados.fe = dadosBrutos.fe * dadosBrutos.fe_dil
+  }
+  if (dadosBrutos.zn !== undefined && dadosBrutos.zn_dil !== undefined) {
+    resultados.zn = dadosBrutos.zn * dadosBrutos.zn_dil
+  }
+  if (dadosBrutos.cu !== undefined && dadosBrutos.cu_dil !== undefined) {
+    // Mantém a mesma regra do solo (0.1 se < 0.01 antes da diluição)
+    const valorCu = dadosBrutos.cu
+    const dilCu = dadosBrutos.cu_dil
+    resultados.cu = valorCu < 0.01 ? 0.1 : valorCu * dilCu
+  }
+  if (dadosBrutos.mn !== undefined && dadosBrutos.mn_dil !== undefined) {
+    resultados.mn = dadosBrutos.mn * dadosBrutos.mn_dil
+  }
+  
+  // Nitrogênio (Foliar) – mesma regra usada no cálculo geral
+  if (dadosBrutos.massaN !== undefined && dadosBrutos.volumeN !== undefined && 
+      dadosBrutos.brancoN !== undefined && dadosBrutos.fatorF !== undefined) {
+    const massaNBruto = dadosBrutos.massaN
+    const valorNBruto = dadosBrutos.volumeN
+    const brancoFatorNBruto = dadosBrutos.brancoN
+    const fatorFCalculado = dadosBrutos.fatorF
+    if (!massaNBruto || massaNBruto === 0) {
+      resultados.n = undefined
+    } else {
+      resultados.n = ((valorNBruto - brancoFatorNBruto) * fatorFCalculado * 1.4) / massaNBruto
     }
   }
   
