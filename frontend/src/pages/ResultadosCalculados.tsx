@@ -273,6 +273,14 @@ export function ResultadosCalculados() {
     // Preparar dados brutos para os cálculos
     const dadosBrutos: DadosBrutos = {}
     
+    // Utilitário: converte string/number para number de forma segura
+    const toNumber = (val: any, defaultValue = 0): number => {
+      if (val === null || val === undefined || val === '') return defaultValue
+      if (typeof val === 'number') return isNaN(val) ? defaultValue : val
+      const parsed = parseFloat(String(val).replace(',', '.'))
+      return isNaN(parsed) ? defaultValue : parsed
+    }
+    
     // Para módulo foliar, buscar o valor real da Massa Geral
     if (modulo === 'foliar') {
       
@@ -280,8 +288,7 @@ export function ResultadosCalculados() {
       const resultadoMassaGeral = resultados.find(r => r.tipo === 'MASSA_GERAL')
       
       if (resultadoMassaGeral && (resultadoMassaGeral.massaGeral || resultadoMassaGeral.valor)) {
-        const massaGeralStr = String(resultadoMassaGeral.massaGeral || resultadoMassaGeral.valor)
-        dadosBrutos.massaGeralBruto = parseFloat(massaGeralStr.replace(',', '.')) || 0.2
+        dadosBrutos.massaGeralBruto = toNumber(resultadoMassaGeral.massaGeral || resultadoMassaGeral.valor, 0.2)
       } else {
         dadosBrutos.massaGeralBruto = 0.2 // Fallback se não encontrar MASSA_GERAL
       }
@@ -290,8 +297,7 @@ export function ResultadosCalculados() {
       const resultadoMassaGeral = resultados.find(r => r.tipo === 'MASSA_GERAL')
       
       if (resultadoMassaGeral && (resultadoMassaGeral.massaGeral || resultadoMassaGeral.valor)) {
-        const massaGeralStr = String(resultadoMassaGeral.massaGeral || resultadoMassaGeral.valor)
-        dadosBrutos.massaGeralBruto = parseFloat(massaGeralStr.replace(',', '.')) || 0.2
+        dadosBrutos.massaGeralBruto = toNumber(resultadoMassaGeral.massaGeral || resultadoMassaGeral.valor, 0.2)
       } else {
         dadosBrutos.massaGeralBruto = 0.2 // Valor padrão para módulo solo
       }
@@ -353,9 +359,9 @@ export function ResultadosCalculados() {
         return valoresPadraoBranco[tipo] || 0
       }
       
-      const valorNum = parseFloat(valor?.replace(',', '.')) || 0
-      const diluicaoNum = parseFloat(diluicao?.replace(',', '.')) || 1
-      const massaNum = parseFloat(massa?.replace(',', '.')) || 0
+      const valorNum = toNumber(valor, 0)
+      const diluicaoNum = toNumber(diluicao, 1)
+      const massaNum = toNumber(massa, 0)
       const brancoNum = getBrancoValue(resultado, tipo)
       
       switch (tipo) {
@@ -386,14 +392,14 @@ export function ResultadosCalculados() {
           break
         case 'H+Al':
           // Para H+Al, extrair todos os campos necessários
-          if (al && al !== 'null' && al.trim() !== '') {
-            dadosBrutos.al = parseFloat(al.replace(',', '.')) || 0
+          if (al && al !== 'null' && String(al).trim() !== '') {
+            dadosBrutos.al = toNumber(al, 0)
           }
-          if (h_al && h_al !== 'null' && h_al.trim() !== '') {
-            dadosBrutos.h_al = parseFloat(h_al.replace(',', '.')) || 0
+          if (h_al && h_al !== 'null' && String(h_al).trim() !== '') {
+            dadosBrutos.h_al = toNumber(h_al, 0)
           }
-          if (resultado.branco && resultado.branco !== 'null' && resultado.branco.trim() !== '') {
-            dadosBrutos.h_al_branco = parseFloat(resultado.branco.replace(',', '.')) || 0
+          if (resultado.branco && resultado.branco !== 'null' && String(resultado.branco).trim() !== '') {
+            dadosBrutos.h_al_branco = toNumber(resultado.branco, 0)
           }
           break
         case 'MO':
@@ -482,20 +488,16 @@ export function ResultadosCalculados() {
           // Mapear campos específicos do Nitrogênio
           
           if (resultado.massaN !== null && resultado.massaN !== undefined && resultado.massaN !== '') {
-            const massaNStr = String(resultado.massaN)
-            dadosBrutos.massaN = parseFloat(massaNStr.replace(',', '.')) || 0
+            dadosBrutos.massaN = toNumber(resultado.massaN, 0)
           }
           if (resultado.volumeN !== null && resultado.volumeN !== undefined && resultado.volumeN !== '') {
-            const volumeNStr = String(resultado.volumeN)
-            dadosBrutos.volumeN = parseFloat(volumeNStr.replace(',', '.')) || 0
+            dadosBrutos.volumeN = toNumber(resultado.volumeN, 0)
           }
           if (resultado.brancoN !== null && resultado.brancoN !== undefined && resultado.brancoN !== '') {
-            const brancoNStr = String(resultado.brancoN)
-            dadosBrutos.brancoN = parseFloat(brancoNStr.replace(',', '.')) || 0
+            dadosBrutos.brancoN = toNumber(resultado.brancoN, 0)
           }
           if (resultado.fatorF !== null && resultado.fatorF !== undefined && resultado.fatorF !== '') {
-            const fatorFStr = String(resultado.fatorF)
-            dadosBrutos.fatorF = parseFloat(fatorFStr.replace(',', '.')) || 0
+            dadosBrutos.fatorF = toNumber(resultado.fatorF, 0)
           }
           break
       }
