@@ -6,6 +6,7 @@ import { useModule } from '../contexts/ModuleContext'
 import { Amostra, CreateAmostraData, Cliente } from '../../../shared/types'
 import { CulturaAutocomplete } from './CulturaAutocomplete'
 import { X, Plus, Search, Trash2 } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 interface AmostraFormProps {
   amostra?: Amostra
