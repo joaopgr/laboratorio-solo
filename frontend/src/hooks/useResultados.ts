@@ -184,8 +184,17 @@ export function useCreateResultadosLote() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['resultados'] })
       queryClient.invalidateQueries({ queryKey: ['amostras'] })
-      const count = Array.isArray(data) ? data.length : 0
-      toast.success(`${count} resultados criados com sucesso!`)
+      // Suporta diferentes formatos de resposta: array direto ou objeto { resultados }
+      let count = 0
+      if (Array.isArray(data)) {
+        count = data.length
+      } else if (data && typeof data === 'object' && 'resultados' in data) {
+        const anyData: any = data as any
+        if (Array.isArray(anyData.resultados)) {
+          count = anyData.resultados.length
+        }
+      }
+      toast.success(`${count} resultado(s) criado(s) com sucesso!`)
     },
     onError: (error: any) => {
       const message = error.response?.data?.error || 'Erro ao criar resultados em lote'

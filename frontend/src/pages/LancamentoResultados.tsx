@@ -455,10 +455,15 @@ export function LancamentoResultados() {
             if (resultadoExistente.massaBFoliar !== undefined && resultadoExistente.massaBFoliar !== null) {
               newMassaBFoliarResultado[amostra.id] = resultadoExistente.massaBFoliar.toString()
             }
-            if (resultadoExistente.diluicaoBFoliar !== undefined && resultadoExistente.diluicaoBFoliar !== null) {
+            // Verificar ambos os nomes de campos (priorizar dilB/brancoB que são salvos no banco)
+            if (resultadoExistente.dilB !== null && resultadoExistente.dilB !== undefined) {
+              newDilBResultado[amostra.id] = resultadoExistente.dilB.toString()
+            } else if (resultadoExistente.diluicaoBFoliar !== null && resultadoExistente.diluicaoBFoliar !== undefined) {
               newDilBResultado[amostra.id] = resultadoExistente.diluicaoBFoliar.toString()
             }
-            if (resultadoExistente.brancoBFoliar !== undefined && resultadoExistente.brancoBFoliar !== null) {
+            if (resultadoExistente.brancoB !== null && resultadoExistente.brancoB !== undefined) {
+              newBrancoBResultado[amostra.id] = resultadoExistente.brancoB.toString()
+            } else if (resultadoExistente.brancoBFoliar !== null && resultadoExistente.brancoBFoliar !== undefined) {
               newBrancoBResultado[amostra.id] = resultadoExistente.brancoBFoliar.toString()
             }
             if (resultadoExistente.massaN !== undefined && resultadoExistente.massaN !== null) {
@@ -2123,8 +2128,9 @@ export function LancamentoResultados() {
                                (campo === 'mlata_ss' && r.massaLataSs !== undefined && r.massaLataSs !== null && r.massaLataSs !== '') ||
                                // Campos específicos do módulo foliar
                                (campo === 'massa_b_foliar' && r.massaBFoliar !== undefined && r.massaBFoliar !== null) ||
-                               (campo === 'dil_b' && r.diluicaoBFoliar !== undefined && r.diluicaoBFoliar !== null) ||
-                               (campo === 'branco_b' && r.brancoBFoliar !== undefined && r.brancoBFoliar !== null) ||
+                               // Verificar ambos os nomes de campos (dilB/brancoB do banco e diluicaoBFoliar/brancoBFoliar do schema)
+                               (campo === 'dil_b' && ((r.dilB !== null && r.dilB !== undefined) || (r.diluicaoBFoliar !== null && r.diluicaoBFoliar !== undefined))) ||
+                               (campo === 'branco_b' && ((r.brancoB !== null && r.brancoB !== undefined) || (r.brancoBFoliar !== null && r.brancoBFoliar !== undefined))) ||
                                (campo === 'massa_n' && r.massaN !== undefined && r.massaN !== null) ||
                                (campo === 'volume_n' && r.volumeN !== undefined && r.volumeN !== null) ||
                                (campo === 'branco_n' && r.brancoN !== undefined && r.brancoN !== null) ||
