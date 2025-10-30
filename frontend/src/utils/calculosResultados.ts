@@ -405,38 +405,48 @@ export function calcularResultadosFoliar(dadosBrutos: DadosBrutos): CalculadosRe
     resultados.s = resultadoS
   }
   
-  // B (Foliar): usar fórmula-base quando parâmetros disponíveis; caso contrário, não exibir (undefined)
-  // (((2-LOG10(valor boro)-B do boro)/A do boro)-((2-LOG10(branco do boro)-B do boro)/A do boro)) * 6/4 * 2
-  if (dadosBrutos.b !== undefined && dadosBrutos.b_branco !== undefined && 
-      dadosBrutos.b_param_a !== undefined && dadosBrutos.b_param_b !== undefined) {
+  // B (Foliar):
+  // =SEERRO((((2-LOG10(Valor B Bruto)-B do B Bruto)/A do B Bruto)-((2-LOG10(Branco do B Bruto)-B do B Bruto)/A do B Bruto))
+  //          * ((25/Massa do B Bruto)*(6/4)) * Dil B Bruto; "")
+  if (dadosBrutos.b !== undefined && dadosBrutos.b_branco !== undefined &&
+      dadosBrutos.b_param_a !== undefined && dadosBrutos.b_param_b !== undefined &&
+      dadosBrutos.massaBFoliar !== undefined && dadosBrutos.massaBFoliar > 0 &&
+      dadosBrutos.b_dil !== undefined) {
     const valorBoro = dadosBrutos.b
     const brancoBoro = dadosBrutos.b_branco
     const paramA = dadosBrutos.b_param_a
     const paramB = dadosBrutos.b_param_b
+    const massaB = dadosBrutos.massaBFoliar
+    const dilB = dadosBrutos.b_dil
     if (valorBoro > 0 && brancoBoro > 0 && paramA !== 0) {
       const parte1 = (2 - Math.log10(valorBoro) - paramB) / paramA
       const parte2 = (2 - Math.log10(brancoBoro) - paramB) / paramA
-      resultados.b = (parte1 - parte2) * (6/4) * 2
-    } else {
-      resultados.b = undefined
+      resultados.b = (parte1 - parte2) * ((25 / massaB) * (6 / 4)) * dilB
     }
   }
   
-  // Micronutrientes (Fe, Zn, Cu, Mn) padrão: valor * diluição
-  if (dadosBrutos.fe !== undefined && dadosBrutos.fe_dil !== undefined) {
-    resultados.fe = dadosBrutos.fe * dadosBrutos.fe_dil
-  }
-  if (dadosBrutos.zn !== undefined && dadosBrutos.zn_dil !== undefined) {
-    resultados.zn = dadosBrutos.zn * dadosBrutos.zn_dil
-  }
-  if (dadosBrutos.cu !== undefined && dadosBrutos.cu_dil !== undefined) {
-    // Mantém a mesma regra do solo (0.1 se < 0.01 antes da diluição)
-    const valorCu = dadosBrutos.cu
-    const dilCu = dadosBrutos.cu_dil
-    resultados.cu = valorCu < 0.01 ? 0.1 : valorCu * dilCu
-  }
-  if (dadosBrutos.mn !== undefined && dadosBrutos.mn_dil !== undefined) {
-    resultados.mn = dadosBrutos.mn * dadosBrutos.mn_dil
+  // Micronutrientes Foliar (Fe, Zn, Cu, Mn):
+  // Fe = (21/Massa Geral Bruto) * Valor Fe Bruto * Dil Fe Bruto
+  // Zn = (21/Massa Geral Bruto) * Valor Zn Bruto * Dil Zn Bruto
+  // Cu = (21/Massa Geral Bruto) * Valor Cu Bruto * Dil Cu Bruto
+  // Mn = (21/Massa Geral Bruto) * Valor Mn Bruto * Dil Mn Bruto
+  if (dadosBrutos.massaGeralBruto !== undefined && dadosBrutos.massaGeralBruto > 0) {
+    const massaGeral = dadosBrutos.massaGeralBruto
+    if (dadosBrutos.fe !== undefined && dadosBrutos.fe_dil !== undefined) {
+      resultados.fe = (21 / massaGeral) * dadosBrutos.fe * dadosBrutos.fe_dil
+    }
+    if (dadosBrutos.zn !== undefined && dadosBrutos.zn_dil !== undefined) {
+      resultados.zn = (21 / massaGeral) * dadosBrutos.zn * dadosBrutos.zn_dil
+    }
+    if (dadosBrutos.cu !== undefined && dadosBrutos.cu_dil !== undefined) {
+      const valorCu = dadosBrutos.cu
+      const dilCu = dadosBrutos.cu_dil
+      const base = (21 / massaGeral) * valorCu * dilCu
+      resultados.cu = valorCu < 0.01 ? 0.1 : base
+    }
+    if (dadosBrutos.mn !== undefined && dadosBrutos.mn_dil !== undefined) {
+      resultados.mn = (21 / massaGeral) * dadosBrutos.mn * dadosBrutos.mn_dil
+    }
   }
   
   // Nitrogênio (Foliar) – mesma regra usada no cálculo geral
