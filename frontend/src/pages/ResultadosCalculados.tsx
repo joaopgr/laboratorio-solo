@@ -510,38 +510,7 @@ export function ResultadosCalculados() {
       }
     })
     
-    // DEBUG: mostrar dados da amostra e cálculos (ativo em prod também)
-    if (typeof window !== 'undefined') {
-      try {
-        const dbg = {
-          amostra: { id: amostra?.id, codigo: amostra?.codigo },
-          dadosBrutos: { ...dadosBrutos }
-        }
-        let calculados: any
-        if (modulo === 'foliar') calculados = calcularResultadosFoliar(dadosBrutos)
-        else calculados = calcularResultados(dadosBrutos)
-        console.log('[ResultadosCalculados][DEBUG]', dbg, { calculados })
-        // Destaque específico para Boro
-        if (dbg.dadosBrutos && (dbg.dadosBrutos as any).b !== undefined) {
-          console.log('[ResultadosCalculados][DEBUG][Boro]', {
-            b: (dbg.dadosBrutos as any).b,
-            b_dil: (dbg.dadosBrutos as any).b_dil,
-            b_branco: (dbg.dadosBrutos as any).b_branco,
-            b_param_a: (dbg.dadosBrutos as any).b_param_a,
-            b_param_b: (dbg.dadosBrutos as any).b_param_b,
-            calculado: calculados?.b
-          })
-        }
-        if (dbg.dadosBrutos && (dbg.dadosBrutos as any).k !== undefined) {
-          console.log('[ResultadosCalculados][DEBUG][K]', {
-            amostra: (dbg as any).amostra?.codigo,
-            k: (dbg.dadosBrutos as any).k,
-            k_dil: (dbg.dadosBrutos as any).k_dil,
-            calculado: calculados?.k
-          })
-        }
-      } catch {}
-    }
+    // Logs de debug removidos
     
     let calculados: CalculadosResultados
     // FORÇAR uso das fórmulas do módulo foliar para amostras foliares
