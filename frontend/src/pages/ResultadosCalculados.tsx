@@ -496,9 +496,20 @@ export function ResultadosCalculados() {
       }
     })
     
-    // Debug final dos dados brutos
-    
-    // Calcular resultados usando as fórmulas específicas do módulo
+    // DEBUG: mostrar dados da amostra e cálculos (apenas em dev)
+    if (typeof window !== 'undefined' && (window.location?.hostname === 'localhost' || window.location?.hostname === '127.0.0.1')) {
+      try {
+        // Clonar para não poluir console com proxies
+        const dbg = {
+          amostra: { id: amostra?.id, codigo: amostra?.codigo },
+          dadosBrutos: { ...dadosBrutos },
+        }
+        let calculados: any
+        if (modulo === 'foliar') calculados = calcularResultadosFoliar(dadosBrutos)
+        else calculados = calcularResultados(dadosBrutos)
+        console.log('[ResultadosCalculados][DEBUG]', dbg, { calculados })
+      } catch {}
+    }
     
     let calculados: CalculadosResultados
     // FORÇAR uso das fórmulas do módulo foliar para amostras foliares
