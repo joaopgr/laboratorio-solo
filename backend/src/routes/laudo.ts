@@ -512,9 +512,11 @@ function calcularResultadosFinais(resultados: any[]) {
     resultadosCalculados.fe = dadosBrutos.fe * dadosBrutos.fe_dil
   }
   
-  // Cu = Cu * Dil
+  // Cu = SE(valor do Cu bruto="";"-";SE(valor do Cu bruto<0,01;0,1;valor do Cu bruto*dil Cu bruto))
   if (dadosBrutos.cu !== undefined && dadosBrutos.cu_dil !== undefined) {
-    resultadosCalculados.cu = dadosBrutos.cu * dadosBrutos.cu_dil
+    const valorCu = dadosBrutos.cu
+    const diluicaoCu = dadosBrutos.cu_dil
+    resultadosCalculados.cu = valorCu < 0.01 ? 0.1 : valorCu * diluicaoCu
   }
   
   // Zn = Zn * Dil
