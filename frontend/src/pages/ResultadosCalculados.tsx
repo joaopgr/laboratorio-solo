@@ -314,10 +314,13 @@ export function ResultadosCalculados() {
           return 0
         }
         
-        // Caso especial para Boro foliar - usar brancoBFoliar
+        // Caso especial para Boro foliar - priorizar brancoB (nome atual no banco), depois brancoBFoliar
         if (tipo === 'B') {
-          if (resultado.brancoBFoliar) {
-            return parseFloat(resultado.brancoBFoliar) || 0
+          if (resultado.brancoB !== null && resultado.brancoB !== undefined && String(resultado.brancoB) !== '') {
+            return parseFloat(String(resultado.brancoB).replace(',', '.')) || 0
+          }
+          if (resultado.brancoBFoliar !== null && resultado.brancoBFoliar !== undefined && String(resultado.brancoBFoliar) !== '') {
+            return parseFloat(String(resultado.brancoBFoliar).replace(',', '.')) || 0
           }
           return 0
         }
@@ -422,8 +425,10 @@ export function ResultadosCalculados() {
           if (resultado.branco && resultado.branco !== 'null' && resultado.branco.trim() !== '') {
             dadosBrutos.b_branco = parseFloat(String(resultado.branco).replace(',', '.')) || 0
           }
-          // Também verificar se há brancoBFoliar no resultado
-          if (resultado.brancoBFoliar !== null && resultado.brancoBFoliar !== undefined) {
+          // Priorizar brancoB (coluna atual), depois brancoBFoliar (compatibilidade)
+          if (resultado.brancoB !== null && resultado.brancoB !== undefined && String(resultado.brancoB) !== '') {
+            dadosBrutos.b_branco = parseFloat(String(resultado.brancoB).replace(',', '.')) || 0
+          } else if (resultado.brancoBFoliar !== null && resultado.brancoBFoliar !== undefined && String(resultado.brancoBFoliar) !== '') {
             dadosBrutos.b_branco = parseFloat(String(resultado.brancoBFoliar).replace(',', '.')) || 0
           }
           if (param_a && param_a !== 'null' && param_a.trim() !== '') {
