@@ -308,17 +308,15 @@ export function Resultados() {
       
       // Para Boro, aceitar tanto dilB (coluna do banco) quanto diluicaoBFoliar (compatibilidade)
       if (tipo === 'B') {
-        if (resultado.dilB !== null && resultado.dilB !== undefined) {
-          return resultado.dilB.toString()
-        }
-        if (resultado.diluicaoBFoliar !== null && resultado.diluicaoBFoliar !== undefined) {
-          return resultado.diluicaoBFoliar.toString()
-        }
+        const hasDilB = resultado.dilB !== null && resultado.dilB !== undefined && resultado.dilB !== ''
+        if (hasDilB) return resultado.dilB.toString()
+        const hasDilBFoliar = resultado.diluicaoBFoliar !== null && resultado.diluicaoBFoliar !== undefined && resultado.diluicaoBFoliar !== ''
+        if (hasDilBFoliar) return resultado.diluicaoBFoliar.toString()
       }
       
-      // Para outros tipos, usar o campo flexível diluicao
-      if (resultado.diluicao) {
-        return resultado.diluicao
+      // Para outros tipos (ou fallback), usar o campo flexível diluicao
+      if (resultado.diluicao !== null && resultado.diluicao !== undefined && resultado.diluicao !== '') {
+        return resultado.diluicao.toString()
       }
     }
     return '-'
