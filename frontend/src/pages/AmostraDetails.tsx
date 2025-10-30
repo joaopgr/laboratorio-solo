@@ -300,6 +300,15 @@ export function AmostraDetails() {
       campos.push(`Branco B: ${resultado.brancoBFoliar}`)
     }
     
+    // Diluição B (para Boro no módulo foliar) - aceita dilB (prioritário) e diluicaoBFoliar
+    if (resultado.tipo === 'B') {
+      if (resultado.dilB !== null && resultado.dilB !== undefined) {
+        campos.push(`Diluição B: ${resultado.dilB}`)
+      } else if (resultado.diluicaoBFoliar !== null && resultado.diluicaoBFoliar !== undefined) {
+        campos.push(`Diluição B: ${resultado.diluicaoBFoliar}`)
+      }
+    }
+    
     // Al, H+Al e Branco (para H+Al)
     if (resultado.tipo === 'H+Al') {
       if (resultado.al !== null && resultado.al !== undefined && resultado.al !== '') {

@@ -433,12 +433,13 @@ export function ResultadosCalculados() {
             dadosBrutos.b_param_b = parseFloat(param_b)
           }
           
-          if (diluicao && diluicao !== 'null' && diluicao.trim() !== '') {
-            dadosBrutos.b_dil = diluicaoNum
-          }
-          // Também verificar se há diluicaoBFoliar no resultado
-          if (resultado.diluicaoBFoliar !== null && resultado.diluicaoBFoliar !== undefined) {
+          // Diluição B: priorizar dilB (coluna do banco), depois diluicaoBFoliar, depois diluicao
+          if (resultado.dilB !== null && resultado.dilB !== undefined && String(resultado.dilB) !== '') {
+            dadosBrutos.b_dil = parseFloat(String(resultado.dilB).replace(',', '.')) || 0
+          } else if (resultado.diluicaoBFoliar !== null && resultado.diluicaoBFoliar !== undefined && String(resultado.diluicaoBFoliar) !== '') {
             dadosBrutos.b_dil = parseFloat(String(resultado.diluicaoBFoliar).replace(',', '.')) || 0
+          } else if (diluicao && diluicao !== 'null' && diluicao.trim() !== '') {
+            dadosBrutos.b_dil = diluicaoNum
           }
           // Mapear massaBFoliar se disponível
           if (resultado.massaBFoliar !== null && resultado.massaBFoliar !== undefined) {
