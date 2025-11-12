@@ -251,3 +251,5 @@ npm run dev
 
 ## Considerações Finais
 Este README serve como roteiro para o TCC: explica o problema, a solução proposta, as decisões técnicas e os próximos passos do projeto. Use-o como base para montar slides, responder perguntas técnicas e demonstrar domínio sobre cada camada do sistema.
+
+
