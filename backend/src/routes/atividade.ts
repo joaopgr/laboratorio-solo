@@ -1,8 +1,11 @@
 import { Router } from 'express';
 import { query } from '../database/connection';
 import { SQL_QUERIES } from '../database/queries';
+import { authenticateToken, authorizeRoles } from './auth';
 
 const router = Router();
+
+router.use(authenticateToken, authorizeRoles('admin', 'analista', 'visualizador'));
 
 // Função helper para mapear nome -> titulo nas respostas
 function mapearAtividadeParaFrontend(atividade: any): any {

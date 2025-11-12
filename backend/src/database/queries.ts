@@ -44,9 +44,12 @@ export const SQL_QUERIES = {
       params: [id]
     }),
 
-    // Buscar cliente por CPF
+    // Buscar cliente por CPF (ignora formatação)
     findByCpf: (cpf: string) => ({
-      query: 'SELECT * FROM clientes WHERE cpf = $1',
+      query: `
+        SELECT * FROM clientes
+        WHERE regexp_replace(cpf, '[^0-9]', '', 'g') = regexp_replace($1, '[^0-9]', '', 'g')
+      `,
       params: [cpf]
     }),
 
@@ -274,12 +277,15 @@ export const SQL_QUERIES = {
           l.codigo,
           l.status,
           l."dataEntrega",
+          l.pago,
+          l.observacoes,
+          l.desconto,
           l.modulo,
           COUNT(a.id) as amostras_count
         FROM lotes_amostras l
         LEFT JOIN amostras a ON l.id = a."loteId"
         WHERE l."clienteId" = $1
-        GROUP BY l.id, l.codigo, l.status, l."dataEntrega", l.modulo
+        GROUP BY l.id, l.codigo, l.status, l."dataEntrega", l.pago, l.observacoes, l.desconto, l.modulo
         ORDER BY l."dataEntrega" DESC
       `,
       params: [clienteId]
@@ -546,6 +552,17 @@ export const SQL_QUERIES = {
     deleteByAmostra: (amostraId: string) => ({
       query: 'DELETE FROM resultados WHERE "amostraId" = $1',
       params: [amostraId]
+    }),
+
+    countByCliente: (clienteId: string) => ({
+      query: `
+        SELECT COUNT(*) as total
+        FROM resultados r
+        JOIN amostras a ON r."amostraId" = a.id
+        JOIN lotes_amostras l ON a."loteId" = l.id
+        WHERE l."clienteId" = $1
+      `,
+      params: [clienteId]
     })
   },
 

@@ -3,8 +3,11 @@ import { z } from 'zod';
 import { query } from '../database/connection';
 import { SQL_QUERIES } from '../database/queries';
 import { verificarAmostraCompleta, determinarStatusAmostra, verificarLoteCompleto } from '../utils/statusUtils';
+import { authenticateToken, authorizeRoles } from './auth';
 
 const router = express.Router();
+
+router.use(authenticateToken, authorizeRoles('admin', 'analista', 'visualizador'));
 
 // Função para converter vírgula em ponto para números
 function normalizeNumber(value: string | undefined): string | undefined {

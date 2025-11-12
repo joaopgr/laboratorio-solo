@@ -1,12 +1,13 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { Usuario } from '../../../shared/types'
+import { AuthenticatedUser, ClienteAuthUser, Usuario } from '../../../shared/types'
 import { api } from '../services/api'
 import toast from 'react-hot-toast'
 
 interface AuthContextType {
-  user: Usuario | null
+  user: AuthenticatedUser | null
   token: string | null
-  login: (email: string, senha: string) => Promise<void>
+  loginFuncionario: (email: string, senha: string) => Promise<void>
+  loginCliente: (cpf: string) => Promise<void>
   logout: () => void
   loading: boolean
 }
@@ -26,7 +27,7 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-  const [user, setUser] = useState<Usuario | null>(null)
+  const [user, setUser] = useState<AuthenticatedUser | null>(null)
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'))
   const [loading, setLoading] = useState(true)
 
@@ -40,7 +41,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
           
           // Buscar dados do usuário autenticado
           const response = await api.get('/auth/me')
-          setUser(response.data)
+          const data = response.data as AuthenticatedUser
+          setUser(data)
         } catch (error) {
           // Token inválido, limpar e forçar login
           localStorage.removeItem('token')
@@ -59,7 +61,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     initAuth()
   }, [])
 
-  const login = async (email: string, senha: string) => {
+  const loginFuncionario = async (email: string, senha: string) => {
     try {
       setLoading(true)
       
@@ -87,6 +89,29 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  const loginCliente = async (cpf: string) => {
+    try {
+      setLoading(true)
+
+      const response = await api.post('/auth/login-cliente', { cpf, senha: cpf })
+      const { token, cliente } = response.data as { token: string; cliente: ClienteAuthUser }
+
+      localStorage.setItem('token', token)
+      setToken(token)
+      setUser(cliente)
+
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+
+      toast.success('Login realizado com sucesso!')
+    } catch (error: any) {
+      const message = error.response?.data?.error || 'Erro ao fazer login'
+      toast.error(message)
+      throw error
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const logout = () => {
     localStorage.removeItem('token')
     setToken(null)
@@ -98,7 +123,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const value = {
     user,
     token,
-    login,
+    loginFuncionario,
+    loginCliente,
     logout,
     loading
   }

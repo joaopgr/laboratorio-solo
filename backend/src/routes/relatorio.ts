@@ -2,8 +2,11 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { query } from '../database/connection';
 import { SQL_QUERIES } from '../database/queries';
+import { authenticateToken, authorizeRoles } from './auth';
 
 const router = Router();
+
+router.use(authenticateToken, authorizeRoles('admin', 'analista', 'visualizador'));
 
 // Schema para filtros de relatório
 const relatorioFiltersSchema = z.object({

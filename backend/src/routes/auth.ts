@@ -20,6 +20,21 @@ const registerSchema = z.object({
   role: z.enum(['admin', 'analista', 'visualizador']).default('analista'),
 });
 
+const clientLoginSchema = z.object({
+  cpf: z.string().min(11, 'CPF é obrigatório'),
+  senha: z.string().min(11, 'Senha é obrigatória'),
+});
+
+export const authorizeRoles = (...roles: string[]) => {
+  return (req: any, res: any, next: any) => {
+    const role = req.user?.role;
+    if (!role || !roles.includes(role)) {
+      return res.status(403).json({ error: 'Acesso não autorizado' });
+    }
+    next();
+  };
+};
+
 // Middleware de autenticação
 export const authenticateToken = (req: any, res: any, next: any) => {
   const authHeader = req.headers['authorization'];
@@ -62,7 +77,8 @@ router.post('/login', async (req, res): Promise<any> => {
       { 
         id: usuario.id, 
         email: usuario.email, 
-        role: usuario.role 
+        role: usuario.role,
+        tipo: 'funcionario'
       },
       process.env.JWT_SECRET!,
       { expiresIn: '24h' }
@@ -74,7 +90,8 @@ router.post('/login', async (req, res): Promise<any> => {
         id: usuario.id,
         nome: usuario.nome,
         email: usuario.email,
-        role: usuario.role
+        role: usuario.role,
+        tipo: 'funcionario'
       }
     });
   } catch (error) {
@@ -86,6 +103,67 @@ router.post('/login', async (req, res): Promise<any> => {
     }
     
     console.error('Erro no login:', error);
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// POST /api/auth/login-cliente - Login para clientes via CPF
+router.post('/login-cliente', async (req, res): Promise<any> => {
+  try {
+    const { cpf, senha } = clientLoginSchema.parse(req.body);
+    const cpfDigits = cpf.replace(/\D/g, '');
+    const senhaDigits = senha.replace(/\D/g, '');
+
+    if (!cpfDigits || cpfDigits.length !== 11) {
+      return res.status(400).json({ error: 'CPF inválido' });
+    }
+
+    if (!senhaDigits || senhaDigits.length !== 11) {
+      return res.status(400).json({ error: 'Senha inválida' });
+    }
+
+    if (cpfDigits !== senhaDigits) {
+      return res.status(401).json({ error: 'CPF e senha não conferem' });
+    }
+
+    const { query: clienteQuery, params: clienteParams } = SQL_QUERIES.clientes.findByCpf(cpfDigits);
+    const clienteResult = await query(clienteQuery, clienteParams);
+    const cliente = clienteResult.rows[0];
+
+    if (!cliente) {
+      return res.status(401).json({ error: 'CPF não encontrado' });
+    }
+
+    const token = jwt.sign(
+      {
+        clienteId: cliente.id,
+        role: 'cliente',
+        tipo: 'cliente'
+      },
+      process.env.JWT_SECRET!,
+      { expiresIn: '24h' }
+    );
+
+    res.json({
+      token,
+      cliente: {
+        id: cliente.id,
+        nome: cliente.nome,
+        cpf: cliente.cpf,
+        email: cliente.email,
+        role: 'cliente',
+        tipo: 'cliente'
+      }
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return res.status(400).json({
+        error: 'Dados inválidos',
+        details: error.errors
+      });
+    }
+
+    console.error('Erro no login de cliente:', error);
     return res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
@@ -129,6 +207,32 @@ router.post('/register', async (req, res): Promise<any> => {
 // GET /api/auth/me - Obter dados do usuário logado
 router.get('/me', authenticateToken, async (req: any, res): Promise<any> => {
   try {
+    const role = req.user?.role;
+
+    if (role === 'cliente') {
+      const clienteId = req.user?.clienteId;
+      if (!clienteId) {
+        return res.status(400).json({ error: 'Token inválido para cliente' });
+      }
+
+      const { query: clienteQuery, params: clienteParams } = SQL_QUERIES.clientes.findById(clienteId);
+      const clienteResult = await query(clienteQuery, clienteParams);
+      const cliente = clienteResult.rows[0];
+
+      if (!cliente) {
+        return res.status(404).json({ error: 'Cliente não encontrado' });
+      }
+
+      return res.json({
+        id: cliente.id,
+        nome: cliente.nome,
+        cpf: cliente.cpf,
+        email: cliente.email,
+        role: 'cliente',
+        tipo: 'cliente'
+      });
+    }
+
     const { query: userQuery, params } = SQL_QUERIES.usuarios.findById(req.user.id);
     const result = await query(userQuery, params);
     const usuario = result.rows[0];
@@ -137,7 +241,13 @@ router.get('/me', authenticateToken, async (req: any, res): Promise<any> => {
       return res.status(404).json({ error: 'Usuário não encontrado' });
     }
 
-    res.json(usuario);
+    return res.json({
+      id: usuario.id,
+      nome: usuario.nome,
+      email: usuario.email,
+      role: usuario.role,
+      tipo: 'funcionario'
+    });
   } catch (error) {
     console.error('Erro ao buscar usuário:', error);
     return res.status(500).json({ error: 'Erro interno do servidor' });
@@ -150,7 +260,7 @@ router.post('/logout', (req, res): any => {
 });
 
 // GET /api/auth/users - Listar todos os usuários (apenas para listagem de logs)
-router.get('/users', authenticateToken, async (req, res): Promise<any> => {
+router.get('/users', authenticateToken, authorizeRoles('admin', 'analista', 'visualizador'), async (req, res): Promise<any> => {
   try {
     const { query: usersQuery, params } = SQL_QUERIES.usuarios.findAll();
     const result = await query(usersQuery, params);

@@ -4,10 +4,12 @@ import { query } from '../database/connection'
 import { SQL_QUERIES } from '../database/queries'
 import * as path from 'path'
 import * as fs from 'fs'
+import { authenticateToken, authorizeRoles } from './auth'
 // PDF será gerado no frontend
 import { getUfesLogoBase64, getLabLogoBase64, getSeloBase64, getAssinaturaBase64 } from '../utils/imageUtils'
 
 const router = Router()
+router.use(authenticateToken, authorizeRoles('admin', 'analista', 'visualizador', 'cliente'))
 const pastaLaudos = 'C:\\xampp\\htdocs\\lab\\laudos'
 
 // Função auxiliar para formatar valores (trata 0 como valor válido)

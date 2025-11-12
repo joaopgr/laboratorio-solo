@@ -3,12 +3,12 @@ import { z } from 'zod';
 import { query } from '../database/connection';
 import { SQL_QUERIES } from '../database/queries';
 import { registrarLog } from '../utils/logging';
-import { authenticateToken } from './auth';
+import { authenticateToken, authorizeRoles } from './auth';
 
 const router = Router();
 
 // Aplicar autenticação em todas as rotas
-router.use(authenticateToken);
+router.use(authenticateToken, authorizeRoles('admin', 'analista', 'visualizador'));
 
 // Função para gerar variações de busca para cobrir acentos
 function generateSearchVariations(term: string): string[] {

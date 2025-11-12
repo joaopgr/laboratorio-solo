@@ -30,6 +30,9 @@ export const getAnaliseValues = (tipoAnalise: TipoAnalise) => {
 // Manter compatibilidade com código existente
 export const ANALISE_VALUES = ANALISE_VALUES_SOLO;
 
+export type UsuarioRole = 'admin' | 'analista' | 'visualizador';
+export type AuthRole = UsuarioRole | 'cliente';
+
 // Tipos de análise disponíveis
 export type TipoAnalise = 'solo' | 'foliar';
 export type CategoriaResultado = 'solo' | 'foliar';
@@ -198,20 +201,40 @@ export interface Resultado {
   volumeTitR1?: number;
   volumeTitR2?: number;
   volumeTitR3?: number;
+
+  origem?: 'bruto' | 'calculado';
 }
 
 export interface Usuario {
   id: string;
   nome: string;
   email: string;
-  role: 'admin' | 'analista' | 'visualizador';
+  role: UsuarioRole;
   ativo: boolean;
   createdAt: string;
 }
 
+export interface ClienteAuthUser {
+  id: string;
+  nome: string;
+  cpf: string;
+  email?: string;
+  role: 'cliente';
+  tipo: 'cliente';
+}
+
+export type AuthenticatedUser =
+  | (Usuario & { tipo: 'funcionario' })
+  | ClienteAuthUser;
+
 export interface AuthResponse {
   token: string;
-  usuario: Usuario;
+  usuario: Usuario & { tipo: 'funcionario' };
+}
+
+export interface ClienteAuthResponse {
+  token: string;
+  cliente: ClienteAuthUser;
 }
 
 export interface PaginationMeta {

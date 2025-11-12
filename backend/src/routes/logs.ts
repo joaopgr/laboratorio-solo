@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { query } from '../database/connection';
 import { SQL_QUERIES } from '../database/queries';
-import { authenticateToken } from './auth';
+import { authenticateToken, authorizeRoles } from './auth';
 
 const router = Router();
 
@@ -18,7 +18,7 @@ const logsFiltersSchema = z.object({
 });
 
 // GET /api/logs - Listar logs
-router.get('/', authenticateToken, async (req, res): Promise<any> => {
+router.get('/', authenticateToken, authorizeRoles('admin', 'analista'), async (req, res): Promise<any> => {
   try {
     const filters = logsFiltersSchema.parse(req.query);
     

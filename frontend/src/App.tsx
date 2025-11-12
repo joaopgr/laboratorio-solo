@@ -18,6 +18,7 @@ import { Relatorios } from './pages/Relatorios'
 import { LancamentoResultados } from './pages/LancamentoResultados'
 import Atividades from './pages/Atividades'
 import { Logs } from './pages/Logs'
+import { ClientePortal } from './pages/ClientePortal'
 
 function App() {
   return (
@@ -25,8 +26,16 @@ function App() {
       <ModuleProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route
+            path="/cliente"
+            element={
+              <ProtectedRoute allowedRoles={['cliente']} redirectTo="/login">
+                <ClientePortal />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/" element={
-            <ProtectedRoute>
+            <ProtectedRoute allowedRoles={['admin', 'analista', 'visualizador']} redirectTo="/cliente">
               <Layout />
             </ProtectedRoute>
           }>
