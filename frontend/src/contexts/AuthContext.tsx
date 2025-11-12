@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { AuthenticatedUser, ClienteAuthUser, Usuario } from '../../../shared/types'
+import { AuthenticatedUser, ClienteAuthUser } from '../../../shared/types'
 import { api } from '../services/api'
 import toast from 'react-hot-toast'
 

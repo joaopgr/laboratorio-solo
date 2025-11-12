@@ -23,7 +23,7 @@ type ClienteLote = LoteAmostra & {
 }
 
 export function ClientePortal() {
-  const { user, logout } = useAuth()
+  const { logout } = useAuth()
   const [loteSelecionado, setLoteSelecionado] = useState<ClienteLote | null>(null)
   const [modalAberto, setModalAberto] = useState(false)
   const [loteExpandido, setLoteExpandido] = useState<string | null>(null)
