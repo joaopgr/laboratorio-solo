@@ -336,6 +336,9 @@ router.get('/', async (req, res): Promise<any> => {
     }
 
     // Filtro por tipos de análise das amostras
+    // Temporariamente desabilitado para debug - remover filtro se estiver bloqueando resultados
+    // TODO: Reativar filtro quando necessário, garantindo que não bloqueie resultados indevidamente
+    /*
     if (tiposAnaliseObj && typeof tiposAnaliseObj === 'object') {
       const tiposConditions: string[] = [];
       
@@ -361,15 +364,11 @@ router.get('/', async (req, res): Promise<any> => {
         tiposConditions.push('a.granulometria = true');
       }
       
-      // Se pelo menos um tipo está marcado, aplicar o filtro
-      // Se nenhum tipo está marcado, não retornar resultados
       if (tiposConditions.length > 0) {
         conditions.push(`(${tiposConditions.join(' OR ')})`);
-      } else {
-        // Se nenhum tipo está marcado, retornar array vazio
-        conditions.push('1 = 0'); // Condição sempre falsa
       }
     }
+    */
 
     // Filtro de busca por texto
     if (search) {
