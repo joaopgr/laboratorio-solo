@@ -257,9 +257,6 @@ const updateResultadoSchema = resultadoBaseSchema.partial().omit({ amostraId: tr
 // GET /api/resultados - Listar resultados
 router.get('/', async (req, res): Promise<any> => {
   try {
-    console.log('🔍 [DEBUG] GET /api/resultados - Iniciando busca de resultados');
-    console.log('🔍 [DEBUG] Query params recebidos:', JSON.stringify(req.query, null, 2));
-    
     const { 
       page = 1, 
       limit = 50, 
@@ -276,26 +273,13 @@ router.get('/', async (req, res): Promise<any> => {
     const limitNum = Number(limit);
     const offset = (pageNum - 1) * limitNum;
     
-    console.log('🔍 [DEBUG] Parâmetros processados:', {
-      page: pageNum,
-      limit: limitNum,
-      offset,
-      amostraId,
-      tipo,
-      categoria,
-      search,
-      codigoInicio,
-      codigoFim
-    });
-    
     // Parsear tiposAnalise se fornecido
     let tiposAnaliseObj: any = null;
     if (tiposAnalise) {
       try {
         tiposAnaliseObj = typeof tiposAnalise === 'string' ? JSON.parse(tiposAnalise) : tiposAnalise;
-        console.log('🔍 [DEBUG] tiposAnalise parseado:', JSON.stringify(tiposAnaliseObj, null, 2));
       } catch (e) {
-        console.error('❌ [DEBUG] Erro ao parsear tiposAnalise:', e);
+        // Ignorar erro de parsing
       }
     }
     
@@ -345,42 +329,13 @@ router.get('/', async (req, res): Promise<any> => {
       params.push(tipo);
     }
 
-    // Verificar se há resultados com a categoria solicitada antes de aplicar o filtro
     if (categoria) {
-      // Primeiro, verificar quantos resultados existem com essa categoria
-      const checkQuery = `
-        SELECT COUNT(*) as total 
-        FROM resultados r
-        WHERE r.categoria = $1
-      `;
-      const checkResult = await query(checkQuery, [categoria]);
-      const totalComCategoria = parseInt(checkResult.rows[0].total);
-      
-      console.log('🔍 [DEBUG] Total de resultados com categoria', categoria, ':', totalComCategoria);
-      
-      // Se não houver resultados com a categoria solicitada, verificar se há resultados sem categoria ou com outra categoria
-      if (totalComCategoria === 0) {
-        const checkAllQuery = `SELECT COUNT(*) as total, categoria FROM resultados GROUP BY categoria`;
-        const checkAllResult = await query(checkAllQuery, []);
-        console.log('🔍 [DEBUG] Distribuição de categorias no banco:', checkAllResult.rows);
-        
-        // Se não houver resultados com a categoria solicitada, retornar vazio
-        // Mas vamos aplicar o filtro mesmo assim para manter a consistência
-        console.warn('⚠️ [DEBUG] Nenhum resultado encontrado com categoria', categoria);
-      }
-      
       paramCount++;
       conditions.push(`r.categoria = $${paramCount}`);
       params.push(categoria);
-      console.log('🔍 [DEBUG] Filtro de categoria aplicado:', categoria);
-    } else {
-      console.log('🔍 [DEBUG] Nenhum filtro de categoria - retornando todos');
     }
 
     // Filtro por tipos de análise das amostras
-    // Temporariamente desabilitado para debug - remover filtro se estiver bloqueando resultados
-    // TODO: Reativar filtro quando necessário, garantindo que não bloqueie resultados indevidamente
-    /*
     if (tiposAnaliseObj && typeof tiposAnaliseObj === 'object') {
       const tiposConditions: string[] = [];
       
@@ -410,7 +365,6 @@ router.get('/', async (req, res): Promise<any> => {
         conditions.push(`(${tiposConditions.join(' OR ')})`);
       }
     }
-    */
 
     // Filtro de busca por texto
     if (search) {
@@ -430,19 +384,13 @@ router.get('/', async (req, res): Promise<any> => {
       baseQuery += ` WHERE ${conditions.join(' AND ')}`;
     }
 
-    console.log('🔍 [DEBUG] Condições aplicadas:', conditions);
-    console.log('🔍 [DEBUG] Parâmetros SQL:', params);
-
     // Ordenação
     baseQuery += ` ORDER BY r."createdAt" DESC`;
 
     // Buscar total para paginação
     const countQuery = baseQuery.replace(/SELECT[\s\S]*?FROM/, 'SELECT COUNT(*) as total FROM').replace(/ORDER BY[\s\S]*$/, '');
-    console.log('🔍 [DEBUG] Query COUNT:', countQuery);
-    
     const countResult = await query(countQuery, params);
     let total = parseInt(countResult.rows[0].total);
-    console.log('🔍 [DEBUG] Total de resultados encontrados:', total);
 
     // Aplicar paginação
     paramCount++;
@@ -454,21 +402,11 @@ router.get('/', async (req, res): Promise<any> => {
     params.push(offset);
 
     // Executar query principal
-    console.log('🔍 [DEBUG] Query principal:', baseQuery);
-    console.log('🔍 [DEBUG] Parâmetros finais:', params);
-    
     const resultadosResult = await query(baseQuery, params);
     let resultados = resultadosResult.rows;
-    
-    console.log('🔍 [DEBUG] Resultados retornados do banco:', resultados.length);
-    if (resultados.length > 0) {
-      console.log('🔍 [DEBUG] Primeiro resultado exemplo:', JSON.stringify(resultados[0], null, 2));
-    }
 
     // Filtro por intervalo de códigos (aplicado após a busca)
     if (codigoInicio && codigoFim) {
-      console.log('🔍 [DEBUG] Aplicando filtro de intervalo de códigos:', { codigoInicio, codigoFim });
-      const antesFiltro = resultados.length;
       resultados = resultados.filter((resultado: any) => {
         const codigo = resultado.amostra_codigo || '';
         const codigoNum = parseInt(codigo.replace(/\D/g, ''));
@@ -482,12 +420,11 @@ router.get('/', async (req, res): Promise<any> => {
         return codigoNum >= inicioNum && codigoNum <= fimNum;
       });
       
-      console.log('🔍 [DEBUG] Resultados após filtro de código:', { antes: antesFiltro, depois: resultados.length });
       // Recalcular total após filtro de código
       total = resultados.length;
     }
 
-    const responseData = {
+    res.json({
       resultados: resultados,
       pagination: {
         page: pageNum,
@@ -495,18 +432,9 @@ router.get('/', async (req, res): Promise<any> => {
         total,
         pages: Math.ceil(total / limitNum)
       }
-    };
-    
-    console.log('🔍 [DEBUG] Resposta final:', {
-      totalResultados: resultados.length,
-      total: total,
-      pagination: responseData.pagination
     });
-
-    res.json(responseData);
   } catch (error) {
-    console.error('❌ [DEBUG] Erro ao buscar resultados:', error);
-    console.error('❌ [DEBUG] Stack trace:', error instanceof Error ? error.stack : 'N/A');
+    console.error('Erro ao buscar resultados:', error);
     return res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });

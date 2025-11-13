@@ -10,10 +10,6 @@ export function useResultados(filters: ResultadoFilters = {}) {
   return useQuery({
     queryKey: ['resultados', filters, modulo],
     queryFn: async () => {
-      console.log('🔍 [FRONTEND DEBUG] useResultados - Iniciando busca')
-      console.log('🔍 [FRONTEND DEBUG] Filters recebidos:', JSON.stringify(filters, null, 2))
-      console.log('🔍 [FRONTEND DEBUG] Módulo:', modulo)
-      
       // Filtrar tipos não aplicáveis ao foliar antes de serializar
       const tiposAnaliseFiltrados = { ...(filters.tiposAnalise || {}) }
       
@@ -31,38 +27,13 @@ export function useResultados(filters: ResultadoFilters = {}) {
         categoria: modulo
       }
       
-      console.log('🔍 [FRONTEND DEBUG] Parâmetros que serão enviados:', JSON.stringify(params, null, 2))
-      console.log('🔍 [FRONTEND DEBUG] URL da requisição:', '/resultados')
+      const response = await api.get<{ resultados: Resultado[], pagination: any }>('/resultados', {
+        params
+      })
       
-      try {
-        const response = await api.get<{ resultados: Resultado[], pagination: any }>('/resultados', {
-          params
-        })
-        
-        console.log('🔍 [FRONTEND DEBUG] Resposta recebida:', {
-          status: response.status,
-          totalResultados: response.data.resultados?.length || 0,
-          pagination: response.data.pagination,
-          primeiroResultado: response.data.resultados?.[0] || null,
-          respostaCompleta: response.data
-        })
-        
-        if (response.data.resultados && response.data.resultados.length > 0) {
-          console.log('🔍 [FRONTEND DEBUG] Exemplo de resultado:', JSON.stringify(response.data.resultados[0], null, 2))
-        } else {
-          console.warn('⚠️ [FRONTEND DEBUG] Nenhum resultado retornado!')
-          console.warn('⚠️ [FRONTEND DEBUG] Resposta completa da API:', JSON.stringify(response.data, null, 2))
-        }
-        
-        return {
-          resultados: response.data.resultados,
-          pagination: response.data.pagination
-        }
-      } catch (error: any) {
-        console.error('❌ [FRONTEND DEBUG] Erro na requisição:', error)
-        console.error('❌ [FRONTEND DEBUG] Erro response:', error.response?.data)
-        console.error('❌ [FRONTEND DEBUG] Erro status:', error.response?.status)
-        throw error
+      return {
+        resultados: response.data.resultados,
+        pagination: response.data.pagination
       }
     },
     refetchOnWindowFocus: false,
@@ -108,12 +79,6 @@ export function useCreateResultado() {
 
   return useMutation({
     mutationFn: async (data: CreateResultadoData) => {
-      // Log dos dados antes de enviar (remover depois)
-      console.log('📤 Dados enviados para criar resultado:', JSON.stringify({
-        ...data,
-        categoria: modulo
-      }, null, 2))
-      
       const response = await api.post<Resultado>('/resultados', {
         ...data,
         categoria: modulo
@@ -127,13 +92,8 @@ export function useCreateResultado() {
       queryClient.invalidateQueries({ queryKey: ['resultados', 'amostra', data.amostraId] })
     },
     onError: (error: any) => {
-      console.error('🔍 Debug: Erro completo no useCreateResultado:', error)
-      console.error('🔍 Debug: Response data:', error.response?.data)
-      console.error('🔍 Debug: Response status:', error.response?.status)
-      
       // Mostrar detalhes dos erros de validação
       if (error.response?.data?.details) {
-        console.error('🔍 Debug: Detalhes dos erros de validação:', error.response.data.details)
         const errosDetalhados = error.response.data.details.map((e: any) => 
           `${e.path || 'campo'}: ${e.message}`
         ).join(', ')
