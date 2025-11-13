@@ -262,12 +262,26 @@ router.get('/', async (req, res): Promise<any> => {
       limit = 50, 
       amostraId,
       tipo,
-      categoria
+      categoria,
+      tiposAnalise,
+      search,
+      codigoInicio,
+      codigoFim
     } = req.query;
     
     const pageNum = Number(page);
     const limitNum = Number(limit);
     const offset = (pageNum - 1) * limitNum;
+    
+    // Parsear tiposAnalise se fornecido
+    let tiposAnaliseObj: any = null;
+    if (tiposAnalise) {
+      try {
+        tiposAnaliseObj = typeof tiposAnalise === 'string' ? JSON.parse(tiposAnalise) : tiposAnalise;
+      } catch (e) {
+        console.error('Erro ao parsear tiposAnalise:', e);
+      }
+    }
     
     // Construir query base
     let baseQuery = `
@@ -275,6 +289,13 @@ router.get('/', async (req, res): Promise<any> => {
              a.codigo as amostra_codigo, 
              a.identificacao as amostra_identificacao, 
              a.cultura as amostra_cultura,
+             a.rotina as amostra_rotina,
+             a.organica as amostra_organica,
+             a.micronutrientes as amostra_micronutrientes,
+             a.enxofre as amostra_enxofre,
+             a.prem as amostra_prem,
+             a.nitrogenio as amostra_nitrogenio,
+             a.granulometria as amostra_granulometria,
              c.nome as cliente_nome,
              c.cpf as cliente_cpf
       FROM resultados r
@@ -314,6 +335,55 @@ router.get('/', async (req, res): Promise<any> => {
       params.push(categoria);
     }
 
+    // Filtro por tipos de análise das amostras
+    if (tiposAnaliseObj && typeof tiposAnaliseObj === 'object') {
+      const tiposConditions: string[] = [];
+      
+      if (tiposAnaliseObj.rotina === true) {
+        tiposConditions.push('a.rotina = true');
+      }
+      if (tiposAnaliseObj.organica === true) {
+        tiposConditions.push('a.organica = true');
+      }
+      if (tiposAnaliseObj.micronutrientes === true) {
+        tiposConditions.push('a.micronutrientes = true');
+      }
+      if (tiposAnaliseObj.enxofre === true) {
+        tiposConditions.push('a.enxofre = true');
+      }
+      if (tiposAnaliseObj.prem === true) {
+        tiposConditions.push('a.prem = true');
+      }
+      if (tiposAnaliseObj.nitrogenio === true) {
+        tiposConditions.push('a.nitrogenio = true');
+      }
+      if (tiposAnaliseObj.granulometria === true) {
+        tiposConditions.push('a.granulometria = true');
+      }
+      
+      // Se pelo menos um tipo está marcado, aplicar o filtro
+      // Se nenhum tipo está marcado, não retornar resultados
+      if (tiposConditions.length > 0) {
+        conditions.push(`(${tiposConditions.join(' OR ')})`);
+      } else {
+        // Se nenhum tipo está marcado, retornar array vazio
+        conditions.push('1 = 0'); // Condição sempre falsa
+      }
+    }
+
+    // Filtro de busca por texto
+    if (search) {
+      paramCount++;
+      const searchTerm = String(search);
+      conditions.push(`(
+        a.codigo ILIKE $${paramCount} OR 
+        a.identificacao ILIKE $${paramCount} OR 
+        a.cultura ILIKE $${paramCount} OR
+        c.nome ILIKE $${paramCount}
+      )`);
+      params.push(`%${searchTerm}%`);
+    }
+
     // Adicionar condições à query
     if (conditions.length > 0) {
       baseQuery += ` WHERE ${conditions.join(' AND ')}`;
@@ -325,7 +395,7 @@ router.get('/', async (req, res): Promise<any> => {
     // Buscar total para paginação
     const countQuery = baseQuery.replace(/SELECT[\s\S]*?FROM/, 'SELECT COUNT(*) as total FROM').replace(/ORDER BY[\s\S]*$/, '');
     const countResult = await query(countQuery, params);
-    const total = parseInt(countResult.rows[0].total);
+    let total = parseInt(countResult.rows[0].total);
 
     // Aplicar paginação
     paramCount++;
@@ -338,7 +408,26 @@ router.get('/', async (req, res): Promise<any> => {
 
     // Executar query principal
     const resultadosResult = await query(baseQuery, params);
-    const resultados = resultadosResult.rows;
+    let resultados = resultadosResult.rows;
+
+    // Filtro por intervalo de códigos (aplicado após a busca)
+    if (codigoInicio && codigoFim) {
+      resultados = resultados.filter((resultado: any) => {
+        const codigo = resultado.amostra_codigo || '';
+        const codigoNum = parseInt(codigo.replace(/\D/g, ''));
+        const inicioNum = parseInt(String(codigoInicio).replace(/\D/g, ''));
+        const fimNum = parseInt(String(codigoFim).replace(/\D/g, ''));
+        
+        if (isNaN(codigoNum) || isNaN(inicioNum) || isNaN(fimNum)) {
+          return false;
+        }
+        
+        return codigoNum >= inicioNum && codigoNum <= fimNum;
+      });
+      
+      // Recalcular total após filtro de código
+      total = resultados.length;
+    }
 
     res.json({
       resultados: resultados,
