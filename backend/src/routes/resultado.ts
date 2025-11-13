@@ -257,6 +257,9 @@ const updateResultadoSchema = resultadoBaseSchema.partial().omit({ amostraId: tr
 // GET /api/resultados - Listar resultados
 router.get('/', async (req, res): Promise<any> => {
   try {
+    console.log('🔍 [DEBUG] GET /api/resultados - Iniciando busca de resultados');
+    console.log('🔍 [DEBUG] Query params recebidos:', JSON.stringify(req.query, null, 2));
+    
     const { 
       page = 1, 
       limit = 50, 
@@ -273,13 +276,26 @@ router.get('/', async (req, res): Promise<any> => {
     const limitNum = Number(limit);
     const offset = (pageNum - 1) * limitNum;
     
+    console.log('🔍 [DEBUG] Parâmetros processados:', {
+      page: pageNum,
+      limit: limitNum,
+      offset,
+      amostraId,
+      tipo,
+      categoria,
+      search,
+      codigoInicio,
+      codigoFim
+    });
+    
     // Parsear tiposAnalise se fornecido
     let tiposAnaliseObj: any = null;
     if (tiposAnalise) {
       try {
         tiposAnaliseObj = typeof tiposAnalise === 'string' ? JSON.parse(tiposAnalise) : tiposAnalise;
+        console.log('🔍 [DEBUG] tiposAnalise parseado:', JSON.stringify(tiposAnaliseObj, null, 2));
       } catch (e) {
-        console.error('Erro ao parsear tiposAnalise:', e);
+        console.error('❌ [DEBUG] Erro ao parsear tiposAnalise:', e);
       }
     }
     
@@ -388,13 +404,19 @@ router.get('/', async (req, res): Promise<any> => {
       baseQuery += ` WHERE ${conditions.join(' AND ')}`;
     }
 
+    console.log('🔍 [DEBUG] Condições aplicadas:', conditions);
+    console.log('🔍 [DEBUG] Parâmetros SQL:', params);
+
     // Ordenação
     baseQuery += ` ORDER BY r."createdAt" DESC`;
 
     // Buscar total para paginação
     const countQuery = baseQuery.replace(/SELECT[\s\S]*?FROM/, 'SELECT COUNT(*) as total FROM').replace(/ORDER BY[\s\S]*$/, '');
+    console.log('🔍 [DEBUG] Query COUNT:', countQuery);
+    
     const countResult = await query(countQuery, params);
     let total = parseInt(countResult.rows[0].total);
+    console.log('🔍 [DEBUG] Total de resultados encontrados:', total);
 
     // Aplicar paginação
     paramCount++;
@@ -406,11 +428,21 @@ router.get('/', async (req, res): Promise<any> => {
     params.push(offset);
 
     // Executar query principal
+    console.log('🔍 [DEBUG] Query principal:', baseQuery);
+    console.log('🔍 [DEBUG] Parâmetros finais:', params);
+    
     const resultadosResult = await query(baseQuery, params);
     let resultados = resultadosResult.rows;
+    
+    console.log('🔍 [DEBUG] Resultados retornados do banco:', resultados.length);
+    if (resultados.length > 0) {
+      console.log('🔍 [DEBUG] Primeiro resultado exemplo:', JSON.stringify(resultados[0], null, 2));
+    }
 
     // Filtro por intervalo de códigos (aplicado após a busca)
     if (codigoInicio && codigoFim) {
+      console.log('🔍 [DEBUG] Aplicando filtro de intervalo de códigos:', { codigoInicio, codigoFim });
+      const antesFiltro = resultados.length;
       resultados = resultados.filter((resultado: any) => {
         const codigo = resultado.amostra_codigo || '';
         const codigoNum = parseInt(codigo.replace(/\D/g, ''));
@@ -424,11 +456,12 @@ router.get('/', async (req, res): Promise<any> => {
         return codigoNum >= inicioNum && codigoNum <= fimNum;
       });
       
+      console.log('🔍 [DEBUG] Resultados após filtro de código:', { antes: antesFiltro, depois: resultados.length });
       // Recalcular total após filtro de código
       total = resultados.length;
     }
 
-    res.json({
+    const responseData = {
       resultados: resultados,
       pagination: {
         page: pageNum,
@@ -436,9 +469,18 @@ router.get('/', async (req, res): Promise<any> => {
         total,
         pages: Math.ceil(total / limitNum)
       }
+    };
+    
+    console.log('🔍 [DEBUG] Resposta final:', {
+      totalResultados: resultados.length,
+      total: total,
+      pagination: responseData.pagination
     });
+
+    res.json(responseData);
   } catch (error) {
-    console.error('Erro ao buscar resultados:', error);
+    console.error('❌ [DEBUG] Erro ao buscar resultados:', error);
+    console.error('❌ [DEBUG] Stack trace:', error instanceof Error ? error.stack : 'N/A');
     return res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
