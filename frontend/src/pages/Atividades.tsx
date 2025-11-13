@@ -199,10 +199,26 @@ export default function Atividades() {
             const PrioridadeIcon = PRIORIDADE_ICONS[atividade.prioridade as keyof typeof PRIORIDADE_ICONS];
             const isOverdueActivity = isOverdue(atividade.prazo) && atividade.status !== 'concluida';
 
+            // Definir cor da borda baseada no status
+            const getStatusBorderColor = (status: string) => {
+              switch (status) {
+                case 'concluida':
+                  return 'border-l-4 border-green-500';
+                case 'em_andamento':
+                  return 'border-l-4 border-blue-500';
+                case 'pendente':
+                  return 'border-l-4 border-yellow-500';
+                case 'cancelada':
+                  return 'border-l-4 border-gray-400';
+                default:
+                  return 'border-l-4 border-yellow-500';
+              }
+            };
+
             return (
               <div
                 key={atividade.id}
-                className={`bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow ${
+                className={`bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow ${getStatusBorderColor(atividade.status || 'pendente')} ${
                   isOverdueActivity ? 'border-red-300 bg-red-50' : ''
                 }`}
               >

@@ -86,7 +86,7 @@ function useLogs(page: number = 1, filters: any = {}) {
   return useQuery<LogsResponse>({
     queryKey: ['logs', page, filters],
     queryFn: async () => {
-      const params: any = { page: page.toString(), limit: '50' }
+      const params: any = { page: page.toString(), limit: '10' }
       // Só enviar filtros se não estiverem vazios
       if (filters.usuarioId && filters.usuarioId.trim() !== '') params.usuarioId = filters.usuarioId
       if (filters.acao && filters.acao.trim() !== '') params.acao = filters.acao
