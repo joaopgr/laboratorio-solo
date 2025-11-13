@@ -265,7 +265,7 @@ export function LoteDetails() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Informações Básicas */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="card">
+          <div className="card border-emerald-300">
             <div className="card-header">
               <h2 className="text-xl font-semibold text-gray-900">Informações do Lote</h2>
             </div>
@@ -362,7 +362,7 @@ export function LoteDetails() {
           </div>
 
           {/* Informações Globais */}
-          <div className="card">
+          <div className="card border-emerald-300">
             <div className="card-header">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">Informações Globais</h2>
@@ -443,7 +443,7 @@ export function LoteDetails() {
           </div>
 
           {/* Tipos de Análise */}
-          <div className="card">
+          <div className="card border-emerald-300">
             <div className="card-header">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold text-gray-900">Tipos de Análise</h2>
@@ -538,7 +538,7 @@ export function LoteDetails() {
 
         {/* Informações do Cliente */}
         <div className="space-y-6">
-          <div className="card">
+          <div className="card border-emerald-300">
             <div className="card-header">
               <h2 className="text-xl font-semibold text-gray-900">Cliente</h2>
             </div>
@@ -581,7 +581,7 @@ export function LoteDetails() {
           </div>
 
           {/* Estatísticas */}
-          <div className="card">
+          <div className="card border-emerald-300">
             <div className="card-header">
               <h2 className="text-xl font-semibold text-gray-900">Estatísticas</h2>
             </div>
@@ -614,7 +614,7 @@ export function LoteDetails() {
           </div>
 
           {/* Valor do Lote */}
-          <div className="card">
+          <div className="card border-emerald-300">
             <div className="card-header">
               <h2 className="text-xl font-semibold text-gray-900">Valor do Lote</h2>
             </div>
@@ -774,7 +774,7 @@ export function LoteDetails() {
 
       {/* Se não há amostras, mostrar card com opção de adicionar */}
       {(!lote.amostras || lote.amostras.length === 0) && (
-        <div className="card">
+        <div className="card border-emerald-300">
           <div className="card-content text-center py-12">
             <Package className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">Nenhuma amostra encontrada</h3>

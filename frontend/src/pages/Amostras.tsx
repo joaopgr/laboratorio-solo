@@ -113,7 +113,7 @@ export function Amostras() {
       </div>
 
       {/* Filtros */}
-      <div className="card">
+      <div className="card border-emerald-300">
         <div className="card-content">
           <div className="flex gap-4">
             <div className="flex-1">
@@ -124,7 +124,7 @@ export function Amostras() {
                   placeholder="Buscar amostras..."
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  className="input pl-10 w-full"
+                  className="input pl-10 w-full border-emerald-300"
                 />
               </div>
             </div>

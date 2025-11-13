@@ -389,7 +389,7 @@ export function AmostraDetails() {
       <div className="space-y-6">
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 rounded w-1/4 mb-4"></div>
-          <div className="card">
+          <div className="card border-emerald-300">
             <div className="card-content">
               <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
               <div className="h-4 bg-gray-200 rounded w-1/2"></div>
@@ -424,7 +424,7 @@ export function AmostraDetails() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="card">
+        <div className="card border-emerald-300">
           <div className="card-header py-2">
             <h3 className="card-title text-sm">Informações da Amostra</h3>
           </div>
@@ -461,7 +461,7 @@ export function AmostraDetails() {
         </div>
 
         {/* Seção de Progresso */}
-        <div className="card">
+        <div className="card border-emerald-300">
           <div className="card-header py-2">
             <h3 className="card-title text-sm flex items-center">
               {amostraStatus?.completa ? (
@@ -530,7 +530,7 @@ export function AmostraDetails() {
           </div>
         </div>
 
-        <div className="card">
+        <div className="card border-emerald-300">
           <div className="card-header py-2">
             <h3 className="card-title text-sm">Cliente</h3>
           </div>
@@ -555,7 +555,7 @@ export function AmostraDetails() {
         </div>
       </div>
 
-      <div className="card">
+      <div className="card border-emerald-300">
         <div className="card-header">
           <h3 className="card-title">Tipos de Análise</h3>
         </div>
@@ -733,7 +733,7 @@ export function AmostraDetails() {
       </div>
 
       {/* Seção de Resultados */}
-      <div className="card">
+      <div className="card border-emerald-300">
         <div className="card-header">
           <div className="flex items-center justify-between">
             <h3 className="card-title">Resultados da Análise</h3>

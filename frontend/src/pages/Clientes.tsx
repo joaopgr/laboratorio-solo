@@ -111,7 +111,7 @@ export function Clientes() {
       </div>
 
       {/* Filters */}
-      <div className="card">
+      <div className="card border-emerald-300">
         <div className="card-content">
           <form onSubmit={handleSearchSubmit} className="flex items-center space-x-4">
             <div className="flex-1">
@@ -120,7 +120,7 @@ export function Clientes() {
                 <input
                   type="text"
                   placeholder="Buscar clientes... (digite e aguarde ou pressione ENTER)"
-                  className="input pl-10 w-full"
+                  className="input pl-10 w-full border-emerald-300"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
                 />
@@ -148,7 +148,7 @@ export function Clientes() {
       )}
 
       {/* Table */}
-      <div className="card">
+      <div className="card border-emerald-300">
         <div className="card-content p-0">
           {isLoading ? (
             <div className="p-6 text-center">

@@ -141,7 +141,7 @@ export function Relatorios() {
       </div>
 
       {/* Filters */}
-      <div className="card">
+      <div className="card border-emerald-300">
         <div className="card-header">
           <h3 className="card-title flex items-center">
             <Filter className="w-5 h-5 mr-2" />
@@ -429,7 +429,7 @@ export function Relatorios() {
 
       {/* Relatório Ativo */}
       {activeReport && (
-        <div className="card">
+        <div className="card border-emerald-300">
           <div className="card-header">
             <h3 className="card-title">
               Relatório {activeReport === 'geral' ? 'Geral' : 
@@ -732,7 +732,7 @@ export function Relatorios() {
       )}
 
       {/* Recent Reports */}
-      <div className="card">
+      <div className="card border-emerald-300">
         <div className="card-header">
           <h3 className="card-title">Relatórios Recentes</h3>
         </div>

@@ -1450,7 +1450,7 @@ export function LancamentoResultados() {
       </div>
 
       {/* Filtros e Configuração */}
-      <div className="card">
+      <div className="card border-emerald-300">
         <div className="card-header">
           <h3 className="card-title">Filtros e Configuração</h3>
         </div>
@@ -1949,7 +1949,7 @@ export function LancamentoResultados() {
 
 
       {/* Lista de Amostras */}
-      <div className="card">
+      <div className="card border-emerald-300">
         <div className="card-header">
           <div className="flex items-center justify-between">
           <h3 className="card-title">

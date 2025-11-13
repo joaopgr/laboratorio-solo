@@ -180,7 +180,7 @@ export function Lotes() {
       </div>
 
       {/* Filters */}
-      <div className="card">
+      <div className="card border-emerald-300">
         <div className="card-content">
           <div className="space-y-4">
             {/* Busca */}
@@ -191,7 +191,7 @@ export function Lotes() {
                   <input
                     type="text"
                     placeholder="Buscar lotes... (digite e aguarde ou pressione ENTER)"
-                    className="input pl-10 w-full"
+                    className="input pl-10 w-full border-emerald-300"
                     value={searchInput}
                     onChange={(e) => setSearchInput(e.target.value)}
                   />

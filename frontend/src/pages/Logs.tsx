@@ -137,7 +137,7 @@ export function Logs() {
       </div>
 
       {/* Filtros */}
-      <div className="card">
+      <div className="card border-emerald-300">
         <div className="card-content">
           <div className="flex items-center gap-2 mb-4">
             <Filter className="w-5 h-5 text-gray-500" />
@@ -153,7 +153,7 @@ export function Logs() {
               <select
                 value={filters.usuarioId}
                 onChange={(e) => setFilters({ ...filters, usuarioId: e.target.value })}
-                className="input w-full"
+                className="input w-full border-emerald-300"
               >
                 <option value="">Todos os usuários</option>
                 {usuarios.map((usuario) => (
@@ -172,7 +172,7 @@ export function Logs() {
               <select
                 value={filters.acao}
                 onChange={(e) => setFilters({ ...filters, acao: e.target.value })}
-                className="input w-full"
+                className="input w-full border-emerald-300"
               >
                 {ACOES.map((opcao) => (
                   <option key={opcao.value} value={opcao.value}>
@@ -190,7 +190,7 @@ export function Logs() {
               <select
                 value={filters.entidade}
                 onChange={(e) => setFilters({ ...filters, entidade: e.target.value })}
-                className="input w-full"
+                className="input w-full border-emerald-300"
               >
                 {ENTIDADES.map((opcao) => (
                   <option key={opcao.value} value={opcao.value}>
