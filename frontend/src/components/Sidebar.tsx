@@ -65,14 +65,14 @@ export function Sidebar() {
                 key={item.name}
                 to={item.href}
                 className={({ isActive }) =>
-                  `flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl transition-all duration-200 group ${
+                  `flex items-center ${collapsed ? 'justify-center' : 'justify-between'} ${collapsed ? 'px-0' : 'px-4'} py-3 text-sm font-semibold rounded-xl transition-all duration-200 group ${
                     isActive
                       ? 'bg-gradient-to-r from-emerald-500 to-green-600 text-white shadow-lg'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
                   }`
                 }
               >
-                <div className="flex items-center">
+                <div className={`flex items-center ${collapsed ? 'justify-center w-full' : ''}`}>
                   <Icon className={`w-5 h-5 flex-shrink-0 transition-transform duration-200 ${
                     collapsed ? '' : 'group-hover:scale-110'
                   }`} />

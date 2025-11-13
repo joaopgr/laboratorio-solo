@@ -224,10 +224,11 @@ export default function Atividades() {
                   isOverdueActivity ? 'border-red-300 bg-red-50' : ''
                 }`}
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-gray-900">{atividade.titulo}</h3>
+                <div className="card-content">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">{atividade.titulo}</h3>
                       
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${TIPO_COLORS[atividade.tipo as keyof typeof TIPO_COLORS]}`}>
                         {atividade.tipo}
@@ -241,60 +242,61 @@ export default function Atividades() {
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${STATUS_COLORS[(atividade.status || 'pendente') as keyof typeof STATUS_COLORS]}`}>
                         {atividade.status ? atividade.status.replace('_', ' ') : 'Pendente'}
                       </span>
-                    </div>
+                      </div>
 
-                    {atividade.descricao && (
-                      <p className="text-gray-600 mb-3">{atividade.descricao}</p>
-                    )}
+                      {atividade.descricao && (
+                        <p className="text-gray-600 mb-3">{atividade.descricao}</p>
+                      )}
 
-                    <div className="flex items-center gap-4 text-sm text-gray-500">
-                      {atividade.responsavel && (
+                      <div className="flex items-center gap-4 text-sm text-gray-500">
+                        {atividade.responsavel && (
+                          <div className="flex items-center gap-1">
+                            <User className="w-4 h-4" />
+                            {atividade.responsavel}
+                          </div>
+                        )}
+                        
+                        {atividade.prazo && (
+                          <div className={`flex items-center gap-1 ${isOverdueActivity ? 'text-red-600 font-medium' : ''}`}>
+                            <Calendar className="w-4 h-4" />
+                            {formatDate(atividade.prazo)}
+                            {isOverdueActivity && <span className="text-red-600">(Vencida)</span>}
+                          </div>
+                        )}
+                        
                         <div className="flex items-center gap-1">
-                          <User className="w-4 h-4" />
-                          {atividade.responsavel}
+                          <Clock className="w-4 h-4" />
+                          Criada em {formatDateTime(atividade.createdAt)}
                         </div>
-                      )}
-                      
-                      {atividade.prazo && (
-                        <div className={`flex items-center gap-1 ${isOverdueActivity ? 'text-red-600 font-medium' : ''}`}>
-                          <Calendar className="w-4 h-4" />
-                          {formatDate(atividade.prazo)}
-                          {isOverdueActivity && <span className="text-red-600">(Vencida)</span>}
-                        </div>
-                      )}
-                      
-                      <div className="flex items-center gap-1">
-                        <Clock className="w-4 h-4" />
-                        Criada em {formatDateTime(atividade.createdAt)}
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center gap-2 ml-4">
-                    <select
-                      value={atividade.status}
-                      onChange={(e) => handleStatusChange(atividade.id, e.target.value)}
-                      className="px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    >
-                      <option value="pendente">Pendente</option>
-                      <option value="em_andamento">Em Andamento</option>
-                      <option value="concluida">Concluída</option>
-                      <option value="cancelada">Cancelada</option>
-                    </select>
+                    <div className="flex items-center gap-2 ml-4">
+                      <select
+                        value={atividade.status}
+                        onChange={(e) => handleStatusChange(atividade.id, e.target.value)}
+                        className="px-2 py-1 text-xs border border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      >
+                        <option value="pendente">Pendente</option>
+                        <option value="em_andamento">Em Andamento</option>
+                        <option value="concluida">Concluída</option>
+                        <option value="cancelada">Cancelada</option>
+                      </select>
 
-                    <button
-                      onClick={() => setEditingAtividade(atividade)}
-                      className="p-1 text-blue-600 hover:text-blue-800 transition-colors"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </button>
+                      <button
+                        onClick={() => setEditingAtividade(atividade)}
+                        className="p-1 text-blue-600 hover:text-blue-800 transition-colors"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
 
-                    <button
-                      onClick={() => handleDelete(atividade.id)}
-                      className="p-1 text-red-600 hover:text-red-800 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                      <button
+                        onClick={() => handleDelete(atividade.id)}
+                        className="p-1 text-red-600 hover:text-red-800 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

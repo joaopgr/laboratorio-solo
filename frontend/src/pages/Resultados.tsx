@@ -554,7 +554,7 @@ export function Resultados() {
       </div>
 
       {/* Filters */}
-      <div className="card">
+      <div className="card border-emerald-300">
         <div className="card-content">
           <div className="space-y-4">
             {/* Busca por texto */}
@@ -565,7 +565,7 @@ export function Resultados() {
                   <input
                     type="text"
                     placeholder="Buscar por amostra, cliente ou cultura..."
-                    className="input pl-10 w-full"
+                    className="input pl-10 w-full border-emerald-300"
                     value={filters.search}
                     onChange={(e) => {
                       setFilters({ ...filters, search: e.target.value, page: 1 })
@@ -585,7 +585,7 @@ export function Resultados() {
                 <input
                   type="text"
                   placeholder="Ex: 1 ou F1"
-                  className="input w-full"
+                  className="input w-full border-emerald-300"
                   value={filters.codigoInicio}
                   onChange={(e) => {
                     setFilters({ ...filters, codigoInicio: e.target.value, page: 1 })
@@ -600,7 +600,7 @@ export function Resultados() {
                 <input
                   type="text"
                   placeholder="Ex: 10 ou F10"
-                  className="input w-full"
+                  className="input w-full border-emerald-300"
                   value={filters.codigoFim}
                   onChange={(e) => {
                     setFilters({ ...filters, codigoFim: e.target.value, page: 1 })
@@ -735,7 +735,7 @@ export function Resultados() {
         />
       ) : (
         <>
-        <div className="card">
+        <div className="card border-emerald-300">
           <div className="card-content p-0">
             {isLoading ? (
               <div className="p-6 text-center">
@@ -900,7 +900,7 @@ export function Resultados() {
       )}
 
       {/* Informações sobre os resultados */}
-      <div className="card">
+      <div className="card border-emerald-300">
         <div className="card-content">
           <div className="flex items-start space-x-3">
             <Search className="w-5 h-5 text-blue-600 mt-0.5" />
