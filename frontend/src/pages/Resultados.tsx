@@ -621,8 +621,7 @@ export function Resultados() {
                 </button>
               )}
             </div>
-          </div>
-            
+
             {/* Filtros de Tipos de Análise */}
             <div className="border-t pt-4">
               <div className="flex items-center justify-between mb-3">
@@ -729,7 +728,6 @@ export function Resultados() {
 
       {/* Table */}
       {filters.tiposAnalise.granulometria && !Object.values(filters.tiposAnalise).some(val => val && val !== filters.tiposAnalise.granulometria) ? (
-        // Mostrar tabela granulométrica quando apenas granulométrica estiver selecionada
         <GranulometriaTable 
           amostras={resultadosPorAmostra.map(r => r.amostra)}
           resultados={data?.resultados || []}
