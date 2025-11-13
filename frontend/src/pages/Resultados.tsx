@@ -557,8 +557,6 @@ export function Resultados() {
       <div className="card">
         <div className="card-content">
           <div className="space-y-4">
-            {/* Busca */}
-          <div className="space-y-4">
             {/* Busca por texto */}
             <div className="flex items-center space-x-4">
               <div className="flex-1">

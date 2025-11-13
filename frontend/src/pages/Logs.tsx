@@ -137,72 +137,74 @@ export function Logs() {
       </div>
 
       {/* Filtros */}
-      <div className="bg-white border rounded-lg p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <Filter className="w-5 h-5 text-gray-500" />
-          <h2 className="font-semibold text-gray-900">Filtros</h2>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {/* Filtro por Usuário */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Usuário
-            </label>
-            <select
-              value={filters.usuarioId}
-              onChange={(e) => setFilters({ ...filters, usuarioId: e.target.value })}
-              className="input w-full"
-            >
-              <option value="">Todos os usuários</option>
-              {usuarios.map((usuario) => (
-                <option key={usuario.id} value={usuario.id}>
-                  {usuario.nome} ({usuario.email})
-                </option>
-              ))}
-            </select>
+      <div className="card">
+        <div className="card-content">
+          <div className="flex items-center gap-2 mb-4">
+            <Filter className="w-5 h-5 text-gray-500" />
+            <h2 className="font-semibold text-gray-900">Filtros</h2>
           </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Filtro por Usuário */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Usuário
+              </label>
+              <select
+                value={filters.usuarioId}
+                onChange={(e) => setFilters({ ...filters, usuarioId: e.target.value })}
+                className="input w-full"
+              >
+                <option value="">Todos os usuários</option>
+                {usuarios.map((usuario) => (
+                  <option key={usuario.id} value={usuario.id}>
+                    {usuario.nome} ({usuario.email})
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Filtro por Ação */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Ação
-            </label>
-            <select
-              value={filters.acao}
-              onChange={(e) => setFilters({ ...filters, acao: e.target.value })}
-              className="input w-full"
-            >
-              {ACOES.map((opcao) => (
-                <option key={opcao.value} value={opcao.value}>
-                  {opcao.label}
-                </option>
-              ))}
-            </select>
-          </div>
+            {/* Filtro por Ação */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Ação
+              </label>
+              <select
+                value={filters.acao}
+                onChange={(e) => setFilters({ ...filters, acao: e.target.value })}
+                className="input w-full"
+              >
+                {ACOES.map((opcao) => (
+                  <option key={opcao.value} value={opcao.value}>
+                    {opcao.label}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Filtro por Entidade */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Entidade
-            </label>
-            <select
-              value={filters.entidade}
-              onChange={(e) => setFilters({ ...filters, entidade: e.target.value })}
-              className="input w-full"
-            >
-              {ENTIDADES.map((opcao) => (
-                <option key={opcao.value} value={opcao.value}>
-                  {opcao.label}
-                </option>
-              ))}
-            </select>
+            {/* Filtro por Entidade */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Entidade
+              </label>
+              <select
+                value={filters.entidade}
+                onChange={(e) => setFilters({ ...filters, entidade: e.target.value })}
+                className="input w-full"
+              >
+                {ENTIDADES.map((opcao) => (
+                  <option key={opcao.value} value={opcao.value}>
+                    {opcao.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Tabela de Logs */}
-      <div className="bg-white border rounded-lg overflow-hidden">
+      <div className="card overflow-hidden">
         {isLoading ? (
           <div className="p-8 text-center">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
@@ -217,28 +219,28 @@ export function Logs() {
           <>
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 border-b">
+                <thead className="bg-gradient-to-r from-emerald-50 to-green-50 border-b-2 border-emerald-200">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                       Data/Hora
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                       Usuário
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                       Ação
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                       Entidade
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
                       Detalhes
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white/80 divide-y divide-gray-200">
                   {logs.map((log) => (
-                    <tr key={log.id} className="hover:bg-gray-50">
+                    <tr key={log.id} className="hover:bg-emerald-50/50 transition-colors">
                       <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                         {formatDate(log.createdAt)}
                       </td>

@@ -131,60 +131,62 @@ export default function Atividades() {
       )}
 
       {/* Filtros */}
-      <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-            <input
-              type="text"
-              placeholder="Buscar atividades..."
-              value={filters.search}
-              onChange={handleSearch}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
+      <div className="card mb-6">
+        <div className="card-content">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <input
+                type="text"
+                placeholder="Buscar atividades..."
+                value={filters.search}
+                onChange={handleSearch}
+                className="input pl-10 w-full"
+              />
+            </div>
+
+            <select
+              value={filters.status}
+              onChange={(e) => handleFilterChange('status', e.target.value)}
+              className="input"
+            >
+              <option value="">Todos os status</option>
+              <option value="pendente">Pendente</option>
+              <option value="em_andamento">Em Andamento</option>
+              <option value="concluida">Concluída</option>
+              <option value="cancelada">Cancelada</option>
+            </select>
+
+            <select
+              value={filters.prioridade}
+              onChange={(e) => handleFilterChange('prioridade', e.target.value)}
+              className="input"
+            >
+              <option value="">Todas as prioridades</option>
+              <option value="baixa">Baixa</option>
+              <option value="media">Média</option>
+              <option value="alta">Alta</option>
+              <option value="urgente">Urgente</option>
+            </select>
+
+            <select
+              value={filters.tipo}
+              onChange={(e) => handleFilterChange('tipo', e.target.value)}
+              className="input"
+            >
+              <option value="">Todos os tipos</option>
+              <option value="tarefa">Tarefa</option>
+              <option value="aviso">Aviso</option>
+              <option value="lembrete">Lembrete</option>
+            </select>
+
+            <button
+              onClick={() => setFilters({ page: 1, limit: 50, search: '', status: '', prioridade: '', tipo: '' })}
+              className="btn btn-outline btn-md"
+            >
+              Limpar
+            </button>
           </div>
-
-          <select
-            value={filters.status}
-            onChange={(e) => handleFilterChange('status', e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Todos os status</option>
-            <option value="pendente">Pendente</option>
-            <option value="em_andamento">Em Andamento</option>
-            <option value="concluida">Concluída</option>
-            <option value="cancelada">Cancelada</option>
-          </select>
-
-          <select
-            value={filters.prioridade}
-            onChange={(e) => handleFilterChange('prioridade', e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Todas as prioridades</option>
-            <option value="baixa">Baixa</option>
-            <option value="media">Média</option>
-            <option value="alta">Alta</option>
-            <option value="urgente">Urgente</option>
-          </select>
-
-          <select
-            value={filters.tipo}
-            onChange={(e) => handleFilterChange('tipo', e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          >
-            <option value="">Todos os tipos</option>
-            <option value="tarefa">Tarefa</option>
-            <option value="aviso">Aviso</option>
-            <option value="lembrete">Lembrete</option>
-          </select>
-
-          <button
-            onClick={() => setFilters({ page: 1, limit: 50, search: '', status: '', prioridade: '', tipo: '' })}
-            className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            Limpar
-          </button>
         </div>
       </div>
 
@@ -218,7 +220,7 @@ export default function Atividades() {
             return (
               <div
                 key={atividade.id}
-                className={`bg-white rounded-lg shadow-sm border p-4 hover:shadow-md transition-shadow ${getStatusBorderColor(atividade.status || 'pendente')} ${
+                className={`card ${getStatusBorderColor(atividade.status || 'pendente')} ${
                   isOverdueActivity ? 'border-red-300 bg-red-50' : ''
                 }`}
               >
