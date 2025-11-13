@@ -345,10 +345,36 @@ router.get('/', async (req, res): Promise<any> => {
       params.push(tipo);
     }
 
+    // Verificar se há resultados com a categoria solicitada antes de aplicar o filtro
     if (categoria) {
+      // Primeiro, verificar quantos resultados existem com essa categoria
+      const checkQuery = `
+        SELECT COUNT(*) as total 
+        FROM resultados r
+        WHERE r.categoria = $1
+      `;
+      const checkResult = await query(checkQuery, [categoria]);
+      const totalComCategoria = parseInt(checkResult.rows[0].total);
+      
+      console.log('🔍 [DEBUG] Total de resultados com categoria', categoria, ':', totalComCategoria);
+      
+      // Se não houver resultados com a categoria solicitada, verificar se há resultados sem categoria ou com outra categoria
+      if (totalComCategoria === 0) {
+        const checkAllQuery = `SELECT COUNT(*) as total, categoria FROM resultados GROUP BY categoria`;
+        const checkAllResult = await query(checkAllQuery, []);
+        console.log('🔍 [DEBUG] Distribuição de categorias no banco:', checkAllResult.rows);
+        
+        // Se não houver resultados com a categoria solicitada, retornar vazio
+        // Mas vamos aplicar o filtro mesmo assim para manter a consistência
+        console.warn('⚠️ [DEBUG] Nenhum resultado encontrado com categoria', categoria);
+      }
+      
       paramCount++;
       conditions.push(`r.categoria = $${paramCount}`);
       params.push(categoria);
+      console.log('🔍 [DEBUG] Filtro de categoria aplicado:', categoria);
+    } else {
+      console.log('🔍 [DEBUG] Nenhum filtro de categoria - retornando todos');
     }
 
     // Filtro por tipos de análise das amostras

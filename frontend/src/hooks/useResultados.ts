@@ -43,13 +43,15 @@ export function useResultados(filters: ResultadoFilters = {}) {
           status: response.status,
           totalResultados: response.data.resultados?.length || 0,
           pagination: response.data.pagination,
-          primeiroResultado: response.data.resultados?.[0] || null
+          primeiroResultado: response.data.resultados?.[0] || null,
+          respostaCompleta: response.data
         })
         
         if (response.data.resultados && response.data.resultados.length > 0) {
           console.log('🔍 [FRONTEND DEBUG] Exemplo de resultado:', JSON.stringify(response.data.resultados[0], null, 2))
         } else {
           console.warn('⚠️ [FRONTEND DEBUG] Nenhum resultado retornado!')
+          console.warn('⚠️ [FRONTEND DEBUG] Resposta completa da API:', JSON.stringify(response.data, null, 2))
         }
         
         return {
