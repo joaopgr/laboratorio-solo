@@ -270,7 +270,8 @@ export function ClientePortal() {
                                         Amostra {amostra.codigo} - {amostra.identificacao}
                                       </p>
                                       <p className="text-xs text-slate-500">
-                                        Cultura: {amostra.cultura || 'Não informada'} • Coleta em{' '}
+                                        Cultura: {amostra.cultura || 'Não informada'} • 
+                                        {amostra.localidade ? ` Localidade: ${amostra.localidade} •` : ''} Coleta em{' '}
                                         {amostra.dataColeta
                                           ? new Date(amostra.dataColeta).toLocaleDateString()
                                           : 'Data não informada'}
@@ -286,27 +287,65 @@ export function ClientePortal() {
                                       <table className="min-w-full text-xs border border-emerald-100 rounded-lg overflow-hidden">
                                         <thead>
                                           <tr className="bg-emerald-600 text-white text-left uppercase tracking-wide">
-                                            <th className="py-2 pr-4 font-semibold">Parâmetro</th>
-                                            <th className="py-2 pr-4 font-semibold">Valor</th>
-                                            <th className="py-2 pr-4 font-semibold">Unidade</th>
-                                            <th className="py-2 pr-4 font-semibold">Origem</th>
+                                            <th className="py-2 px-2 font-semibold">Parâmetro</th>
+                                            <th className="py-2 px-2 font-semibold">Valor</th>
+                                            <th className="py-2 px-2 font-semibold">Unidade</th>
                                           </tr>
                                         </thead>
                                         <tbody>
                                           {amostra.resultados
                                             .filter((resultado) => resultado.origem === 'calculado')
-                                            .map((resultado) => (
-                                              <tr key={resultado.id} className="border-t border-emerald-50">
-                                                <td className="py-2 pr-4 text-slate-700 font-medium">{resultado.tipo}</td>
-                                                <td className="py-2 pr-4 text-slate-600">
-                                                  {resultado.valor && !Number.isNaN(Number(resultado.valor))
-                                                    ? Number(resultado.valor).toFixed(2)
-                                                    : '-'}
-                                                </td>
-                                                <td className="py-2 pr-4 text-slate-500">{resultado.unidade ?? '-'}</td>
-                                                <td className="py-2 pr-4 text-slate-500 capitalize">{resultado.origem ?? '-'}</td>
-                                              </tr>
-                                            ))}
+                                            .map((resultado) => {
+                                              // Função para formatar o nome do parâmetro
+                                              const formatarParametro = (tipo: string): string => {
+                                                const parametros: Record<string, string> = {
+                                                  'PH': 'pH',
+                                                  'NA': 'Na',
+                                                  'CA': 'Ca',
+                                                  'MG': 'Mg',
+                                                  'K': 'K',
+                                                  'P': 'P',
+                                                  'AL': 'Al',
+                                                  'H+AL': 'H+Al',
+                                                  'H_AL': 'H+Al',
+                                                  'SB': 'SB',
+                                                  'T': 't',
+                                                  'CTC': 'CTC',
+                                                  'V': 'V',
+                                                  'M': 'm',
+                                                  'FE': 'Fe',
+                                                  'ZN': 'Zn',
+                                                  'CU': 'Cu',
+                                                  'MN': 'Mn',
+                                                  'B': 'B',
+                                                  'MO': 'MO',
+                                                  'S': 'S',
+                                                  'PREM': 'PREM',
+                                                  'N': 'N'
+                                                }
+                                                return parametros[tipo.toUpperCase()] || tipo
+                                              }
+
+                                              // Função para obter a unidade correta
+                                              const obterUnidade = (tipo: string, unidade?: string | null): string => {
+                                                if (tipo.toUpperCase() === 'PH') {
+                                                  return 'H₂O'
+                                                }
+                                                return unidade || '-'
+                                              }
+
+                                              return (
+                                                <tr key={resultado.id} className="border-t border-emerald-50 hover:bg-emerald-50/50">
+                                                  <td className="py-2 px-2 text-slate-700 font-medium">{formatarParametro(resultado.tipo)}</td>
+                                                  <td className="py-2 px-2 text-slate-600">
+                                                    {resultado.valor && !Number.isNaN(Number(resultado.valor))
+                                                      ? Number(resultado.valor).toFixed(2)
+                                                      : '-'}
+                                                  </td>
+                                                  <td className="py-2 px-2 text-slate-500">{obterUnidade(resultado.tipo, resultado.unidade)}</td>
+                                                </tr>
+                                              )
+                                            })}
                                         </tbody>
                                       </table>
                                     </div>
