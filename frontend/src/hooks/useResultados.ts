@@ -10,6 +10,10 @@ export function useResultados(filters: ResultadoFilters = {}) {
   return useQuery({
     queryKey: ['resultados', filters, modulo],
     queryFn: async () => {
+      console.log('🔍 [FRONTEND DEBUG] useResultados - Iniciando busca')
+      console.log('🔍 [FRONTEND DEBUG] Filters recebidos:', JSON.stringify(filters, null, 2))
+      console.log('🔍 [FRONTEND DEBUG] Módulo:', modulo)
+      
       // Filtrar tipos não aplicáveis ao foliar antes de serializar
       const tiposAnaliseFiltrados = { ...(filters.tiposAnalise || {}) }
       
@@ -27,12 +31,36 @@ export function useResultados(filters: ResultadoFilters = {}) {
         categoria: modulo
       }
       
-      const response = await api.get<{ resultados: Resultado[], pagination: any }>('/resultados', {
-        params
-      })
-      return {
-        resultados: response.data.resultados,
-        pagination: response.data.pagination
+      console.log('🔍 [FRONTEND DEBUG] Parâmetros que serão enviados:', JSON.stringify(params, null, 2))
+      console.log('🔍 [FRONTEND DEBUG] URL da requisição:', '/resultados')
+      
+      try {
+        const response = await api.get<{ resultados: Resultado[], pagination: any }>('/resultados', {
+          params
+        })
+        
+        console.log('🔍 [FRONTEND DEBUG] Resposta recebida:', {
+          status: response.status,
+          totalResultados: response.data.resultados?.length || 0,
+          pagination: response.data.pagination,
+          primeiroResultado: response.data.resultados?.[0] || null
+        })
+        
+        if (response.data.resultados && response.data.resultados.length > 0) {
+          console.log('🔍 [FRONTEND DEBUG] Exemplo de resultado:', JSON.stringify(response.data.resultados[0], null, 2))
+        } else {
+          console.warn('⚠️ [FRONTEND DEBUG] Nenhum resultado retornado!')
+        }
+        
+        return {
+          resultados: response.data.resultados,
+          pagination: response.data.pagination
+        }
+      } catch (error: any) {
+        console.error('❌ [FRONTEND DEBUG] Erro na requisição:', error)
+        console.error('❌ [FRONTEND DEBUG] Erro response:', error.response?.data)
+        console.error('❌ [FRONTEND DEBUG] Erro status:', error.response?.status)
+        throw error
       }
     },
     refetchOnWindowFocus: false,

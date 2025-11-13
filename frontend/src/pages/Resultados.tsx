@@ -30,7 +30,29 @@ export function Resultados() {
   const [displayedResults, setDisplayedResults] = useState(10)
   const [sortOrder, setSortOrder] = useState<'desc' | 'asc'>('desc') // 'desc' = mais recente primeiro (padrão)
 
-  const { data, isLoading } = useResultados(filters)
+  const { data, isLoading, error } = useResultados(filters)
+
+  // Debug logs
+  useEffect(() => {
+    console.log('🔍 [FRONTEND DEBUG] Resultados.tsx - Estado atual:', {
+      isLoading,
+      hasData: !!data,
+      totalResultados: data?.resultados?.length || 0,
+      filters,
+      modulo
+    })
+    
+    if (error) {
+      console.error('❌ [FRONTEND DEBUG] Erro no useResultados:', error)
+    }
+    
+    if (data) {
+      console.log('🔍 [FRONTEND DEBUG] Dados recebidos:', {
+        resultados: data.resultados?.length || 0,
+        pagination: data.pagination
+      })
+    }
+  }, [data, isLoading, error, filters, modulo])
 
   // Determinar filtros ativos
   const filtrosAtivos = useMemo(() => {
