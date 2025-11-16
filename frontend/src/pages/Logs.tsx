@@ -1,3 +1,8 @@
+/* 
+  CONTEÚDO ORIGINAL DO REGISTRO DE ATIVIDADES COMENTADO TEMPORARIAMENTE (FASE 2).
+  Para reativar, remova este comentário e o placeholder abaixo.
+*/
+
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
@@ -142,6 +147,18 @@ export function Logs() {
         <div className="space-y-6"> ... conteúdo original completo ... </div>
       */}
     </>
+  )
+}
+
+// Placeholder temporário (FASE 2)
+export function Logs() {
+  return (
+    <div className="min-h-[60vh] w-full flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-2xl font-bold text-gray-900">Em breve</h1>
+        <p className="text-gray-600 mt-2">Esta área será implementada na FASE 2 de desenvolvimento.</p>
+      </div>
+    </div>
   )
 }
 
