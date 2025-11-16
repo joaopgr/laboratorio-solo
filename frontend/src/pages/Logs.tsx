@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { api } from '../services/api'
@@ -126,22 +125,205 @@ export function Logs() {
   }
 
   return (
-    <>
-      {/* Placeholder temporário - FASE 2 */}
-      <div className="min-h-[60vh] w-full flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900">Em breve</h1>
-          <p className="text-gray-600 mt-2">Esta área será implementada na FASE 2 de desenvolvimento.</p>
+    <div className="space-y-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">Registro de Atividades</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Histórico de ações realizadas no sistema
+          </p>
         </div>
       </div>
 
-      {/*
-        CONTEÚDO ORIGINAL DA PÁGINA REGISTRO DE ATIVIDADES (DESABILITADO TEMPORARIAMENTE)
-        Para reativar, remova este comentário e o bloco de placeholder acima.
+      {/* Filtros */}
+      <div className="card border-emerald-300">
+        <div className="card-content">
+          <div className="flex items-center gap-2 mb-4">
+            <Filter className="w-5 h-5 text-gray-500" />
+            <h2 className="font-semibold text-gray-900">Filtros</h2>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Filtro por Usuário */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Usuário
+              </label>
+              <select
+                value={filters.usuarioId}
+                onChange={(e) => setFilters({ ...filters, usuarioId: e.target.value })}
+                className="input w-full border-emerald-300"
+              >
+                <option value="">Todos os usuários</option>
+                {usuarios.map((usuario) => (
+                  <option key={usuario.id} value={usuario.id}>
+                    {usuario.nome} ({usuario.email})
+                  </option>
+                ))}
+              </select>
+            </div>
 
-        <div className="space-y-6"> ... conteúdo original completo ... </div>
-      */}
-    </>
+            {/* Filtro por Ação */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Ação
+              </label>
+              <select
+                value={filters.acao}
+                onChange={(e) => setFilters({ ...filters, acao: e.target.value })}
+                className="input w-full border-emerald-300"
+              >
+                {ACOES.map((opcao) => (
+                  <option key={opcao.value} value={opcao.value}>
+                    {opcao.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Filtro por Entidade */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Entidade
+              </label>
+              <select
+                value={filters.entidade}
+                onChange={(e) => setFilters({ ...filters, entidade: e.target.value })}
+                className="input w-full border-emerald-300"
+              >
+                {ENTIDADES.map((opcao) => (
+                  <option key={opcao.value} value={opcao.value}>
+                    {opcao.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabela de Logs */}
+      <div className="card overflow-hidden">
+        {isLoading ? (
+          <div className="p-8 text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+            <p className="mt-2 text-sm text-gray-500">Carregando logs...</p>
+          </div>
+        ) : (!logs || logs.length === 0) ? (
+          <div className="p-8 text-center">
+            <Activity className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-500">Nenhum log encontrado</p>
+          </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gradient-to-r from-emerald-50 to-green-50 border-b-2 border-emerald-200">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Data/Hora
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Usuário
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Ação
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Entidade
+                    </th>
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
+                      Detalhes
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white/80 divide-y divide-gray-200">
+                  {logs.map((log) => (
+                    <tr key={log.id} className="hover:bg-emerald-50/50 transition-colors">
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {formatDate(log.createdAt)}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <User className="w-4 h-4 text-gray-400" />
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {log.usuarioNome || 'Usuário não identificado'}
+                            </p>
+                            {log.usuarioEmail && (
+                              <p className="text-xs text-gray-500">{log.usuarioEmail}</p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          {getAcaoIcon(log.acao)}
+                          <span className="text-sm font-medium text-gray-900">
+                            {getAcaoLabel(log.acao)}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <Package className="w-4 h-4 text-gray-400" />
+                          <div>
+                            <p className="text-sm font-medium text-gray-900">
+                              {getEntidadeLabel(log.entidade)}
+                            </p>
+                            {log.entidadeNome && (
+                              <p className="text-xs text-gray-500">{log.entidadeNome}</p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500">
+                        {log.entidadeId && (
+                          <span className="text-xs font-mono bg-gray-100 px-2 py-1 rounded">
+                            ID: {log.entidadeId.substring(0, 8)}...
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Paginação */}
+            {pagination && pagination.pages > 1 && (
+              <div className="px-4 py-3 border-t bg-gray-50 flex items-center justify-between">
+                <div className="text-sm text-gray-700">
+                  Mostrando {((page - 1) * pagination.limit) + 1} a{' '}
+                  {Math.min(page * pagination.limit, pagination.total)} de{' '}
+                  {pagination.total} registros
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setPage(page - 1)}
+                    disabled={page === 1}
+                    className="btn btn-sm btn-outline"
+                  >
+                    Anterior
+                  </button>
+                  <span className="flex items-center px-3 text-sm text-gray-700">
+                    Página {page} de {pagination.pages}
+                  </span>
+                  <button
+                    onClick={() => setPage(page + 1)}
+                    disabled={page >= pagination.pages}
+                    className="btn btn-sm btn-outline"
+                  >
+                    Próxima
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </div>
   )
 }
 
