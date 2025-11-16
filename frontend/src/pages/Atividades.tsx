@@ -1,20 +1,4 @@
-export default function Atividades() {
-  return (
-    <div className="min-h-[60vh] w-full flex items-center justify-center">
-      <div className="text-center">
-        <h1 className="text-2xl font-bold text-gray-900">Em breve</h1>
-        <p className="text-gray-600 mt-2">Esta área será implementada na FASE 2 de desenvolvimento.</p>
-      </div>
-    </div>
-  );
-}
-
-/*
-===============================================================================
-CONTEÚDO ORIGINAL DA PÁGINA ATIVIDADES (DESABILITADO TEMPORARIAMENTE)
-Para reativar, mova o conteúdo de volta e remova o placeholder acima.
-===============================================================================
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState, useMemo } from 'react';
 import { 
   Plus, 
@@ -126,9 +110,20 @@ export default function Atividades() {
 
   return (
     <>
-      // ... JSX original aqui ...
+      {/* Placeholder temporário - FASE 2 */}
+      <div className="min-h-[60vh] w-full flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900">Em breve</h1>
+          <p className="text-gray-600 mt-2">Esta área será implementada na FASE 2 de desenvolvimento.</p>
+        </div>
+      </div>
+
+      {/*
+        CONTEÚDO ORIGINAL DA PÁGINA ATIVIDADES (DESABILITADO TEMPORARIAMENTE)
+        Para reativar, remova este comentário e o bloco de placeholder acima.
+
+        <div className="p-6"> ... conteúdo original completo ... </div>
+      */}
     </>
   );
 }
-
-*/ 
