@@ -42,6 +42,9 @@ const TIPO_COLORS = {
 };
 
 export default function Atividades() {
+  // Toggle simples para bloquear/desbloquear a página no futuro
+  const BLOQUEAR_PAGINA = true
+
   const [showForm, setShowForm] = useState(false);
   const [editingAtividade, setEditingAtividade] = useState<Atividade | null>(null);
   const [filters, setFilters] = useState<AtividadeFilters>({
@@ -108,7 +111,7 @@ export default function Atividades() {
   }, [atividades]);
 
   return (
-    <div className="p-6">
+    <div className="p-6 relative">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Atividades</h1>
@@ -349,6 +352,20 @@ export default function Atividades() {
             setEditingAtividade(null);
           }}
         />
+      )}
+      {/* Overlay de bloqueio temporário (FASE 2) */}
+      {BLOQUEAR_PAGINA && (
+        <div
+          className="fixed inset-0 z-[9999] bg-white/95 flex items-center justify-center p-6"
+          style={{ backdropFilter: 'blur(1px)' }}
+        >
+          <div className="text-center max-w-xl">
+            <h2 className="text-2xl font-bold text-gray-900">Em breve</h2>
+            <p className="text-gray-600 mt-2">
+              Esta área será implementada na FASE 2 de desenvolvimento.
+            </p>
+          </div>
+        </div>
       )}
     </div>
   );

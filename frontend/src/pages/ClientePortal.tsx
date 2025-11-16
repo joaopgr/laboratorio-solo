@@ -28,6 +28,8 @@ export function ClientePortal() {
   const [modalAberto, setModalAberto] = useState(false)
   const [loteExpandido, setLoteExpandido] = useState<string | null>(null)
   const { setModulo } = useModule()
+  // Toggle simples para bloquear/desbloquear a página no futuro
+  const BLOQUEAR_PAGINA = true
 
   const perfilQuery = useQuery({
     queryKey: ['portal-cliente', 'perfil'],
@@ -106,7 +108,7 @@ export function ClientePortal() {
   const lotes = lotesQuery.data ?? []
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
         <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 bg-white/90 backdrop-blur-sm border border-emerald-100 shadow-lg rounded-2xl p-6">
           <div className="space-y-2">
@@ -381,6 +383,28 @@ export function ClientePortal() {
           amostras={loteSelecionado.amostras ?? []}
           resultados={resultadosSelecionados}
         />
+      )}
+
+      {/* Overlay de bloqueio temporário (FASE 3) */}
+      {BLOQUEAR_PAGINA && (
+        <div
+          className="fixed inset-0 z-[9999] bg-white/95 flex items-center justify-center p-6"
+          style={{ backdropFilter: 'blur(1px)' }}
+        >
+          <div className="text-center max-w-xl">
+            <h2 className="text-2xl font-bold text-gray-900">Área em desenvolvimento</h2>
+            <p className="text-gray-600 mt-2">
+              Esta área será implementada na FASE 3 de desenvolvimento.
+            </p>
+            <button
+              onClick={logout}
+              className="inline-flex items-center justify-center px-4 py-2 mt-4 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
+            </button>
+          </div>
+        </div>
       )}
     </div>
   )

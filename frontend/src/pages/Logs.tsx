@@ -125,7 +125,7 @@ export function Logs() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -322,6 +322,19 @@ export function Logs() {
             )}
           </>
         )}
+      </div>
+
+      {/* Overlay de bloqueio temporário (FASE 2) */}
+      <div
+        className="fixed inset-0 z-[9999] bg-white/95 flex items-center justify-center p-6"
+        style={{ backdropFilter: 'blur(1px)' }}
+      >
+        <div className="text-center max-w-xl">
+          <h2 className="text-2xl font-bold text-gray-900">Em breve</h2>
+          <p className="text-gray-600 mt-2">
+            Esta área será implementada na FASE 2 de desenvolvimento.
+          </p>
+        </div>
       </div>
     </div>
   )
