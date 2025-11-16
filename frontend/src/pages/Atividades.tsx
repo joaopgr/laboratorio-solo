@@ -356,7 +356,7 @@ export default function Atividades() {
       {/* Overlay de bloqueio temporário (FASE 2) */}
       {BLOQUEAR_PAGINA && (
         <div
-          className="fixed inset-0 z-[9999] bg-white/95 flex items-center justify-center p-6"
+          className="absolute inset-0 z-[9999] bg-white/95 flex items-center justify-center p-6"
           style={{ backdropFilter: 'blur(1px)' }}
         >
           <div className="text-center max-w-xl">

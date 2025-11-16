@@ -108,8 +108,8 @@ export function ClientePortal() {
   const lotes = lotesQuery.data ?? []
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 relative">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 relative">
         <header className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 bg-white/90 backdrop-blur-sm border border-emerald-100 shadow-lg rounded-2xl p-6">
           <div className="space-y-2">
             <span className="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">
@@ -388,7 +388,7 @@ export function ClientePortal() {
       {/* Overlay de bloqueio temporário (FASE 3) */}
       {BLOQUEAR_PAGINA && (
         <div
-          className="fixed inset-0 z-[9999] bg-white/95 flex items-center justify-center p-6"
+          className="absolute inset-0 z-[9999] bg-white/95 flex items-center justify-center p-6"
           style={{ backdropFilter: 'blur(1px)' }}
         >
           <div className="text-center max-w-xl">
