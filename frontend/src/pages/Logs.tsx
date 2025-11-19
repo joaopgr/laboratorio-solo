@@ -324,8 +324,9 @@ export function Logs() {
         )}
       </div>
 
-      {/* Overlay de bloqueio temporário (FASE 2) */}
-      <div
+      {/* Overlay de bloqueio temporário (FASE 2) - DESABILITADO TEMPORARIAMENTE */}
+      {/* Para reativar, descomente o bloco abaixo */}
+      {/* <div
         className="absolute inset-0 z-[9999] bg-white/95 flex items-center justify-center p-6"
         style={{ backdropFilter: 'blur(1px)' }}
       >
@@ -335,7 +336,7 @@ export function Logs() {
             Esta área será implementada na FASE 2 de desenvolvimento.
           </p>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

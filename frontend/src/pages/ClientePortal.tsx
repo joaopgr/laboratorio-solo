@@ -29,7 +29,7 @@ export function ClientePortal() {
   const [loteExpandido, setLoteExpandido] = useState<string | null>(null)
   const { setModulo } = useModule()
   // Toggle simples para bloquear/desbloquear a página no futuro
-  const BLOQUEAR_PAGINA = true
+  // const BLOQUEAR_PAGINA = true // DESABILITADO TEMPORARIAMENTE - Para reativar, descomente esta linha
 
   const perfilQuery = useQuery({
     queryKey: ['portal-cliente', 'perfil'],
@@ -385,8 +385,9 @@ export function ClientePortal() {
         />
       )}
 
-      {/* Overlay de bloqueio temporário (FASE 3) */}
-      {BLOQUEAR_PAGINA && (
+      {/* Overlay de bloqueio temporário (FASE 3) - DESABILITADO TEMPORARIAMENTE */}
+      {/* Para reativar, descomente o bloco abaixo e a constante BLOQUEAR_PAGINA acima */}
+      {/* {BLOQUEAR_PAGINA && (
         <div
           className="absolute inset-0 z-[9999] bg-white/95 flex items-center justify-center p-6"
           style={{ backdropFilter: 'blur(1px)' }}
@@ -405,7 +406,7 @@ export function ClientePortal() {
             </button>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   )
 }

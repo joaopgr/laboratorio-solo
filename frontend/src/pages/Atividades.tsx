@@ -43,7 +43,7 @@ const TIPO_COLORS = {
 
 export default function Atividades() {
   // Toggle simples para bloquear/desbloquear a página no futuro
-  const BLOQUEAR_PAGINA = true
+  // const BLOQUEAR_PAGINA = true // DESABILITADO TEMPORARIAMENTE - Para reativar, descomente esta linha
 
   const [showForm, setShowForm] = useState(false);
   const [editingAtividade, setEditingAtividade] = useState<Atividade | null>(null);
@@ -353,8 +353,9 @@ export default function Atividades() {
           }}
         />
       )}
-      {/* Overlay de bloqueio temporário (FASE 2) */}
-      {BLOQUEAR_PAGINA && (
+      {/* Overlay de bloqueio temporário (FASE 2) - DESABILITADO TEMPORARIAMENTE */}
+      {/* Para reativar, descomente o bloco abaixo e a constante BLOQUEAR_PAGINA acima */}
+      {/* {BLOQUEAR_PAGINA && (
         <div
           className="absolute inset-0 z-[9999] bg-white/95 flex items-center justify-center p-6"
           style={{ backdropFilter: 'blur(1px)' }}
@@ -366,7 +367,7 @@ export default function Atividades() {
             </p>
           </div>
         </div>
-      )}
+      )} */}
     </div>
   );
 }
