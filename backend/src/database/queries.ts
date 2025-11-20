@@ -659,6 +659,7 @@ export const SQL_QUERIES = {
           // - responsavel = 'Geral' OU
           // - responsavel contém o nome do usuário logado (ex: "Felipe" ou "Felipe, Anderson")
           // IMPORTANTE: Excluir atividades onde o usuário é o criador (essas aparecem em "Criadas")
+          // Usar comparação explícita: criadoPor deve ser diferente do nome do usuário OU NULL
           const paramIndex1 = params.length + 1;
           const paramIndex2 = params.length + 2;
           const paramIndex3 = params.length + 3;
@@ -667,12 +668,12 @@ export const SQL_QUERIES = {
           const paramIndex6 = params.length + 6;
           conditions.push(`(
             (responsavel = $${paramIndex1} OR 
-            TRIM(responsavel) = TRIM($${paramIndex2}) OR
+            TRIM(responsavel) ILIKE TRIM($${paramIndex2}) OR
             responsavel ILIKE $${paramIndex3} OR 
             responsavel ILIKE $${paramIndex4} OR 
             responsavel ILIKE $${paramIndex5} OR
             responsavel IS NULL)
-            AND ("criadoPor" IS NULL OR TRIM("criadoPor") NOT ILIKE TRIM($${paramIndex6}))
+            AND ("criadoPor" IS NULL OR LOWER(TRIM("criadoPor")) != LOWER(TRIM($${paramIndex6})))
           )`);
           params.push('Geral', nomeUsuarioLogado, `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`, nomeUsuarioLogado);
         }
