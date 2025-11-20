@@ -648,8 +648,8 @@ export const SQL_QUERIES = {
       // Filtrar por modo: 'recebidas' (onde é responsável) ou 'criadas' (onde é criador)
       if (nomeUsuarioLogado) {
         if (modo === 'criadas') {
-          // Criadas: apenas onde criadoPor = nomeUsuario
-          conditions.push(`LOWER(TRIM("criadoPor")) = LOWER(TRIM($${params.length + 1}))`);
+          // Criadas: apenas onde criadoPor = nomeUsuario E criadoPor não é NULL nem vazio
+          conditions.push(`"criadoPor" IS NOT NULL AND TRIM("criadoPor") != '' AND LOWER(TRIM("criadoPor")) = LOWER(TRIM($${params.length + 1}))`);
           params.push(nomeUsuarioLogado);
         } else {
           // Recebidas: onde responsavel contém nomeUsuario E criadoPor != nomeUsuario
@@ -669,6 +669,7 @@ export const SQL_QUERIES = {
              LOWER(responsavel) LIKE LOWER($${likeParam2}) OR
              LOWER(responsavel) LIKE LOWER($${likeParam3}))
             AND "criadoPor" IS NOT NULL
+            AND TRIM("criadoPor") != ''
             AND LOWER(TRIM("criadoPor")) != LOWER(TRIM($${nomeExatoParam}))
           )`);
         }
@@ -722,8 +723,8 @@ export const SQL_QUERIES = {
       if (nomeUsuarioLogado) {
         if (modo === 'criadas') {
           // Modo "Criadas": mostrar atividades onde o usuário é o criador
-          // Comparação exata e case-insensitive: criadoPor = nomeUsuario
-          conditions.push(`LOWER(TRIM("criadoPor")) = LOWER(TRIM($${params.length + 1}))`);
+          // Comparação exata e case-insensitive: criadoPor = nomeUsuario E criadoPor não é NULL nem vazio
+          conditions.push(`"criadoPor" IS NOT NULL AND TRIM("criadoPor") != '' AND LOWER(TRIM("criadoPor")) = LOWER(TRIM($${params.length + 1}))`);
           params.push(nomeUsuarioLogado);
         } else {
           // Modo "Recebidas": mostrar atividades onde o usuário é responsável E não é o criador
@@ -746,6 +747,7 @@ export const SQL_QUERIES = {
             LOWER(responsavel) LIKE LOWER($${likeParam2}) OR 
             LOWER(responsavel) LIKE LOWER($${likeParam3}))
             AND "criadoPor" IS NOT NULL
+            AND TRIM("criadoPor") != ''
             AND LOWER(TRIM("criadoPor")) != LOWER(TRIM($${nomeExatoParam}))
           )`);
         }

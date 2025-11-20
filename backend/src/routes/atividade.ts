@@ -91,6 +91,19 @@ router.get('/', async (req: any, res): Promise<any> => {
     const atividades = atividadesResult.rows.map(mapearAtividadeParaFrontend);
     const total = parseInt(countResult.rows[0].total);
 
+    // Log detalhado para debug
+    console.log('📊 Resultados da busca:', {
+      modo,
+      nomeUsuarioLogado,
+      totalAtividades: atividades.length,
+      atividades: atividades.map(a => ({
+        id: a.id,
+        titulo: a.titulo || a.nome,
+        criadoPor: a.criadoPor || 'NULL',
+        responsavel: a.responsavel
+      }))
+    });
+
     res.json({
       data: atividades,
       pagination: {
