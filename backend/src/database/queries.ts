@@ -638,12 +638,31 @@ export const SQL_QUERIES = {
   // ===== ATIVIDADES =====
   atividades: {
     // Buscar todas as atividades
-    findAll: (page: number = 1, limit: number = 50, search?: string, status?: string, prioridade?: string, tipo?: string) => {
+    findAll: (page: number = 1, limit: number = 50, search?: string, status?: string, prioridade?: string, tipo?: string, nomeUsuarioLogado?: string, modo?: string) => {
       const offset = (page - 1) * limit;
       let query = 'SELECT * FROM atividades';
       
       const params: any[] = [];
       const conditions: string[] = [];
+      
+      // Filtrar por responsável: mostrar atividades onde:
+      // - responsavel = 'Geral' OU
+      // - responsavel contém o nome do usuário logado (ex: "Felipe" ou "Felipe, Anderson")
+      // - responsavel começa com o nome OU contém ", Nome" OU termina com ", Nome"
+      if (nomeUsuarioLogado) {
+        const paramIndex1 = params.length + 1;
+        const paramIndex2 = params.length + 2;
+        const paramIndex3 = params.length + 3;
+        const paramIndex4 = params.length + 4;
+        conditions.push(`(
+          responsavel = $${paramIndex1} OR 
+          responsavel ILIKE $${paramIndex2} OR 
+          responsavel ILIKE $${paramIndex3} OR 
+          responsavel ILIKE $${paramIndex4} OR
+          responsavel IS NULL
+        )`);
+        params.push('Geral', `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`);
+      }
       
       if (search) {
         conditions.push(`(titulo ILIKE $${params.length + 1} OR descricao ILIKE $${params.length + 1} OR responsavel ILIKE $${params.length + 1})`);
@@ -683,11 +702,36 @@ export const SQL_QUERIES = {
     },
 
     // Contar atividades
-    count: (search?: string, status?: string, prioridade?: string, tipo?: string) => {
+    count: (search?: string, status?: string, prioridade?: string, tipo?: string, nomeUsuarioLogado?: string, modo?: string) => {
       let query = 'SELECT COUNT(*) as total FROM atividades';
       
       const params: any[] = [];
       const conditions: string[] = [];
+      
+      // Filtrar por modo: 'recebidas' (onde é responsável) ou 'criadas' (onde é criador)
+      if (nomeUsuarioLogado) {
+        if (modo === 'criadas') {
+          // Modo "Criadas": mostrar atividades onde o usuário é o criador
+          conditions.push(`"criadoPor" = $${params.length + 1}`);
+          params.push(nomeUsuarioLogado);
+        } else {
+          // Modo "Recebidas" (padrão): mostrar atividades onde:
+          // - responsavel = 'Geral' OU
+          // - responsavel contém o nome do usuário logado (ex: "Felipe" ou "Felipe, Anderson")
+          const paramIndex1 = params.length + 1;
+          const paramIndex2 = params.length + 2;
+          const paramIndex3 = params.length + 3;
+          const paramIndex4 = params.length + 4;
+          conditions.push(`(
+            responsavel = $${paramIndex1} OR 
+            responsavel ILIKE $${paramIndex2} OR 
+            responsavel ILIKE $${paramIndex3} OR 
+            responsavel ILIKE $${paramIndex4} OR
+            responsavel IS NULL
+          )`);
+          params.push('Geral', `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`);
+        }
+      }
       
       if (search) {
         conditions.push(`(titulo ILIKE $${params.length + 1} OR descricao ILIKE $${params.length + 1} OR responsavel ILIKE $${params.length + 1})`);

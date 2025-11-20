@@ -28,27 +28,38 @@ router.get('/', async (req, res): Promise<any> => {
       search = '', 
       status = '', 
       prioridade = '', 
-      tipo = '' 
+      tipo = '',
+      modo = 'recebidas' // 'recebidas' ou 'criadas'
     } = req.query;
 
     const pageNum = parseInt(page as string);
     const limitNum = parseInt(limit as string);
 
-    // Buscar atividades e total
+    // Buscar nome do usuário logado para filtrar atividades
+    const { query: userQuery, params: userParams } = SQL_QUERIES.usuarios.findById(req.user.id);
+    const userResult = await query(userQuery, userParams);
+    const usuarioLogado = userResult.rows[0];
+    const nomeUsuarioLogado = usuarioLogado?.nome || '';
+
+    // Buscar atividades e total (com filtro por responsável ou criador)
     const { query: atividadesQuery, params: atividadesParams } = SQL_QUERIES.atividades.findAll(
       pageNum, 
       limitNum, 
       search as string, 
       status as string, 
       prioridade as string, 
-      tipo as string
+      tipo as string,
+      nomeUsuarioLogado, // Passar nome do usuário para filtrar
+      modo as string // 'recebidas' ou 'criadas'
     );
     
     const { query: countQuery, params: countParams } = SQL_QUERIES.atividades.count(
       search as string, 
       status as string, 
       prioridade as string, 
-      tipo as string
+      tipo as string,
+      nomeUsuarioLogado, // Passar nome do usuário para filtrar
+      modo as string // 'recebidas' ou 'criadas'
     );
 
     const [atividadesResult, countResult] = await Promise.all([
@@ -103,6 +114,12 @@ router.post('/', async (req, res): Promise<any> => {
       return res.status(400).json({ error: 'Título é obrigatório' });
     }
 
+    // Buscar nome do usuário que está criando a atividade
+    const { query: userQuery, params: userParams } = SQL_QUERIES.usuarios.findById(req.user.id);
+    const userResult = await query(userQuery, userParams);
+    const usuarioCriador = userResult.rows[0];
+    const nomeCriador = usuarioCriador?.nome || '';
+
     // Verificar estrutura da tabela para determinar qual coluna usar
     const schemaQuery = `
       SELECT column_name
@@ -148,17 +165,18 @@ router.post('/', async (req, res): Promise<any> => {
     try {
       // Criar query usando "nome" sempre (estrutura atual do banco)
       const createQuery = `
-        INSERT INTO atividades (id, nome, descricao, tipo, prioridade, status, responsavel, prazo, "createdAt", "updatedAt")
-        VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+        INSERT INTO atividades (id, nome, descricao, tipo, prioridade, status, responsavel, "criadoPor", prazo, "createdAt", "updatedAt")
+        VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
         RETURNING *
       `;
       const params = [
-        titulo || 'Sem título', // Garantir que nunca seja null
+        titulo || 'Sem título',
         descricao || null,
         tipo || 'tarefa',
         prioridade || 'media',
         'pendente',
         responsavel || null,
+        nomeCriador || null, // Campo criadoPor
         prazo ? new Date(prazo + 'T00:00:00Z') : null
       ];
       

@@ -41,6 +41,7 @@ export interface AtividadeFilters {
   status?: string;
   prioridade?: string;
   tipo?: string;
+  modo?: 'recebidas' | 'criadas';
 }
 
 export function useAtividades(filters: AtividadeFilters = {}) {
@@ -55,6 +56,7 @@ export function useAtividades(filters: AtividadeFilters = {}) {
       if (filters.status) params.append('status', filters.status);
       if (filters.prioridade) params.append('prioridade', filters.prioridade);
       if (filters.tipo) params.append('tipo', filters.tipo);
+      if (filters.modo) params.append('modo', filters.modo);
 
       const response = await api.get(`/atividades?${params.toString()}`);
       return response.data;

@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { 
   Plus, 
   Search, 
@@ -47,13 +47,15 @@ export default function Atividades() {
 
   const [showForm, setShowForm] = useState(false);
   const [editingAtividade, setEditingAtividade] = useState<Atividade | null>(null);
+  const [modoVisualizacao, setModoVisualizacao] = useState<'recebidas' | 'criadas'>('recebidas');
   const [filters, setFilters] = useState<AtividadeFilters>({
     page: 1,
     limit: 50,
     search: '',
     status: '',
     prioridade: '',
-    tipo: ''
+    tipo: '',
+    modo: 'recebidas'
   });
 
   const { data: atividadesData, isLoading, error } = useAtividades(filters);
@@ -110,6 +112,11 @@ export default function Atividades() {
     });
   }, [atividades]);
 
+  // Atualizar filtros quando modo de visualização mudar
+  useEffect(() => {
+    setFilters(prev => ({ ...prev, modo: modoVisualizacao, page: 1 }));
+  }, [modoVisualizacao]);
+
   return (
     <div className="p-6 relative">
       <div className="flex justify-between items-center mb-6">
@@ -124,6 +131,37 @@ export default function Atividades() {
           <Plus className="w-4 h-4" />
           Nova Atividade
         </button>
+      </div>
+
+      {/* Tabs de visualização */}
+      <div className="mb-6">
+        <div className="flex gap-2 border-b border-gray-200">
+          <button
+            onClick={() => setModoVisualizacao('recebidas')}
+            className={`px-4 py-2 font-medium text-sm transition-colors ${
+              modoVisualizacao === 'recebidas'
+                ? 'text-blue-600 border-b-2 border-blue-600'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Recebidas
+          </button>
+          <button
+            onClick={() => setModoVisualizacao('criadas')}
+            className={`px-4 py-2 font-medium text-sm transition-colors ${
+              modoVisualizacao === 'criadas'
+                ? 'text-blue-600 border-b-2 border-blue-600'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Criadas
+          </button>
+        </div>
+        <p className="mt-2 text-sm text-gray-500">
+          {modoVisualizacao === 'recebidas' 
+            ? 'Atividades designadas para você como responsável'
+            : 'Atividades que você criou e deseja supervisionar'}
+        </p>
       </div>
 
       {/* Erro */}

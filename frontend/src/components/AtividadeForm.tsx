@@ -1,12 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { X, Save, Calendar, User} from 'lucide-react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { X, Save, Calendar, User, XCircle} from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useCreateAtividade, useUpdateAtividade, Atividade, CreateAtividadeData, UpdateAtividadeData } from '../hooks/useAtividades';
+import { useUsuarios } from '../hooks/useUsuarios';
 
 interface AtividadeFormProps {
   atividade?: Atividade | null;
   onClose: () => void;
 }
+
+// Função para remover acentos e normalizar texto para busca
+const normalizeText = (text: string): string => {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+};
 
 export default function AtividadeForm({ atividade, onClose }: AtividadeFormProps) {
   const [formData, setFormData] = useState({
@@ -19,14 +28,32 @@ export default function AtividadeForm({ atividade, onClose }: AtividadeFormProps
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [searchResponsavel, setSearchResponsavel] = useState('');
+  const [showResponsavelDropdown, setShowResponsavelDropdown] = useState(false);
+  const [responsaveisSelecionados, setResponsaveisSelecionados] = useState<string[]>([]);
+
+  const { data: usuariosData } = useUsuarios();
+  const usuarios = Array.isArray(usuariosData) ? usuariosData : [];
 
   const createAtividade = useCreateAtividade();
   const updateAtividade = useUpdateAtividade();
 
   const isEditing = !!atividade;
 
+  // Filtrar usuários baseado na busca
+  const usuariosFiltrados = useMemo(() => {
+    if (!searchResponsavel.trim()) {
+      return usuarios;
+    }
+    const searchNormalized = normalizeText(searchResponsavel);
+    return usuarios.filter(usuario => 
+      normalizeText(usuario.nome).includes(searchNormalized)
+    );
+  }, [usuarios, searchResponsavel]);
+
   useEffect(() => {
     if (atividade) {
+      const responsaveis = atividade.responsavel ? atividade.responsavel.split(',').map(r => r.trim()) : [];
       setFormData({
         titulo: atividade.titulo,
         descricao: atividade.descricao || '',
@@ -35,8 +62,33 @@ export default function AtividadeForm({ atividade, onClose }: AtividadeFormProps
         responsavel: atividade.responsavel || '',
         prazo: atividade.prazo ? new Date(atividade.prazo).toISOString().slice(0, 10) : ''
       });
+      setResponsaveisSelecionados(responsaveis);
     }
   }, [atividade]);
+
+  // Atualizar formData.responsavel quando responsaveisSelecionados mudar
+  useEffect(() => {
+    if (responsaveisSelecionados.length > 0) {
+      setFormData(prev => ({ ...prev, responsavel: responsaveisSelecionados.join(', ') }));
+    } else {
+      setFormData(prev => ({ ...prev, responsavel: '' }));
+    }
+  }, [responsaveisSelecionados]);
+
+  // Fechar dropdown ao clicar fora
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.responsavel-dropdown-container')) {
+        setShowResponsavelDropdown(false);
+      }
+    };
+
+    if (showResponsavelDropdown) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, [showResponsavelDropdown]);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -92,6 +144,25 @@ export default function AtividadeForm({ atividade, onClose }: AtividadeFormProps
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
     }
+  };
+
+  const handleSelectResponsavel = (nome: string) => {
+    if (nome === 'Geral') {
+      // Se selecionar Geral, limpar outros e deixar só Geral
+      setResponsaveisSelecionados(['Geral']);
+    } else {
+      // Remover Geral se existir e adicionar o novo nome
+      const novosResponsaveis = responsaveisSelecionados.filter(r => r !== 'Geral');
+      if (!novosResponsaveis.includes(nome)) {
+        setResponsaveisSelecionados([...novosResponsaveis, nome]);
+      }
+    }
+    setSearchResponsavel('');
+    setShowResponsavelDropdown(false);
+  };
+
+  const handleRemoveResponsavel = (nome: string) => {
+    setResponsaveisSelecionados(prev => prev.filter(r => r !== nome));
   };
 
   const prioridadeOptions = [
@@ -194,18 +265,95 @@ export default function AtividadeForm({ atividade, onClose }: AtividadeFormProps
           </div>
 
           {/* Responsável */}
-          <div>
+          <div className="relative responsavel-dropdown-container">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               <User className="w-4 h-4 inline mr-1" />
               Responsável
             </label>
-            <input
-              type="text"
-              value={formData.responsavel}
-              onChange={(e) => handleInputChange('responsavel', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              placeholder="Nome da pessoa responsável (opcional)"
-            />
+            
+            {/* Tags dos responsáveis selecionados */}
+            {responsaveisSelecionados.length > 0 && (
+              <div className="flex flex-wrap gap-2 mb-2">
+                {responsaveisSelecionados.map((nome) => (
+                  <span
+                    key={nome}
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm"
+                  >
+                    {nome}
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveResponsavel(nome)}
+                      className="hover:text-blue-600"
+                    >
+                      <XCircle className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Input de busca */}
+            <div className="relative">
+              <input
+                type="text"
+                value={searchResponsavel}
+                onChange={(e) => {
+                  setSearchResponsavel(e.target.value);
+                  setShowResponsavelDropdown(true);
+                }}
+                onFocus={() => setShowResponsavelDropdown(true)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                placeholder="Digite para buscar usuário (ex: 'fel' para Felipe) ou 'Geral'"
+              />
+              
+              {/* Dropdown de sugestões */}
+              {showResponsavelDropdown && (
+                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                  {/* Opção Geral */}
+                  {normalizeText('Geral').includes(normalizeText(searchResponsavel)) && (
+                    <button
+                      type="button"
+                      onClick={() => handleSelectResponsavel('Geral')}
+                      className="w-full text-left px-4 py-2 hover:bg-blue-50 transition-colors flex items-center gap-2"
+                    >
+                      <User className="w-4 h-4 text-gray-400" />
+                      <span className="font-semibold text-blue-600">Geral</span>
+                      <span className="text-xs text-gray-500">(Todos os usuários)</span>
+                    </button>
+                  )}
+                  
+                  {/* Lista de usuários */}
+                  {usuariosFiltrados.length > 0 ? (
+                    usuariosFiltrados.map((usuario) => (
+                      <button
+                        key={usuario.id}
+                        type="button"
+                        onClick={() => handleSelectResponsavel(usuario.nome)}
+                        disabled={responsaveisSelecionados.includes(usuario.nome)}
+                        className={`w-full text-left px-4 py-2 hover:bg-blue-50 transition-colors flex items-center gap-2 ${
+                          responsaveisSelecionados.includes(usuario.nome) ? 'opacity-50 cursor-not-allowed' : ''
+                        }`}
+                      >
+                        <User className="w-4 h-4 text-gray-400" />
+                        <span>{usuario.nome}</span>
+                        {responsaveisSelecionados.includes(usuario.nome) && (
+                          <span className="text-xs text-gray-500 ml-auto">(já selecionado)</span>
+                        )}
+                      </button>
+                    ))
+                  ) : searchResponsavel.trim() ? (
+                    <div className="px-4 py-2 text-sm text-gray-500">
+                      Nenhum usuário encontrado
+                    </div>
+                  ) : null}
+                </div>
+              )}
+            </div>
+            
+            {/* Instrução */}
+            <p className="mt-1 text-xs text-gray-500">
+              Selecione um ou mais responsáveis. Use "Geral" para que todos vejam a atividade.
+            </p>
           </div>
 
           {/* Prazo */}
