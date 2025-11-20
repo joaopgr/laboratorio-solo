@@ -648,27 +648,20 @@ export const SQL_QUERIES = {
       // Filtrar por modo: 'recebidas' (onde é responsável) ou 'criadas' (onde é criador)
       if (nomeUsuarioLogado) {
         if (modo === 'criadas') {
-          // Modo "Criadas": mostrar atividades onde o usuário é o criador
-          // Lógica simples: criadoPor = nomeUsuario
+          // Criadas: apenas onde criadoPor = nomeUsuario
           conditions.push(`LOWER(TRIM("criadoPor")) = LOWER(TRIM($${params.length + 1}))`);
           params.push(nomeUsuarioLogado);
         } else {
-          // Modo "Recebidas": mostrar atividades onde o usuário é responsável E não é o criador
-          // Lógica simples: responsavel contém nomeUsuario E criadoPor != nomeUsuario
-          const paramIndex1 = params.length + 1;
-          const paramIndex2 = params.length + 2;
-          const paramIndex3 = params.length + 3;
-          const paramIndex4 = params.length + 4;
-          const paramIndex5 = params.length + 5;
+          // Recebidas: onde responsavel contém nomeUsuario E criadoPor != nomeUsuario
+          const nomeParam = params.length + 1;
           conditions.push(`(
-            (responsavel = $${paramIndex1} OR 
-            LOWER(TRIM(responsavel)) = LOWER(TRIM($${paramIndex2})) OR
-            LOWER(responsavel) LIKE LOWER($${paramIndex3}) OR 
-            LOWER(responsavel) LIKE LOWER($${paramIndex4}) OR 
-            LOWER(responsavel) LIKE LOWER($${paramIndex5}))
-            AND (LOWER(TRIM("criadoPor")) != LOWER(TRIM($${paramIndex2})) OR "criadoPor" IS NULL)
+            (responsavel = 'Geral' OR 
+             LOWER(responsavel) LIKE LOWER($${nomeParam}) OR
+             LOWER(responsavel) LIKE LOWER($${params.length + 2}) OR
+             LOWER(responsavel) LIKE LOWER($${params.length + 3}))
+            AND LOWER(TRIM(COALESCE("criadoPor", ''))) != LOWER(TRIM($${nomeParam}))
           )`);
-          params.push('Geral', nomeUsuarioLogado, `%${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`);
+          params.push(`%${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`);
         }
       }
       
