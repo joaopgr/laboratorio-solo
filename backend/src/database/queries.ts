@@ -720,32 +720,26 @@ export const SQL_QUERIES = {
       if (nomeUsuarioLogado) {
         if (modo === 'criadas') {
           // Modo "Criadas": mostrar atividades onde o usuário é o criador
-          // Usar TRIM e comparação case-insensitive para garantir match
-          // IMPORTANTE: Se criadoPor for NULL ou vazio, não deve aparecer em "Criadas"
-          conditions.push(`"criadoPor" IS NOT NULL AND TRIM("criadoPor") ILIKE TRIM($${params.length + 1})`);
+          // Comparação exata e case-insensitive: criadoPor = nomeUsuario
+          conditions.push(`LOWER(TRIM("criadoPor")) = LOWER(TRIM($${params.length + 1}))`);
           params.push(nomeUsuarioLogado);
         } else {
-          // Modo "Recebidas" (padrão): mostrar atividades onde:
-          // - responsavel = 'Geral' OU
-          // - responsavel contém o nome do usuário logado (ex: "Felipe" ou "Felipe, Anderson" ou "Carlos, Felipe")
-          // IMPORTANTE: Excluir atividades onde o usuário é o criador (essas aparecem em "Criadas")
-          // Usar múltiplas condições para garantir match exato do nome (não apenas substring)
+          // Modo "Recebidas": mostrar atividades onde o usuário é responsável E não é o criador
+          // Lógica simples: responsavel contém nomeUsuario E criadoPor != nomeUsuario
           const paramIndex1 = params.length + 1;
           const paramIndex2 = params.length + 2;
           const paramIndex3 = params.length + 3;
           const paramIndex4 = params.length + 4;
           const paramIndex5 = params.length + 5;
-          const paramIndex6 = params.length + 6;
           conditions.push(`(
             (responsavel = $${paramIndex1} OR 
-            TRIM(responsavel) = TRIM($${paramIndex2}) OR
-            responsavel ILIKE $${paramIndex3} OR 
-            responsavel ILIKE $${paramIndex4} OR 
-            responsavel ILIKE $${paramIndex5} OR
-            responsavel IS NULL)
-            AND ("criadoPor" IS NULL OR TRIM("criadoPor") NOT ILIKE TRIM($${paramIndex6}))
+            LOWER(TRIM(responsavel)) = LOWER(TRIM($${paramIndex2})) OR
+            LOWER(responsavel) LIKE LOWER($${paramIndex3}) OR 
+            LOWER(responsavel) LIKE LOWER($${paramIndex4}) OR 
+            LOWER(responsavel) LIKE LOWER($${paramIndex5}))
+            AND (LOWER(TRIM("criadoPor")) != LOWER(TRIM($${paramIndex2})) OR "criadoPor" IS NULL)
           )`);
-          params.push('Geral', nomeUsuarioLogado, `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`, nomeUsuarioLogado);
+          params.push('Geral', nomeUsuarioLogado, `%${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`);
         }
       }
       
