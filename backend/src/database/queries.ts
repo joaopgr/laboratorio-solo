@@ -649,8 +649,9 @@ export const SQL_QUERIES = {
       if (nomeUsuarioLogado) {
         if (modo === 'criadas') {
           // Modo "Criadas": mostrar atividades onde o usuário é o criador
-          // Usar TRIM e comparação case-insensitive para garantir match
+          // Usar comparação exata com TRIM e case-insensitive (ILIKE para case-insensitive)
           // IMPORTANTE: Se criadoPor for NULL ou vazio, não deve aparecer em "Criadas"
+          // Usar ILIKE para case-insensitive mas com match exato (sem %)
           conditions.push(`"criadoPor" IS NOT NULL AND TRIM("criadoPor") ILIKE TRIM($${params.length + 1})`);
           params.push(nomeUsuarioLogado);
         } else {
@@ -669,7 +670,7 @@ export const SQL_QUERIES = {
             responsavel ILIKE $${paramIndex3} OR 
             responsavel ILIKE $${paramIndex4} OR
             responsavel IS NULL)
-            AND (COALESCE("criadoPor", '') = '' OR TRIM("criadoPor") != TRIM($${paramIndex5}))
+            AND ("criadoPor" IS NULL OR TRIM("criadoPor") NOT ILIKE TRIM($${paramIndex5}))
           )`);
           params.push('Geral', `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`, nomeUsuarioLogado);
         }
@@ -743,7 +744,7 @@ export const SQL_QUERIES = {
             responsavel ILIKE $${paramIndex3} OR 
             responsavel ILIKE $${paramIndex4} OR
             responsavel IS NULL)
-            AND (COALESCE("criadoPor", '') = '' OR TRIM("criadoPor") != TRIM($${paramIndex5}))
+            AND ("criadoPor" IS NULL OR TRIM("criadoPor") NOT ILIKE TRIM($${paramIndex5}))
           )`);
           params.push('Geral', `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`, nomeUsuarioLogado);
         }

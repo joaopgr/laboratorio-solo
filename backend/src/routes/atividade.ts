@@ -47,6 +47,20 @@ router.get('/', async (req: any, res): Promise<any> => {
       modo: modo,
       queryParams: { page, limit, search, status, prioridade, tipo }
     });
+    
+    // Log da query que será executada
+    const { query: atividadesQueryDebug, params: atividadesParamsDebug } = SQL_QUERIES.atividades.findAll(
+      pageNum, 
+      limitNum, 
+      search as string, 
+      status as string, 
+      prioridade as string, 
+      tipo as string,
+      nomeUsuarioLogado,
+      modo as string
+    );
+    console.log('📋 Query que será executada:', atividadesQueryDebug);
+    console.log('📋 Parâmetros:', atividadesParamsDebug);
 
     // Buscar atividades e total (com filtro por responsável ou criador)
     const { query: atividadesQuery, params: atividadesParams } = SQL_QUERIES.atividades.findAll(
