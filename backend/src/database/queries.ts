@@ -650,8 +650,8 @@ export const SQL_QUERIES = {
         if (modo === 'criadas') {
           // Modo "Criadas": mostrar atividades onde o usuário é o criador
           // Usar TRIM e comparação case-insensitive para garantir match
-          // Verificar se coluna existe (usar COALESCE para evitar erro se não existir)
-          conditions.push(`COALESCE(TRIM("criadoPor"), '') ILIKE TRIM($${params.length + 1})`);
+          // IMPORTANTE: Se criadoPor for NULL ou vazio, não deve aparecer em "Criadas"
+          conditions.push(`"criadoPor" IS NOT NULL AND TRIM("criadoPor") ILIKE TRIM($${params.length + 1})`);
           params.push(nomeUsuarioLogado);
         } else {
           // Modo "Recebidas" (padrão): mostrar atividades onde:
@@ -721,8 +721,8 @@ export const SQL_QUERIES = {
         if (modo === 'criadas') {
           // Modo "Criadas": mostrar atividades onde o usuário é o criador
           // Usar TRIM e comparação case-insensitive para garantir match
-          // Verificar se coluna existe (usar COALESCE para evitar erro se não existir)
-          conditions.push(`COALESCE(TRIM("criadoPor"), '') ILIKE TRIM($${params.length + 1})`);
+          // IMPORTANTE: Se criadoPor for NULL ou vazio, não deve aparecer em "Criadas"
+          conditions.push(`"criadoPor" IS NOT NULL AND TRIM("criadoPor") ILIKE TRIM($${params.length + 1})`);
           params.push(nomeUsuarioLogado);
         } else {
           // Modo "Recebidas" (padrão): mostrar atividades onde:

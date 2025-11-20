@@ -44,7 +44,8 @@ router.get('/', async (req: any, res): Promise<any> => {
     console.log('🔍 Buscando atividades - Usuário logado:', {
       userId: req.user.id,
       nomeUsuarioLogado: nomeUsuarioLogado,
-      modo: modo
+      modo: modo,
+      queryParams: { page, limit, search, status, prioridade, tipo }
     });
 
     // Buscar atividades e total (com filtro por responsável ou criador)
@@ -174,23 +175,61 @@ router.post('/', async (req: any, res): Promise<any> => {
     // A detecção acima está sendo usada apenas para logging
     const useNomeForcado = true; // Forçar uso de "nome" até migração completa
     
+    // Verificar se coluna "criadoPor" existe
+    const checkCriadoPorQuery = `
+      SELECT column_name
+      FROM information_schema.columns
+      WHERE table_name = 'atividades' AND table_schema = 'public'
+      AND column_name = 'criadoPor';
+    `;
+    let temCriadoPor = false;
+    try {
+      const criadoPorResult = await query(checkCriadoPorQuery);
+      temCriadoPor = criadoPorResult.rows.length > 0;
+      console.log('🔍 Coluna criadoPor existe?', temCriadoPor);
+    } catch (err) {
+      console.log('⚠️ Erro ao verificar coluna criadoPor:', err);
+    }
+    
     try {
       // Criar query usando "nome" sempre (estrutura atual do banco)
-      const createQuery = `
-        INSERT INTO atividades (id, nome, descricao, tipo, prioridade, status, responsavel, "criadoPor", prazo, "createdAt", "updatedAt")
-        VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
-        RETURNING *
-      `;
-      const params = [
-        titulo || 'Sem título',
-        descricao || null,
-        tipo || 'tarefa',
-        prioridade || 'media',
-        'pendente',
-        responsavel || null,
-        nomeCriador || null, // Campo criadoPor
-        prazo ? new Date(prazo + 'T00:00:00Z') : null
-      ];
+      let createQuery: string;
+      let params: any[];
+      
+      if (temCriadoPor) {
+        createQuery = `
+          INSERT INTO atividades (id, nome, descricao, tipo, prioridade, status, responsavel, "criadoPor", prazo, "createdAt", "updatedAt")
+          VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+          RETURNING *
+        `;
+        params = [
+          titulo || 'Sem título',
+          descricao || null,
+          tipo || 'tarefa',
+          prioridade || 'media',
+          'pendente',
+          responsavel || null,
+          nomeCriador || null, // Campo criadoPor
+          prazo ? new Date(prazo + 'T00:00:00Z') : null
+        ];
+      } else {
+        // Se coluna não existe, criar sem ela (compatibilidade)
+        console.warn('⚠️ Coluna criadoPor não existe - criando atividade sem esse campo');
+        createQuery = `
+          INSERT INTO atividades (id, nome, descricao, tipo, prioridade, status, responsavel, prazo, "createdAt", "updatedAt")
+          VALUES (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+          RETURNING *
+        `;
+        params = [
+          titulo || 'Sem título',
+          descricao || null,
+          tipo || 'tarefa',
+          prioridade || 'media',
+          'pendente',
+          responsavel || null,
+          prazo ? new Date(prazo + 'T00:00:00Z') : null
+        ];
+      }
       
       console.log('📝 Executando INSERT com params:', { 
         titulo: params[0], 
@@ -199,11 +238,19 @@ router.post('/', async (req: any, res): Promise<any> => {
         prioridade: params[3],
         status: params[4],
         responsavel: params[5],
-        criadoPor: params[6]
+        criadoPor: temCriadoPor ? params[6] : 'N/A (coluna não existe)',
+        temCriadoPor
       });
       
       const result = await query(createQuery, params);
       const atividade = result.rows[0];
+      
+      console.log('✅ Atividade criada:', {
+        id: atividade.id,
+        titulo: atividade.nome || atividade.titulo,
+        criadoPor: atividade.criadoPor || 'NULL',
+        responsavel: atividade.responsavel
+      });
 
       res.status(201).json(mapearAtividadeParaFrontend(atividade));
     } catch (dbError: any) {
