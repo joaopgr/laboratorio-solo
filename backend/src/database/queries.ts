@@ -657,18 +657,21 @@ export const SQL_QUERIES = {
           // Modo "Recebidas" (padrão): mostrar atividades onde:
           // - responsavel = 'Geral' OU
           // - responsavel contém o nome do usuário logado (ex: "Felipe" ou "Felipe, Anderson")
+          // IMPORTANTE: Excluir atividades onde o usuário é o criador (essas aparecem em "Criadas")
           const paramIndex1 = params.length + 1;
           const paramIndex2 = params.length + 2;
           const paramIndex3 = params.length + 3;
           const paramIndex4 = params.length + 4;
+          const paramIndex5 = params.length + 5;
           conditions.push(`(
-            responsavel = $${paramIndex1} OR 
+            (responsavel = $${paramIndex1} OR 
             responsavel ILIKE $${paramIndex2} OR 
             responsavel ILIKE $${paramIndex3} OR 
             responsavel ILIKE $${paramIndex4} OR
-            responsavel IS NULL
+            responsavel IS NULL)
+            AND (COALESCE("criadoPor", '') = '' OR TRIM("criadoPor") != TRIM($${paramIndex5}))
           )`);
-          params.push('Geral', `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`);
+          params.push('Geral', `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`, nomeUsuarioLogado);
         }
       }
       
@@ -728,18 +731,21 @@ export const SQL_QUERIES = {
           // Modo "Recebidas" (padrão): mostrar atividades onde:
           // - responsavel = 'Geral' OU
           // - responsavel contém o nome do usuário logado (ex: "Felipe" ou "Felipe, Anderson")
+          // IMPORTANTE: Excluir atividades onde o usuário é o criador (essas aparecem em "Criadas")
           const paramIndex1 = params.length + 1;
           const paramIndex2 = params.length + 2;
           const paramIndex3 = params.length + 3;
           const paramIndex4 = params.length + 4;
+          const paramIndex5 = params.length + 5;
           conditions.push(`(
-            responsavel = $${paramIndex1} OR 
+            (responsavel = $${paramIndex1} OR 
             responsavel ILIKE $${paramIndex2} OR 
             responsavel ILIKE $${paramIndex3} OR 
             responsavel ILIKE $${paramIndex4} OR
-            responsavel IS NULL
+            responsavel IS NULL)
+            AND (COALESCE("criadoPor", '') = '' OR TRIM("criadoPor") != TRIM($${paramIndex5}))
           )`);
-          params.push('Geral', `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`);
+          params.push('Geral', `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`, nomeUsuarioLogado);
         }
       }
       
