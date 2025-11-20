@@ -653,15 +653,24 @@ export const SQL_QUERIES = {
           params.push(nomeUsuarioLogado);
         } else {
           // Recebidas: onde responsavel contém nomeUsuario E criadoPor != nomeUsuario
-          const nomeParam = params.length + 1;
+          // Primeiro adicionar o nome exato para comparar com criadoPor
+          const nomeExatoParam = params.length + 1;
+          params.push(nomeUsuarioLogado);
+          
+          // Depois adicionar os padrões LIKE para buscar no responsavel
+          const likeParam1 = params.length + 1;
+          const likeParam2 = params.length + 2;
+          const likeParam3 = params.length + 3;
+          params.push(`%${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`);
+          
           conditions.push(`(
             (responsavel = 'Geral' OR 
-             LOWER(responsavel) LIKE LOWER($${nomeParam}) OR
-             LOWER(responsavel) LIKE LOWER($${params.length + 2}) OR
-             LOWER(responsavel) LIKE LOWER($${params.length + 3}))
-            AND LOWER(TRIM(COALESCE("criadoPor", ''))) != LOWER(TRIM($${nomeParam}))
+             LOWER(responsavel) LIKE LOWER($${likeParam1}) OR
+             LOWER(responsavel) LIKE LOWER($${likeParam2}) OR
+             LOWER(responsavel) LIKE LOWER($${likeParam3}))
+            AND "criadoPor" IS NOT NULL
+            AND LOWER(TRIM("criadoPor")) != LOWER(TRIM($${nomeExatoParam}))
           )`);
-          params.push(`%${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`);
         }
       }
       
@@ -718,21 +727,27 @@ export const SQL_QUERIES = {
           params.push(nomeUsuarioLogado);
         } else {
           // Modo "Recebidas": mostrar atividades onde o usuário é responsável E não é o criador
-          // Lógica simples: responsavel contém nomeUsuario E criadoPor != nomeUsuario
-          const paramIndex1 = params.length + 1;
-          const paramIndex2 = params.length + 2;
-          const paramIndex3 = params.length + 3;
-          const paramIndex4 = params.length + 4;
-          const paramIndex5 = params.length + 5;
-          conditions.push(`(
-            (responsavel = $${paramIndex1} OR 
-            LOWER(TRIM(responsavel)) = LOWER(TRIM($${paramIndex2})) OR
-            LOWER(responsavel) LIKE LOWER($${paramIndex3}) OR 
-            LOWER(responsavel) LIKE LOWER($${paramIndex4}) OR 
-            LOWER(responsavel) LIKE LOWER($${paramIndex5}))
-            AND (LOWER(TRIM("criadoPor")) != LOWER(TRIM($${paramIndex2})) OR "criadoPor" IS NULL)
-          )`);
+          // Primeiro adicionar o nome exato para comparar com criadoPor
+          const nomeExatoParam = params.length + 1;
+          params.push(nomeUsuarioLogado);
+          
+          // Depois adicionar os padrões para buscar no responsavel
+          const geralParam = params.length + 1;
+          const nomeExatoParam2 = params.length + 2;
+          const likeParam1 = params.length + 3;
+          const likeParam2 = params.length + 4;
+          const likeParam3 = params.length + 5;
           params.push('Geral', nomeUsuarioLogado, `%${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`);
+          
+          conditions.push(`(
+            (responsavel = $${geralParam} OR 
+            LOWER(TRIM(responsavel)) = LOWER(TRIM($${nomeExatoParam2})) OR
+            LOWER(responsavel) LIKE LOWER($${likeParam1}) OR 
+            LOWER(responsavel) LIKE LOWER($${likeParam2}) OR 
+            LOWER(responsavel) LIKE LOWER($${likeParam3}))
+            AND "criadoPor" IS NOT NULL
+            AND LOWER(TRIM("criadoPor")) != LOWER(TRIM($${nomeExatoParam}))
+          )`);
         }
       }
       
