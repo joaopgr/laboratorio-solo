@@ -666,13 +666,14 @@ export const SQL_QUERIES = {
           const paramIndex5 = params.length + 5;
           conditions.push(`(
             (responsavel = $${paramIndex1} OR 
-            responsavel ILIKE $${paramIndex2} OR 
+            TRIM(responsavel) = TRIM($${paramIndex2}) OR
             responsavel ILIKE $${paramIndex3} OR 
-            responsavel ILIKE $${paramIndex4} OR
+            responsavel ILIKE $${paramIndex4} OR 
+            responsavel ILIKE $${paramIndex5} OR
             responsavel IS NULL)
-            AND ("criadoPor" IS NULL OR TRIM("criadoPor") NOT ILIKE TRIM($${paramIndex5}))
+            AND ("criadoPor" IS NULL OR TRIM("criadoPor") NOT ILIKE TRIM($${paramIndex6}))
           )`);
-          params.push('Geral', `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`, nomeUsuarioLogado);
+          params.push('Geral', nomeUsuarioLogado, `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`, nomeUsuarioLogado);
         }
       }
       
@@ -731,22 +732,25 @@ export const SQL_QUERIES = {
         } else {
           // Modo "Recebidas" (padrão): mostrar atividades onde:
           // - responsavel = 'Geral' OU
-          // - responsavel contém o nome do usuário logado (ex: "Felipe" ou "Felipe, Anderson")
+          // - responsavel contém o nome do usuário logado (ex: "Felipe" ou "Felipe, Anderson" ou "Carlos, Felipe")
           // IMPORTANTE: Excluir atividades onde o usuário é o criador (essas aparecem em "Criadas")
+          // Usar múltiplas condições para garantir match exato do nome (não apenas substring)
           const paramIndex1 = params.length + 1;
           const paramIndex2 = params.length + 2;
           const paramIndex3 = params.length + 3;
           const paramIndex4 = params.length + 4;
           const paramIndex5 = params.length + 5;
+          const paramIndex6 = params.length + 6;
           conditions.push(`(
             (responsavel = $${paramIndex1} OR 
-            responsavel ILIKE $${paramIndex2} OR 
+            TRIM(responsavel) = TRIM($${paramIndex2}) OR
             responsavel ILIKE $${paramIndex3} OR 
-            responsavel ILIKE $${paramIndex4} OR
+            responsavel ILIKE $${paramIndex4} OR 
+            responsavel ILIKE $${paramIndex5} OR
             responsavel IS NULL)
-            AND ("criadoPor" IS NULL OR TRIM("criadoPor") NOT ILIKE TRIM($${paramIndex5}))
+            AND ("criadoPor" IS NULL OR TRIM("criadoPor") NOT ILIKE TRIM($${paramIndex6}))
           )`);
-          params.push('Geral', `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`, nomeUsuarioLogado);
+          params.push('Geral', nomeUsuarioLogado, `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`, nomeUsuarioLogado);
         }
       }
       
