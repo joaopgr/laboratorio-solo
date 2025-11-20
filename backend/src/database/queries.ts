@@ -664,6 +664,7 @@ export const SQL_QUERIES = {
           const paramIndex3 = params.length + 3;
           const paramIndex4 = params.length + 4;
           const paramIndex5 = params.length + 5;
+          const paramIndex6 = params.length + 6;
           conditions.push(`(
             (responsavel = $${paramIndex1} OR 
             TRIM(responsavel) = TRIM($${paramIndex2}) OR
