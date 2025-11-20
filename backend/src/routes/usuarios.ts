@@ -11,7 +11,7 @@ const createUsuarioSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
   email: z.string().email('Email inválido'),
   senha: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
-  role: z.enum(['admin', 'analista', 'visualizador']).default('analista'),
+  role: z.enum(['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante']).default('funcionario'),
   ativo: z.boolean().default(true),
 });
 
@@ -19,7 +19,7 @@ const updateUsuarioSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').optional(),
   email: z.string().email('Email inválido').optional(),
   senha: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres').optional(),
-  role: z.enum(['admin', 'analista', 'visualizador']).optional(),
+  role: z.enum(['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante']).optional(),
   ativo: z.boolean().optional(),
 });
 

@@ -9,7 +9,7 @@ import { authenticateToken, authorizeRoles } from './auth'
 import { getUfesLogoBase64, getLabLogoBase64, getSeloBase64, getAssinaturaBase64 } from '../utils/imageUtils'
 
 const router = Router()
-router.use(authenticateToken, authorizeRoles('admin', 'analista', 'visualizador', 'cliente'))
+router.use(authenticateToken, authorizeRoles('admin', 'funcionario', 'estagiario', 'recepcao', 'visitante', 'cliente'))
 const pastaLaudos = 'C:\\xampp\\htdocs\\lab\\laudos'
 
 // Função auxiliar para formatar valores (trata 0 como valor válido)

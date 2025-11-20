@@ -36,7 +36,7 @@ function App() {
             }
           />
           <Route path="/" element={
-            <ProtectedRoute allowedRoles={['admin', 'analista', 'visualizador']} redirectTo="/cliente">
+            <ProtectedRoute allowedRoles={['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante']} redirectTo="/cliente">
               <Layout />
             </ProtectedRoute>
           }>

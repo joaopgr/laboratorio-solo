@@ -18,7 +18,7 @@ const logsFiltersSchema = z.object({
 });
 
 // GET /api/logs - Listar logs
-router.get('/', authenticateToken, authorizeRoles('admin', 'analista'), async (req, res): Promise<any> => {
+router.get('/', authenticateToken, authorizeRoles('admin', 'funcionario', 'estagiario'), async (req, res): Promise<any> => {
   try {
     const filters = logsFiltersSchema.parse(req.query);
     

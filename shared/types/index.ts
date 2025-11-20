@@ -30,7 +30,7 @@ export const getAnaliseValues = (tipoAnalise: TipoAnalise) => {
 // Manter compatibilidade com código existente
 export const ANALISE_VALUES = ANALISE_VALUES_SOLO;
 
-export type UsuarioRole = 'admin' | 'analista' | 'visualizador';
+export type UsuarioRole = 'admin' | 'funcionario' | 'estagiario' | 'recepcao' | 'visitante';
 export type AuthRole = UsuarioRole | 'cliente';
 
 // Tipos de análise disponíveis

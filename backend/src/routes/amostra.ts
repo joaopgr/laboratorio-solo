@@ -9,7 +9,7 @@ import { authenticateToken, authorizeRoles } from './auth';
 const router = express.Router();
 
 // Aplicar autenticação em todas as rotas
-router.use(authenticateToken, authorizeRoles('admin', 'analista', 'visualizador'));
+router.use(authenticateToken, authorizeRoles('admin', 'funcionario', 'estagiario', 'recepcao'));
 
 // Função para gerar variações de busca para cobrir acentos
 function generateSearchVariations(term: string): string[] {

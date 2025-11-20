@@ -6,7 +6,7 @@ export interface Usuario {
   nome: string;
   email: string;
   senha: string;
-  role: 'admin' | 'analista' | 'visualizador';
+  role: 'admin' | 'funcionario' | 'estagiario' | 'recepcao' | 'visitante';
   ativo: boolean;
   createdAt: string;
 }
@@ -15,7 +15,7 @@ export interface CreateUsuarioData {
   nome: string;
   email: string;
   senha: string;
-  role: 'admin' | 'analista' | 'visualizador';
+  role: 'admin' | 'funcionario' | 'estagiario' | 'recepcao' | 'visitante';
   ativo?: boolean;
 }
 

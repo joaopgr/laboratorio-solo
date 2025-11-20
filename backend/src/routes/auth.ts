@@ -17,7 +17,7 @@ const registerSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
   email: z.string().email('Email inválido'),
   senha: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
-  role: z.enum(['admin', 'analista', 'visualizador']).default('analista'),
+  role: z.enum(['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante']).default('funcionario'),
 });
 
 const clientLoginSchema = z.object({
@@ -260,7 +260,7 @@ router.post('/logout', (req, res): any => {
 });
 
 // GET /api/auth/users - Listar todos os usuários (apenas para listagem de logs)
-router.get('/users', authenticateToken, authorizeRoles('admin', 'analista', 'visualizador'), async (req, res): Promise<any> => {
+router.get('/users', authenticateToken, authorizeRoles('admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'), async (req, res): Promise<any> => {
   try {
     const { query: usersQuery, params } = SQL_QUERIES.usuarios.findAll();
     const result = await query(usersQuery, params);

@@ -5,8 +5,10 @@ import toast from 'react-hot-toast';
 
 const ROLE_LABELS = {
   admin: 'Administrador',
-  analista: 'Analista',
-  visualizador: 'Visualizador'
+  funcionario: 'Funcionário',
+  estagiario: 'Estagiário',
+  recepcao: 'Recepção',
+  visitante: 'Visitante'
 };
 
 export function ControleUsuarios() {
@@ -180,8 +182,12 @@ export function ControleUsuarios() {
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
                         usuario.role === 'admin' 
                           ? 'bg-purple-100 text-purple-800'
-                          : usuario.role === 'analista'
+                          : usuario.role === 'funcionario'
                           ? 'bg-blue-100 text-blue-800'
+                          : usuario.role === 'estagiario'
+                          ? 'bg-green-100 text-green-800'
+                          : usuario.role === 'recepcao'
+                          ? 'bg-orange-100 text-orange-800'
                           : 'bg-gray-100 text-gray-800'
                       }`}>
                         {ROLE_LABELS[usuario.role]}
@@ -246,7 +252,7 @@ function UsuarioForm({ usuario, onClose, onSubmit }: UsuarioFormProps) {
     nome: usuario?.nome || '',
     email: usuario?.email || '',
     senha: usuario?.senha || '',
-    role: usuario?.role || 'analista',
+    role: usuario?.role || 'funcionario',
     ativo: usuario?.ativo !== undefined ? usuario.ativo : true,
   });
 
@@ -334,9 +340,11 @@ function UsuarioForm({ usuario, onClose, onSubmit }: UsuarioFormProps) {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             >
-              <option value="analista">Analista</option>
+              <option value="funcionario">Funcionário</option>
+              <option value="estagiario">Estagiário</option>
+              <option value="recepcao">Recepção</option>
+              <option value="visitante">Visitante</option>
               <option value="admin">Administrador</option>
-              <option value="visualizador">Visualizador</option>
             </select>
           </div>
 

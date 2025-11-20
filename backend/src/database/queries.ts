@@ -603,7 +603,7 @@ export const SQL_QUERIES = {
         data.nome, 
         data.email, 
         data.senha, 
-        data.role || 'analista', 
+        data.role || 'funcionario', 
         data.ativo !== undefined ? data.ativo : true
       ]
     }),

@@ -5,7 +5,7 @@ import { authenticateToken, authorizeRoles } from './auth';
 
 const router = Router();
 
-router.use(authenticateToken, authorizeRoles('admin', 'analista', 'visualizador'));
+router.use(authenticateToken, authorizeRoles('admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'));
 
 // Função helper para mapear nome -> titulo nas respostas
 function mapearAtividadeParaFrontend(atividade: any): any {

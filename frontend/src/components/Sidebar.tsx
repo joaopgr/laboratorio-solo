@@ -19,16 +19,16 @@ import { useAtividades } from '../hooks/useAtividades'
 import { useAuth } from '../contexts/AuthContext'
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'analista', 'visualizador'] },
-  { name: 'Clientes', href: '/clientes', icon: Users, roles: ['admin', 'analista', 'visualizador'] },
-  { name: 'Amostras', href: '/amostras', icon: TestTube, roles: ['admin', 'analista', 'visualizador'] },
-  { name: 'Lotes', href: '/lotes', icon: Package, roles: ['admin', 'analista', 'visualizador'] },
-  { name: 'Resultados', href: '/resultados', icon: BarChart3, roles: ['admin', 'analista', 'visualizador'] },
-  { name: 'Resultados Calculados', href: '/resultados-calculados', icon: Calculator, roles: ['admin', 'analista', 'visualizador'] },
-  { name: 'Lançamento em Lote', href: '/lancamento-resultados', icon: Zap, roles: ['admin', 'analista', 'visualizador'] },
-  { name: 'Relatórios', href: '/relatorios', icon: FileText, roles: ['admin', 'analista', 'visualizador'] },
-  { name: 'Atividades', href: '/atividades', icon: CheckSquare, roles: ['admin', 'analista', 'visualizador'] },
-  { name: 'Registro de Atividades', href: '/logs', icon: Activity, roles: ['admin', 'analista', 'visualizador'] },
+  { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'] },
+  { name: 'Clientes', href: '/clientes', icon: Users, roles: ['admin', 'funcionario', 'estagiario', 'recepcao'] },
+  { name: 'Amostras', href: '/amostras', icon: TestTube, roles: ['admin', 'funcionario', 'estagiario', 'recepcao'] },
+  { name: 'Lotes', href: '/lotes', icon: Package, roles: ['admin', 'funcionario', 'estagiario', 'recepcao'] },
+  { name: 'Resultados', href: '/resultados', icon: BarChart3, roles: ['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'] },
+  { name: 'Resultados Calculados', href: '/resultados-calculados', icon: Calculator, roles: ['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'] },
+  { name: 'Lançamento em Lote', href: '/lancamento-resultados', icon: Zap, roles: ['admin', 'funcionario', 'estagiario'] },
+  { name: 'Relatórios', href: '/relatorios', icon: FileText, roles: ['admin', 'funcionario', 'estagiario', 'visitante'] },
+  { name: 'Atividades', href: '/atividades', icon: CheckSquare, roles: ['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'] },
+  { name: 'Registro de Atividades', href: '/logs', icon: Activity, roles: ['admin', 'funcionario', 'estagiario'] },
   { name: 'Controle de Usuários', href: '/controle-usuarios', icon: UserCog, roles: ['admin'] },
 ]
 

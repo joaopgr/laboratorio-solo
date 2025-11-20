@@ -7,7 +7,7 @@ import { authenticateToken, authorizeRoles } from './auth';
 
 const router = express.Router();
 
-router.use(authenticateToken, authorizeRoles('admin', 'analista', 'visualizador'));
+router.use(authenticateToken, authorizeRoles('admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'));
 
 // Função para converter vírgula em ponto para números
 function normalizeNumber(value: string | undefined): string | undefined {
