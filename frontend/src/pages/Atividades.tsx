@@ -11,6 +11,7 @@ import {
   Flag,
   AlertCircle} from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAtividades, useDeleteAtividade, useUpdateAtividadeStatus, AtividadeFilters, Atividade } from '../hooks/useAtividades';
 import AtividadeForm from '../components/AtividadeForm';
 
@@ -45,6 +46,7 @@ export default function Atividades() {
   // Toggle simples para bloquear/desbloquear a página no futuro
   // const BLOQUEAR_PAGINA = true // DESABILITADO TEMPORARIAMENTE - Para reativar, descomente esta linha
 
+  const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [editingAtividade, setEditingAtividade] = useState<Atividade | null>(null);
   const [modoVisualizacao, setModoVisualizacao] = useState<'recebidas' | 'criadas'>('recebidas');
@@ -63,6 +65,11 @@ export default function Atividades() {
   const { data: atividadesData, isLoading, error } = useAtividades(filters);
   const deleteAtividade = useDeleteAtividade();
   const updateStatus = useUpdateAtividadeStatus();
+  
+  // Invalidar cache de atividades quando o componente monta para garantir dados atualizados
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['atividades'] });
+  }, []); // Executar apenas na montagem
 
   const atividades = atividadesData?.data || [];
   const pagination = atividadesData?.pagination;
