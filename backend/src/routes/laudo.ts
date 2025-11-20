@@ -1534,7 +1534,7 @@ router.post('/gerar-lote', async (req, res): Promise<any> => {
 })
 
 // POST /api/laudos/gerar - Gerar laudo
-router.post('/gerar', async (req, res): Promise<any> => {
+router.post('/gerar', async (req: any, res): Promise<any> => {
   try {
     const { loteId, tipoAnalise } = gerarLaudoSchema.parse(req.body)
 
@@ -1545,6 +1545,14 @@ router.post('/gerar', async (req, res): Promise<any> => {
 
     if (!lote) {
       return res.status(404).json({ error: 'Lote não encontrado' })
+    }
+
+    // Se o usuário é um cliente, verificar se o lote pertence a ele
+    if (req.user?.role === 'cliente') {
+      const clienteId = req.user?.clienteId
+      if (!clienteId || lote.clienteId !== clienteId) {
+        return res.status(403).json({ error: 'Você não tem permissão para gerar laudo deste lote' })
+      }
     }
 
     // Buscar dados do cliente (já vem aninhado no lote, mas podemos buscar caso não venha)
