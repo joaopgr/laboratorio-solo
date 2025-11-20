@@ -632,6 +632,29 @@ export const SQL_QUERIES = {
     count: () => ({
       query: 'SELECT COUNT(*) as total FROM usuarios',
       params: []
+    }),
+
+    // Deletar usuário (soft delete - marcar como inativo)
+    delete: (id: string) => ({
+      query: `
+        UPDATE usuarios 
+        SET ativo = false, "updatedAt" = NOW()
+        WHERE id = $1
+        RETURNING id, nome, email, role, ativo, "createdAt"
+      `,
+      params: [id]
+    }),
+
+    // Buscar usuário por ID incluindo senha (apenas para admin)
+    findByIdWithPassword: (id: string) => ({
+      query: 'SELECT id, nome, email, senha, role, ativo, "createdAt" FROM usuarios WHERE id = $1',
+      params: [id]
+    }),
+
+    // Buscar todos os usuários incluindo inativos (apenas para admin)
+    findAllWithInactive: () => ({
+      query: 'SELECT id, nome, email, senha, role, ativo, "createdAt" FROM usuarios ORDER BY nome',
+      params: []
     })
   },
 

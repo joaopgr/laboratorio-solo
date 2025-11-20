@@ -11,31 +11,40 @@ import {
   Zap,
   Calculator,
   CheckSquare,
-  Activity
+  Activity,
+  UserCog
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAtividades } from '../hooks/useAtividades'
+import { useAuth } from '../contexts/AuthContext'
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: Home },
-  { name: 'Clientes', href: '/clientes', icon: Users },
-  { name: 'Amostras', href: '/amostras', icon: TestTube },
-  { name: 'Lotes', href: '/lotes', icon: Package },
-  { name: 'Resultados', href: '/resultados', icon: BarChart3 },
-  { name: 'Resultados Calculados', href: '/resultados-calculados', icon: Calculator },
-  { name: 'Lançamento em Lote', href: '/lancamento-resultados', icon: Zap },
-  { name: 'Relatórios', href: '/relatorios', icon: FileText },
-  { name: 'Atividades', href: '/atividades', icon: CheckSquare },
-  { name: 'Registro de Atividades', href: '/logs', icon: Activity },
+  { name: 'Dashboard', href: '/dashboard', icon: Home, roles: ['admin', 'analista', 'visualizador'] },
+  { name: 'Clientes', href: '/clientes', icon: Users, roles: ['admin', 'analista', 'visualizador'] },
+  { name: 'Amostras', href: '/amostras', icon: TestTube, roles: ['admin', 'analista', 'visualizador'] },
+  { name: 'Lotes', href: '/lotes', icon: Package, roles: ['admin', 'analista', 'visualizador'] },
+  { name: 'Resultados', href: '/resultados', icon: BarChart3, roles: ['admin', 'analista', 'visualizador'] },
+  { name: 'Resultados Calculados', href: '/resultados-calculados', icon: Calculator, roles: ['admin', 'analista', 'visualizador'] },
+  { name: 'Lançamento em Lote', href: '/lancamento-resultados', icon: Zap, roles: ['admin', 'analista', 'visualizador'] },
+  { name: 'Relatórios', href: '/relatorios', icon: FileText, roles: ['admin', 'analista', 'visualizador'] },
+  { name: 'Atividades', href: '/atividades', icon: CheckSquare, roles: ['admin', 'analista', 'visualizador'] },
+  { name: 'Registro de Atividades', href: '/logs', icon: Activity, roles: ['admin', 'analista', 'visualizador'] },
+  { name: 'Controle de Usuários', href: '/controle-usuarios', icon: UserCog, roles: ['admin'] },
 ]
 
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false)
+  const { user } = useAuth()
   
   // Buscar atividades pendentes
   const { data: atividadesData } = useAtividades({ status: 'pendente', limit: 1000 })
   const atividadesPendentes = atividadesData?.data?.filter((a: any) => a.status === 'pendente') || []
   const countPendentes = atividadesPendentes.length
+
+  // Filtrar navegação baseado no role do usuário
+  const filteredNavigation = navigation.filter(item => 
+    item.roles?.includes(user?.role || '')
+  )
 
   return (
     <div className={`bg-white/90 backdrop-blur-md shadow-xl border-r border-slate-200/60 transition-all duration-300 ${
@@ -58,7 +67,7 @@ export function Sidebar() {
 
         {/* Navigation */}
         <nav className="flex-1 px-4 py-6 space-y-3">
-          {navigation.map((item) => {
+          {filteredNavigation.map((item) => {
             const Icon = item.icon
             return (
               <NavLink

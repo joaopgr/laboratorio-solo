@@ -293,6 +293,24 @@ router.post('/', async (req: any, res): Promise<any> => {
         responsavel: atividade.responsavel
       });
 
+      // Criar log
+      const { query: logQuery, params: logParams } = SQL_QUERIES.logs.create({
+        usuarioId: req.user.id,
+        usuarioNome: nomeCriador,
+        usuarioEmail: req.user.email,
+        acao: 'criar',
+        entidade: 'atividade',
+        entidadeId: atividade.id,
+        entidadeNome: atividade.nome || atividade.titulo,
+        detalhes: JSON.stringify({ 
+          tipo: atividade.tipo, 
+          prioridade: atividade.prioridade, 
+          responsavel: atividade.responsavel,
+          status: atividade.status
+        })
+      });
+      await query(logQuery, logParams);
+
       res.status(201).json(mapearAtividadeParaFrontend(atividade));
     } catch (dbError: any) {
       console.error('Erro ao criar atividade:', dbError);
@@ -311,7 +329,7 @@ router.post('/', async (req: any, res): Promise<any> => {
 });
 
 // PUT /api/atividades/:id - Atualizar atividade
-router.put('/:id', async (req, res): Promise<any> => {
+router.put('/:id', async (req: any, res): Promise<any> => {
   try {
     const { id } = req.params;
     const { titulo, descricao, tipo, prioridade, status, responsavel, prazo } = req.body;
@@ -364,6 +382,25 @@ router.put('/:id', async (req, res): Promise<any> => {
     const result = await query(updateQuery, [id, ...values]);
     const atividade = result.rows[0];
 
+    // Buscar nome do usuário para o log
+    const { query: userQuery, params: userParams } = SQL_QUERIES.usuarios.findById(req.user.id);
+    const userResult = await query(userQuery, userParams);
+    const usuarioLogado = userResult.rows[0];
+    const nomeUsuarioLogado = usuarioLogado?.nome?.trim() || '';
+
+    // Criar log
+    const { query: logQuery, params: logParams } = SQL_QUERIES.logs.create({
+      usuarioId: req.user.id,
+      usuarioNome: nomeUsuarioLogado,
+      usuarioEmail: req.user.email,
+      acao: 'atualizar',
+      entidade: 'atividade',
+      entidadeId: atividade.id,
+      entidadeNome: atividade.nome || atividade.titulo,
+      detalhes: JSON.stringify(updateData)
+    });
+    await query(logQuery, logParams);
+
     res.json(mapearAtividadeParaFrontend(atividade));
   } catch (error) {
     console.error('Erro ao atualizar atividade:', error);
@@ -372,7 +409,7 @@ router.put('/:id', async (req, res): Promise<any> => {
 });
 
 // DELETE /api/atividades/:id - Excluir atividade
-router.delete('/:id', async (req, res): Promise<any> => {
+router.delete('/:id', async (req: any, res): Promise<any> => {
   try {
     const { id } = req.params;
 
@@ -384,9 +421,35 @@ router.delete('/:id', async (req, res): Promise<any> => {
       return res.status(404).json({ error: 'Atividade não encontrada' });
     }
 
+    // Buscar atividade antes de deletar para o log
+    const atividadeAntes = checkResult.rows[0];
+
     // Deletar atividade
     const { query: deleteQuery, params: deleteParams } = SQL_QUERIES.atividades.delete(id);
     await query(deleteQuery, deleteParams);
+
+    // Buscar nome do usuário para o log
+    const { query: userQuery, params: userParams } = SQL_QUERIES.usuarios.findById(req.user.id);
+    const userResult = await query(userQuery, userParams);
+    const usuarioLogado = userResult.rows[0];
+    const nomeUsuarioLogado = usuarioLogado?.nome?.trim() || '';
+
+    // Criar log
+    const { query: logQuery, params: logParams } = SQL_QUERIES.logs.create({
+      usuarioId: req.user.id,
+      usuarioNome: nomeUsuarioLogado,
+      usuarioEmail: req.user.email,
+      acao: 'deletar',
+      entidade: 'atividade',
+      entidadeId: id,
+      entidadeNome: atividadeAntes.nome || atividadeAntes.titulo,
+      detalhes: JSON.stringify({ 
+        tipo: atividadeAntes.tipo, 
+        prioridade: atividadeAntes.prioridade,
+        responsavel: atividadeAntes.responsavel
+      })
+    });
+    await query(logQuery, logParams);
 
     res.status(204).send();
   } catch (error) {
@@ -396,7 +459,7 @@ router.delete('/:id', async (req, res): Promise<any> => {
 });
 
 // PATCH /api/atividades/:id/status - Atualizar apenas o status
-router.patch('/:id/status', async (req, res): Promise<any> => {
+router.patch('/:id/status', async (req: any, res): Promise<any> => {
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -413,6 +476,9 @@ router.patch('/:id/status', async (req, res): Promise<any> => {
       return res.status(404).json({ error: 'Atividade não encontrada' });
     }
 
+    // Buscar atividade antes de atualizar para o log
+    const atividadeAntes = checkResult.rows[0];
+
     // Atualizar apenas o status
     const updateQuery = `
       UPDATE atividades 
@@ -422,6 +488,28 @@ router.patch('/:id/status', async (req, res): Promise<any> => {
     `;
     const result = await query(updateQuery, [id, status]);
     const atividade = result.rows[0];
+
+    // Buscar nome do usuário para o log
+    const { query: userQuery, params: userParams } = SQL_QUERIES.usuarios.findById(req.user.id);
+    const userResult = await query(userQuery, userParams);
+    const usuarioLogado = userResult.rows[0];
+    const nomeUsuarioLogado = usuarioLogado?.nome?.trim() || '';
+
+    // Criar log
+    const { query: logQuery, params: logParams } = SQL_QUERIES.logs.create({
+      usuarioId: req.user.id,
+      usuarioNome: nomeUsuarioLogado,
+      usuarioEmail: req.user.email,
+      acao: 'atualizar_status',
+      entidade: 'atividade',
+      entidadeId: atividade.id,
+      entidadeNome: atividade.nome || atividade.titulo,
+      detalhes: JSON.stringify({ 
+        statusAnterior: atividadeAntes.status, 
+        statusNovo: status 
+      })
+    });
+    await query(logQuery, logParams);
 
     res.json(mapearAtividadeParaFrontend(atividade));
   } catch (error) {

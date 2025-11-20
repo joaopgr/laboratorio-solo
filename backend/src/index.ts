@@ -13,6 +13,7 @@ import laudoRoutes from './routes/laudo';
 import atividadeRoutes from './routes/atividade';
 import logsRoutes from './routes/logs';
 import portalClienteRoutes from './routes/portalCliente';
+import usuariosRoutes from './routes/usuarios';
 
 // Configuração
 dotenv.config();
@@ -51,6 +52,7 @@ app.use('/api/laudos', laudoRoutes);
 app.use('/api/atividades', atividadeRoutes);
 app.use('/api/logs', logsRoutes);
 app.use('/api/portal-cliente', portalClienteRoutes);
+app.use('/api/usuarios', usuariosRoutes);
 
 // Rota de health check
 app.get('/api/health', (req, res) => {

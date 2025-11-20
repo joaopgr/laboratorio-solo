@@ -19,6 +19,7 @@ import { LancamentoResultados } from './pages/LancamentoResultados'
 import Atividades from './pages/Atividades'
 import { Logs } from './pages/Logs'
 import { ClientePortal } from './pages/ClientePortal'
+import { ControleUsuarios } from './pages/ControleUsuarios'
 
 function App() {
   return (
@@ -56,6 +57,11 @@ function App() {
           <Route path="relatorios" element={<Relatorios />} />
           <Route path="atividades" element={<Atividades />} />
           <Route path="logs" element={<Logs />} />
+          <Route path="controle-usuarios" element={
+            <ProtectedRoute allowedRoles={['admin']} redirectTo="/dashboard">
+              <ControleUsuarios />
+            </ProtectedRoute>
+          } />
           </Route>
         </Routes>
       </ModuleProvider>
