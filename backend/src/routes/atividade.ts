@@ -29,8 +29,13 @@ router.get('/', async (req: any, res): Promise<any> => {
       status = '', 
       prioridade = '', 
       tipo = '',
-      modo = 'recebidas' // 'recebidas' ou 'criadas'
+      modo: modoQuery = 'recebidas' // 'recebidas' ou 'criadas'
     } = req.query;
+    
+    // Garantir que o modo seja uma string válida
+    const modo = (modoQuery === 'criadas' || modoQuery === 'recebidas') 
+      ? modoQuery as string 
+      : 'recebidas';
 
     const pageNum = parseInt(page as string);
     const limitNum = parseInt(limit as string);
@@ -45,6 +50,7 @@ router.get('/', async (req: any, res): Promise<any> => {
       userId: req.user.id,
       nomeUsuarioLogado: nomeUsuarioLogado,
       modo: modo,
+      modoType: typeof modo,
       queryParams: { page, limit, search, status, prioridade, tipo }
     });
     
@@ -61,6 +67,12 @@ router.get('/', async (req: any, res): Promise<any> => {
     );
     console.log('📋 Query que será executada:', atividadesQueryDebug);
     console.log('📋 Parâmetros:', atividadesParamsDebug);
+    console.log('🔍 Verificação de modo:', {
+      modoRecebido: modo,
+      modoIgualCriadas: modo === 'criadas',
+      modoIgualRecebidas: modo === 'recebidas',
+      modoString: String(modo)
+    });
 
     // Buscar atividades e total (com filtro por responsável ou criador)
     const { query: atividadesQuery, params: atividadesParams } = SQL_QUERIES.atividades.findAll(
@@ -100,7 +112,9 @@ router.get('/', async (req: any, res): Promise<any> => {
         id: a.id,
         titulo: a.titulo || a.nome,
         criadoPor: a.criadoPor || 'NULL',
-        responsavel: a.responsavel
+        responsavel: a.responsavel,
+        criadoPorIgual: a.criadoPor ? (a.criadoPor.toLowerCase().trim() === nomeUsuarioLogado.toLowerCase().trim()) : false,
+        responsavelContem: a.responsavel ? a.responsavel.toLowerCase().includes(nomeUsuarioLogado.toLowerCase()) : false
       }))
     });
 

@@ -647,7 +647,10 @@ export const SQL_QUERIES = {
       
       // Filtrar por modo: 'recebidas' (onde é responsável) ou 'criadas' (onde é criador)
       if (nomeUsuarioLogado) {
-        if (modo === 'criadas') {
+        // Garantir que o modo seja válido
+        const modoValido = (modo === 'criadas' || modo === 'recebidas') ? modo : 'recebidas';
+        
+        if (modoValido === 'criadas') {
           // Criadas: apenas onde criadoPor = nomeUsuario E criadoPor não é NULL nem vazio
           conditions.push(`"criadoPor" IS NOT NULL AND TRIM("criadoPor") != '' AND LOWER(TRIM("criadoPor")) = LOWER(TRIM($${params.length + 1}))`);
           params.push(nomeUsuarioLogado);
@@ -721,7 +724,10 @@ export const SQL_QUERIES = {
       
       // Filtrar por modo: 'recebidas' (onde é responsável) ou 'criadas' (onde é criador)
       if (nomeUsuarioLogado) {
-        if (modo === 'criadas') {
+        // Garantir que o modo seja válido
+        const modoValido = (modo === 'criadas' || modo === 'recebidas') ? modo : 'recebidas';
+        
+        if (modoValido === 'criadas') {
           // Modo "Criadas": mostrar atividades onde o usuário é o criador
           // Comparação exata e case-insensitive: criadoPor = nomeUsuario E criadoPor não é NULL nem vazio
           conditions.push(`"criadoPor" IS NOT NULL AND TRIM("criadoPor") != '' AND LOWER(TRIM("criadoPor")) = LOWER(TRIM($${params.length + 1}))`);
