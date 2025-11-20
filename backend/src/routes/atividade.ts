@@ -20,7 +20,7 @@ function mapearAtividadeParaFrontend(atividade: any): any {
 }
 
 // GET /api/atividades - Listar todas as atividades
-router.get('/', async (req, res): Promise<any> => {
+router.get('/', async (req: any, res): Promise<any> => {
   try {
     const { 
       page = '1', 
@@ -106,7 +106,7 @@ router.get('/:id', async (req, res): Promise<any> => {
 });
 
 // POST /api/atividades - Criar nova atividade
-router.post('/', async (req, res): Promise<any> => {
+router.post('/', async (req: any, res): Promise<any> => {
   try {
     const { titulo, descricao, tipo, prioridade, responsavel, prazo } = req.body;
 
