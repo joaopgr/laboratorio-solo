@@ -39,7 +39,13 @@ router.get('/', async (req: any, res): Promise<any> => {
     const { query: userQuery, params: userParams } = SQL_QUERIES.usuarios.findById(req.user.id);
     const userResult = await query(userQuery, userParams);
     const usuarioLogado = userResult.rows[0];
-    const nomeUsuarioLogado = usuarioLogado?.nome || '';
+    const nomeUsuarioLogado = usuarioLogado?.nome?.trim() || '';
+    
+    console.log('🔍 Buscando atividades - Usuário logado:', {
+      userId: req.user.id,
+      nomeUsuarioLogado: nomeUsuarioLogado,
+      modo: modo
+    });
 
     // Buscar atividades e total (com filtro por responsável ou criador)
     const { query: atividadesQuery, params: atividadesParams } = SQL_QUERIES.atividades.findAll(
@@ -118,7 +124,13 @@ router.post('/', async (req: any, res): Promise<any> => {
     const { query: userQuery, params: userParams } = SQL_QUERIES.usuarios.findById(req.user.id);
     const userResult = await query(userQuery, userParams);
     const usuarioCriador = userResult.rows[0];
-    const nomeCriador = usuarioCriador?.nome || '';
+    const nomeCriador = usuarioCriador?.nome?.trim() || '';
+    
+    console.log('🔍 Criando atividade - Usuário criador:', {
+      userId: req.user.id,
+      nomeCriador: nomeCriador,
+      responsavel: responsavel
+    });
 
     // Verificar estrutura da tabela para determinar qual coluna usar
     const schemaQuery = `
@@ -180,12 +192,14 @@ router.post('/', async (req: any, res): Promise<any> => {
         prazo ? new Date(prazo + 'T00:00:00Z') : null
       ];
       
-      console.log('Executando INSERT com params:', { 
+      console.log('📝 Executando INSERT com params:', { 
         titulo: params[0], 
         descricao: params[1], 
         tipo: params[2],
         prioridade: params[3],
-        status: params[4]
+        status: params[4],
+        responsavel: params[5],
+        criadoPor: params[6]
       });
       
       const result = await query(createQuery, params);

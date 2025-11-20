@@ -645,23 +645,31 @@ export const SQL_QUERIES = {
       const params: any[] = [];
       const conditions: string[] = [];
       
-      // Filtrar por responsável: mostrar atividades onde:
-      // - responsavel = 'Geral' OU
-      // - responsavel contém o nome do usuário logado (ex: "Felipe" ou "Felipe, Anderson")
-      // - responsavel começa com o nome OU contém ", Nome" OU termina com ", Nome"
+      // Filtrar por modo: 'recebidas' (onde é responsável) ou 'criadas' (onde é criador)
       if (nomeUsuarioLogado) {
-        const paramIndex1 = params.length + 1;
-        const paramIndex2 = params.length + 2;
-        const paramIndex3 = params.length + 3;
-        const paramIndex4 = params.length + 4;
-        conditions.push(`(
-          responsavel = $${paramIndex1} OR 
-          responsavel ILIKE $${paramIndex2} OR 
-          responsavel ILIKE $${paramIndex3} OR 
-          responsavel ILIKE $${paramIndex4} OR
-          responsavel IS NULL
-        )`);
-        params.push('Geral', `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`);
+        if (modo === 'criadas') {
+          // Modo "Criadas": mostrar atividades onde o usuário é o criador
+          // Usar TRIM e comparação case-insensitive para garantir match
+          // Verificar se coluna existe (usar COALESCE para evitar erro se não existir)
+          conditions.push(`COALESCE(TRIM("criadoPor"), '') ILIKE TRIM($${params.length + 1})`);
+          params.push(nomeUsuarioLogado);
+        } else {
+          // Modo "Recebidas" (padrão): mostrar atividades onde:
+          // - responsavel = 'Geral' OU
+          // - responsavel contém o nome do usuário logado (ex: "Felipe" ou "Felipe, Anderson")
+          const paramIndex1 = params.length + 1;
+          const paramIndex2 = params.length + 2;
+          const paramIndex3 = params.length + 3;
+          const paramIndex4 = params.length + 4;
+          conditions.push(`(
+            responsavel = $${paramIndex1} OR 
+            responsavel ILIKE $${paramIndex2} OR 
+            responsavel ILIKE $${paramIndex3} OR 
+            responsavel ILIKE $${paramIndex4} OR
+            responsavel IS NULL
+          )`);
+          params.push('Geral', `${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}%`, `%, ${nomeUsuarioLogado}`);
+        }
       }
       
       if (search) {
@@ -712,7 +720,9 @@ export const SQL_QUERIES = {
       if (nomeUsuarioLogado) {
         if (modo === 'criadas') {
           // Modo "Criadas": mostrar atividades onde o usuário é o criador
-          conditions.push(`"criadoPor" = $${params.length + 1}`);
+          // Usar TRIM e comparação case-insensitive para garantir match
+          // Verificar se coluna existe (usar COALESCE para evitar erro se não existir)
+          conditions.push(`COALESCE(TRIM("criadoPor"), '') ILIKE TRIM($${params.length + 1})`);
           params.push(nomeUsuarioLogado);
         } else {
           // Modo "Recebidas" (padrão): mostrar atividades onde:
