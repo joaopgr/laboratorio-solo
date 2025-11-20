@@ -48,6 +48,8 @@ export default function Atividades() {
   const [showForm, setShowForm] = useState(false);
   const [editingAtividade, setEditingAtividade] = useState<Atividade | null>(null);
   const [modoVisualizacao, setModoVisualizacao] = useState<'recebidas' | 'criadas'>('recebidas');
+  
+  // Garantir que filters.modo sempre esteja sincronizado com modoVisualizacao
   const [filters, setFilters] = useState<AtividadeFilters>({
     page: 1,
     limit: 50,
@@ -55,7 +57,7 @@ export default function Atividades() {
     status: '',
     prioridade: '',
     tipo: '',
-    modo: 'recebidas'
+    modo: 'recebidas' // Inicializar com o mesmo valor de modoVisualizacao
   });
 
   const { data: atividadesData, isLoading, error } = useAtividades(filters);
@@ -113,8 +115,15 @@ export default function Atividades() {
   }, [atividades]);
 
   // Atualizar filtros quando modo de visualização mudar
+  // Garantir sincronização imediata na montagem e quando o modo mudar
   useEffect(() => {
-    setFilters(prev => ({ ...prev, modo: modoVisualizacao, page: 1 }));
+    setFilters(prev => {
+      // Sempre atualizar se o modo for diferente para garantir sincronização
+      if (prev.modo !== modoVisualizacao) {
+        return { ...prev, modo: modoVisualizacao, page: 1 };
+      }
+      return prev;
+    });
   }, [modoVisualizacao]);
 
   return (
