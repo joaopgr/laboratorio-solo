@@ -26,10 +26,10 @@ const updateUsuarioSchema = z.object({
 // Todas as rotas requerem autenticação e permissão de admin
 router.use(authenticateToken, authorizeRoles('admin'));
 
-// GET /api/usuarios - Listar todos os usuários (com senhas para admin)
+// GET /api/usuarios - Listar todos os usuários ativos (com senhas para admin)
 router.get('/', async (req: any, res): Promise<any> => {
   try {
-    const { query: usersQuery, params } = SQL_QUERIES.usuarios.findAllWithInactive();
+    const { query: usersQuery, params } = SQL_QUERIES.usuarios.findAllActiveWithPassword();
     const result = await query(usersQuery, params);
     
     const usuarios = result.rows.map((u: any) => ({
