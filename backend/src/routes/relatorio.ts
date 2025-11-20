@@ -6,7 +6,7 @@ import { authenticateToken, authorizeRoles } from './auth';
 
 const router = Router();
 
-router.use(authenticateToken, authorizeRoles('admin', 'funcionario', 'estagiario', 'visitante'));
+router.use(authenticateToken, authorizeRoles('admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'));
 
 // Schema para filtros de relatório
 const relatorioFiltersSchema = z.object({

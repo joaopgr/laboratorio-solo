@@ -25,10 +25,10 @@ const navigation = [
   { name: 'Lotes', href: '/lotes', icon: Package, roles: ['admin', 'funcionario', 'estagiario', 'recepcao'] },
   { name: 'Resultados', href: '/resultados', icon: BarChart3, roles: ['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'] },
   { name: 'Resultados Calculados', href: '/resultados-calculados', icon: Calculator, roles: ['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'] },
-  { name: 'Lançamento em Lote', href: '/lancamento-resultados', icon: Zap, roles: ['admin', 'funcionario', 'estagiario'] },
-  { name: 'Relatórios', href: '/relatorios', icon: FileText, roles: ['admin', 'funcionario', 'estagiario', 'visitante'] },
+  { name: 'Lançamento em Lote', href: '/lancamento-resultados', icon: Zap, roles: ['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'] },
+  { name: 'Relatórios', href: '/relatorios', icon: FileText, roles: ['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'] },
   { name: 'Atividades', href: '/atividades', icon: CheckSquare, roles: ['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'] },
-  { name: 'Registro de Atividades', href: '/logs', icon: Activity, roles: ['admin', 'funcionario', 'estagiario'] },
+  { name: 'Registro de Atividades', href: '/logs', icon: Activity, roles: ['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'] },
   { name: 'Controle de Usuários', href: '/controle-usuarios', icon: UserCog, roles: ['admin'] },
 ]
 
