@@ -103,7 +103,11 @@ export default function Atividades() {
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('pt-BR');
+    // Criar data no timezone local para evitar problemas de conversão
+    const date = new Date(dateString);
+    // Ajustar para o meio-dia para evitar problemas de timezone
+    date.setHours(12, 0, 0, 0);
+    return date.toLocaleDateString('pt-BR');
   };
 
   const formatDateTime = (dateString: string) => {

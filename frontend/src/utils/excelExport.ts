@@ -6,17 +6,27 @@ export interface ExcelExportOptions {
 }
 
 export function exportToExcel(data: any[], options: ExcelExportOptions) {
-  // Criar uma nova planilha
-  const worksheet = XLSX.utils.json_to_sheet(data)
+  if (!data || !Array.isArray(data) || data.length === 0) {
+    console.error('Dados inválidos para exportação:', data)
+    throw new Error('Nenhum dado disponível para exportar')
+  }
   
-  // Criar um novo workbook
-  const workbook = XLSX.utils.book_new()
-  
-  // Adicionar a planilha ao workbook
-  XLSX.utils.book_append_sheet(workbook, worksheet, options.sheetName || 'Relatório')
-  
-  // Gerar o arquivo Excel
-  XLSX.writeFile(workbook, `${options.filename}.xlsx`)
+  try {
+    // Criar uma nova planilha
+    const worksheet = XLSX.utils.json_to_sheet(data)
+    
+    // Criar um novo workbook
+    const workbook = XLSX.utils.book_new()
+    
+    // Adicionar a planilha ao workbook
+    XLSX.utils.book_append_sheet(workbook, worksheet, options.sheetName || 'Relatório')
+    
+    // Gerar o arquivo Excel
+    XLSX.writeFile(workbook, `${options.filename}.xlsx`)
+  } catch (error) {
+    console.error('Erro ao gerar arquivo Excel:', error)
+    throw new Error(`Erro ao gerar arquivo Excel: ${error instanceof Error ? error.message : 'Erro desconhecido'}`)
+  }
 }
 
 // Função específica para relatório geral
