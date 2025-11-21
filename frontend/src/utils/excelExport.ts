@@ -225,7 +225,7 @@ export function exportRelatorioEstatisticas(relatorioData: any) {
   // O relatório de estatísticas usa o endpoint /dashboard e retorna 'totais'
   const { estatisticas, totais, metricas } = relatorioData
   
-  // Usar a primeira estrutura disponível
+  // O endpoint /dashboard retorna totais diretamente com: lotes, amostras, clientes, resultados
   const stats = totais || estatisticas || metricas || relatorioData
   
   if (!stats) {
@@ -233,11 +233,11 @@ export function exportRelatorioEstatisticas(relatorioData: any) {
     throw new Error('Estatísticas não disponíveis')
   }
   
-  // O endpoint /dashboard retorna totais com: lotes, amostras, clientes
+  // O endpoint /dashboard retorna totais com: lotes, amostras, clientes, resultados (números diretos)
   const statsData = [
-    { Métrica: 'Total de Lotes', Valor: stats.lotes?.total || stats.totalLotes || 0 },
-    { Métrica: 'Total de Amostras', Valor: stats.amostras?.total || stats.totalAmostras || 0 },
-    { Métrica: 'Total de Clientes', Valor: stats.clientes?.total || stats.totalClientes || 0 },
+    { Métrica: 'Total de Lotes', Valor: stats.lotes || stats.totalLotes || 0 },
+    { Métrica: 'Total de Amostras', Valor: stats.amostras || stats.totalAmostras || 0 },
+    { Métrica: 'Total de Clientes', Valor: stats.clientes || stats.totalClientes || 0 },
     { Métrica: 'Total de Resultados', Valor: stats.resultados || stats.totalResultados || 0 }
   ]
   
