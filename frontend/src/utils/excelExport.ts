@@ -36,11 +36,18 @@ export function exportRelatorioGeral(relatorioData: any) {
     throw new Error('Dados do relatório não disponíveis')
   }
 
-  const { estatisticas, lotes } = relatorioData
+  // A API retorna 'dados' em vez de 'lotes'
+  const { estatisticas, lotes, dados } = relatorioData
+  const lotesArray = lotes || dados || []
   
-  if (!estatisticas || !lotes) {
-    console.error('Estrutura de dados inválida:', { estatisticas, lotes })
-    throw new Error('Estrutura de dados inválida')
+  if (!estatisticas) {
+    console.error('Estatísticas não disponíveis:', relatorioData)
+    throw new Error('Estatísticas não disponíveis')
+  }
+  
+  if (!Array.isArray(lotesArray)) {
+    console.error('Lotes não é um array:', { lotes, dados, lotesArray })
+    throw new Error('Dados de lotes inválidos')
   }
   
   // Criar workbook
@@ -70,12 +77,7 @@ export function exportRelatorioGeral(relatorioData: any) {
   XLSX.utils.book_append_sheet(workbook, tiposSheet, 'Tipos de Análise')
   
   // Planilha 3: Lotes
-  if (!Array.isArray(lotes)) {
-    console.error('Lotes não é um array:', lotes)
-    throw new Error('Dados de lotes inválidos')
-  }
-  
-  const lotesData = lotes.map((lote: any) => ({
+  const lotesData = lotesArray.map((lote: any) => ({
     'Código': lote?.codigo || '-',
     'Cliente': lote?.cliente?.nome || '-',
     'Data Entrega': lote?.dataEntrega ? new Date(lote.dataEntrega).toLocaleDateString('pt-BR') : '-',
