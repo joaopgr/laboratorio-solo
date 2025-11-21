@@ -70,16 +70,25 @@ export function exportRelatorioGeral(relatorioData: any) {
   XLSX.utils.book_append_sheet(workbook, tiposSheet, 'Tipos de Análise')
   
   // Planilha 3: Lotes
+  if (!Array.isArray(lotes)) {
+    console.error('Lotes não é um array:', lotes)
+    throw new Error('Dados de lotes inválidos')
+  }
+  
   const lotesData = lotes.map((lote: any) => ({
-    'Código': lote.codigo,
-    'Cliente': lote.cliente?.nome || '-',
-    'Data Entrega': new Date(lote.dataEntrega).toLocaleDateString('pt-BR'),
-    'Amostras': lote.amostras?.length || 0,
-    'Status': lote.status === 'pendente' ? 'Pendente' :
-              lote.status === 'em_analise' ? 'Em Análise' :
-              lote.status === 'concluido' ? 'Concluído' : 'Pago',
-    'Pagamento': lote.pago ? 'Pago' : 'Pendente'
+    'Código': lote?.codigo || '-',
+    'Cliente': lote?.cliente?.nome || '-',
+    'Data Entrega': lote?.dataEntrega ? new Date(lote.dataEntrega).toLocaleDateString('pt-BR') : '-',
+    'Amostras': lote?.amostras?.length || 0,
+    'Status': lote?.status === 'pendente' ? 'Pendente' :
+              lote?.status === 'em_analise' ? 'Em Análise' :
+              lote?.status === 'concluido' ? 'Concluído' : 'Pago',
+    'Pagamento': lote?.pago ? 'Pago' : 'Pendente'
   }))
+  
+  if (lotesData.length === 0) {
+    console.warn('Nenhum lote para exportar')
+  }
   
   const lotesSheet = XLSX.utils.json_to_sheet(lotesData)
   XLSX.utils.book_append_sheet(workbook, lotesSheet, 'Lotes')
