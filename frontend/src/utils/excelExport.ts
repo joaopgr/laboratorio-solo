@@ -107,24 +107,26 @@ export function exportRelatorioCliente(relatorioData: any) {
     throw new Error('Dados do relatório não disponíveis')
   }
 
-  const { relatorioPorCliente } = relatorioData
+  // A API retorna 'dados' em vez de 'relatorioPorCliente'
+  const { relatorioPorCliente, dados } = relatorioData
+  const clientesArray = relatorioPorCliente || dados || []
   
-  if (!relatorioPorCliente || !Array.isArray(relatorioPorCliente)) {
-    console.error('Dados de relatório por cliente inválidos:', relatorioPorCliente)
+  if (!Array.isArray(clientesArray)) {
+    console.error('Dados de relatório por cliente inválidos:', { relatorioPorCliente, dados, clientesArray })
     throw new Error('Dados de relatório por cliente inválidos')
   }
   
-  const clientesData = relatorioPorCliente.map((clienteData: any) => ({
-    'Cliente': clienteData.cliente.nome,
-    'CPF': clienteData.cliente.cpf || '-',
-    'Cidade': clienteData.cliente.cidade || '-',
-    'Total Lotes': clienteData.lotes.length,
-    'Total Amostras': clienteData.totalAmostras,
-    'Total Resultados': clienteData.totalResultados,
-    'Lotes Pendentes': clienteData.statusCount.pendente || 0,
-    'Lotes em Análise': clienteData.statusCount.em_analise || 0,
-    'Lotes Concluídos': clienteData.statusCount.concluido || 0,
-    'Lotes Pagos': clienteData.statusCount.pago || 0
+  const clientesData = clientesArray.map((clienteData: any) => ({
+    'Cliente': clienteData?.cliente?.nome || '-',
+    'CPF': clienteData?.cliente?.cpf || '-',
+    'Cidade': clienteData?.cliente?.cidade || '-',
+    'Total Lotes': clienteData?.estatisticas?.totalLotes || clienteData?.lotes?.length || 0,
+    'Total Amostras': clienteData?.estatisticas?.totalAmostras || 0,
+    'Total Resultados': clienteData?.estatisticas?.totalResultados || 0,
+    'Lotes Pendentes': clienteData?.estatisticas?.statusCount?.pendente || 0,
+    'Lotes em Análise': clienteData?.estatisticas?.statusCount?.em_analise || 0,
+    'Lotes Concluídos': clienteData?.estatisticas?.statusCount?.concluido || 0,
+    'Lotes Pagos': clienteData?.estatisticas?.statusCount?.pago || 0
   }))
   
   const filename = `Relatorio_Clientes_${new Date().toISOString().split('T')[0]}`
@@ -220,18 +222,24 @@ export function exportRelatorioEstatisticas(relatorioData: any) {
     throw new Error('Dados do relatório não disponíveis')
   }
 
-  const { estatisticas } = relatorioData
+  // O relatório de estatísticas pode ter diferentes estruturas
+  // Verificar se tem 'estatisticas', 'totais', ou 'metricas'
+  const { estatisticas, totais, metricas } = relatorioData
   
-  if (!estatisticas) {
-    console.error('Estatísticas não disponíveis')
+  // Usar a primeira estrutura disponível
+  const stats = estatisticas || totais || metricas || relatorioData
+  
+  if (!stats) {
+    console.error('Estatísticas não disponíveis:', relatorioData)
     throw new Error('Estatísticas não disponíveis')
   }
   
   const statsData = [
-    { Métrica: 'Total de Lotes', Valor: estatisticas.totalLotes },
-    { Métrica: 'Total de Amostras', Valor: estatisticas.totalAmostras },
-    { Métrica: 'Total de Clientes', Valor: estatisticas.totalClientes },
-    { Métrica: 'Tempo Médio de Análise (dias)', Valor: estatisticas.tempoMedioAnalise }
+    { Métrica: 'Total de Lotes', Valor: stats.totalLotes || stats.lotes || 0 },
+    { Métrica: 'Total de Amostras', Valor: stats.totalAmostras || stats.amostras || 0 },
+    { Métrica: 'Total de Clientes', Valor: stats.totalClientes || stats.clientes || 0 },
+    { Métrica: 'Total de Resultados', Valor: stats.totalResultados || stats.resultados || 0 },
+    { Métrica: 'Tempo Médio de Análise (dias)', Valor: stats.tempoMedioAnalise || stats.tempoMedioProcessamento || 0 }
   ]
   
   const filename = `Relatorio_Estatisticas_${new Date().toISOString().split('T')[0]}`
