@@ -222,24 +222,23 @@ export function exportRelatorioEstatisticas(relatorioData: any) {
     throw new Error('Dados do relatório não disponíveis')
   }
 
-  // O relatório de estatísticas pode ter diferentes estruturas
-  // Verificar se tem 'estatisticas', 'totais', ou 'metricas'
+  // O relatório de estatísticas usa o endpoint /dashboard e retorna 'totais'
   const { estatisticas, totais, metricas } = relatorioData
   
   // Usar a primeira estrutura disponível
-  const stats = estatisticas || totais || metricas || relatorioData
+  const stats = totais || estatisticas || metricas || relatorioData
   
   if (!stats) {
     console.error('Estatísticas não disponíveis:', relatorioData)
     throw new Error('Estatísticas não disponíveis')
   }
   
+  // O endpoint /dashboard retorna totais com: lotes, amostras, clientes
   const statsData = [
-    { Métrica: 'Total de Lotes', Valor: stats.totalLotes || stats.lotes || 0 },
-    { Métrica: 'Total de Amostras', Valor: stats.totalAmostras || stats.amostras || 0 },
-    { Métrica: 'Total de Clientes', Valor: stats.totalClientes || stats.clientes || 0 },
-    { Métrica: 'Total de Resultados', Valor: stats.totalResultados || stats.resultados || 0 },
-    { Métrica: 'Tempo Médio de Análise (dias)', Valor: stats.tempoMedioAnalise || stats.tempoMedioProcessamento || 0 }
+    { Métrica: 'Total de Lotes', Valor: stats.lotes?.total || stats.totalLotes || 0 },
+    { Métrica: 'Total de Amostras', Valor: stats.amostras?.total || stats.totalAmostras || 0 },
+    { Métrica: 'Total de Clientes', Valor: stats.clientes?.total || stats.totalClientes || 0 },
+    { Métrica: 'Total de Resultados', Valor: stats.resultados || stats.totalResultados || 0 }
   ]
   
   const filename = `Relatorio_Estatisticas_${new Date().toISOString().split('T')[0]}`
