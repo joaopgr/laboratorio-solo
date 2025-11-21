@@ -21,9 +21,17 @@ export function exportToExcel(data: any[], options: ExcelExportOptions) {
 
 // Função específica para relatório geral
 export function exportRelatorioGeral(relatorioData: any) {
-  if (!relatorioData) return
+  if (!relatorioData) {
+    console.error('Dados do relatório não disponíveis')
+    throw new Error('Dados do relatório não disponíveis')
+  }
 
   const { estatisticas, lotes } = relatorioData
+  
+  if (!estatisticas || !lotes) {
+    console.error('Estrutura de dados inválida:', { estatisticas, lotes })
+    throw new Error('Estrutura de dados inválida')
+  }
   
   // Criar workbook
   const workbook = XLSX.utils.book_new()
@@ -73,9 +81,17 @@ export function exportRelatorioGeral(relatorioData: any) {
 
 // Função específica para relatório por cliente
 export function exportRelatorioCliente(relatorioData: any) {
-  if (!relatorioData) return
+  if (!relatorioData) {
+    console.error('Dados do relatório não disponíveis')
+    throw new Error('Dados do relatório não disponíveis')
+  }
 
   const { relatorioPorCliente } = relatorioData
+  
+  if (!relatorioPorCliente || !Array.isArray(relatorioPorCliente)) {
+    console.error('Dados de relatório por cliente inválidos:', relatorioPorCliente)
+    throw new Error('Dados de relatório por cliente inválidos')
+  }
   
   const clientesData = relatorioPorCliente.map((clienteData: any) => ({
     'Cliente': clienteData.cliente.nome,
@@ -96,7 +112,15 @@ export function exportRelatorioCliente(relatorioData: any) {
 
 // Função específica para relatório por cultura
 export function exportRelatorioCultura(relatorioData: any) {
-  if (!relatorioData || !relatorioData.culturas) return
+  if (!relatorioData) {
+    console.error('Dados do relatório não disponíveis')
+    throw new Error('Dados do relatório não disponíveis')
+  }
+  
+  if (!relatorioData.culturas) {
+    console.error('Dados de culturas não disponíveis')
+    throw new Error('Dados de culturas não disponíveis')
+  }
 
   const culturasData = Object.entries(relatorioData.culturas).map(([cultura, dados]: [string, any]) => ({
     'Cultura': cultura,
@@ -111,9 +135,17 @@ export function exportRelatorioCultura(relatorioData: any) {
 
 // Função específica para relatório financeiro
 export function exportRelatorioFinanceiro(relatorioData: any) {
-  if (!relatorioData) return
+  if (!relatorioData) {
+    console.error('Dados do relatório não disponíveis')
+    throw new Error('Dados do relatório não disponíveis')
+  }
 
   const { estatisticas, lotes } = relatorioData
+  
+  if (!estatisticas || !lotes) {
+    console.error('Estrutura de dados inválida:', { estatisticas, lotes })
+    throw new Error('Estrutura de dados inválida')
+  }
   
   // Criar workbook
   const workbook = XLSX.utils.book_new()
@@ -154,7 +186,10 @@ export function exportRelatorioFinanceiro(relatorioData: any) {
 
 // Função específica para relatório de estatísticas
 export function exportRelatorioEstatisticas(relatorioData: any) {
-  if (!relatorioData) return
+  if (!relatorioData) {
+    console.error('Dados do relatório não disponíveis')
+    throw new Error('Dados do relatório não disponíveis')
+  }
 
   const { estatisticas } = relatorioData
   

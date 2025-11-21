@@ -251,7 +251,7 @@ router.post('/', async (req: any, res): Promise<any> => {
           'pendente',
           responsavel || null,
           nomeCriador || null, // Campo criadoPor
-          prazo ? new Date(prazo + 'T00:00:00Z') : null
+          prazo ? new Date(prazo + 'T00:00:00') : null
         ];
       } else {
         // Se coluna não existe, criar sem ela (compatibilidade)
@@ -268,7 +268,7 @@ router.post('/', async (req: any, res): Promise<any> => {
           prioridade || 'media',
           'pendente',
           responsavel || null,
-          prazo ? new Date(prazo + 'T00:00:00Z') : null
+          prazo ? new Date(prazo + 'T00:00:00') : null
         ];
       }
       
@@ -350,7 +350,7 @@ router.put('/:id', async (req: any, res): Promise<any> => {
     if (prioridade !== undefined) updateData.prioridade = prioridade;
     if (status !== undefined) updateData.status = status;
     if (responsavel !== undefined) updateData.responsavel = responsavel;
-    if (prazo !== undefined) updateData.prazo = prazo ? new Date(prazo + 'T00:00:00Z') : null;
+    if (prazo !== undefined) updateData.prazo = prazo ? new Date(prazo + 'T00:00:00') : null;
     
     const updates: string[] = [];
     const values: any[] = [];

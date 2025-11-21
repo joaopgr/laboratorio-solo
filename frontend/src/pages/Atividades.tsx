@@ -112,7 +112,16 @@ export default function Atividades() {
 
   const isOverdue = (prazo: string | undefined) => {
     if (!prazo) return false;
-    return new Date(prazo) < new Date();
+    // Criar data do prazo no início do dia (00:00:00) no timezone local
+    const prazoDate = new Date(prazo);
+    prazoDate.setHours(0, 0, 0, 0);
+    
+    // Criar data de hoje no início do dia (00:00:00) no timezone local
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    
+    // Só é vencida se hoje for DEPOIS do prazo (ou seja, no dia seguinte ao prazo)
+    return hoje > prazoDate;
   };
 
   const atividadesFiltradas = useMemo(() => {
