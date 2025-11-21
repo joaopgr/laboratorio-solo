@@ -161,11 +161,18 @@ export function exportRelatorioFinanceiro(relatorioData: any) {
     throw new Error('Dados do relatório não disponíveis')
   }
 
-  const { estatisticas, lotes } = relatorioData
+  // A API retorna 'dados' em vez de 'lotes'
+  const { estatisticas, lotes, dados } = relatorioData
+  const lotesArray = lotes || dados || []
   
-  if (!estatisticas || !lotes) {
-    console.error('Estrutura de dados inválida:', { estatisticas, lotes })
-    throw new Error('Estrutura de dados inválida')
+  if (!estatisticas) {
+    console.error('Estatísticas não disponíveis:', relatorioData)
+    throw new Error('Estatísticas não disponíveis')
+  }
+  
+  if (!Array.isArray(lotesArray)) {
+    console.error('Lotes não é um array:', { lotes, dados, lotesArray })
+    throw new Error('Dados de lotes inválidos')
   }
   
   // Criar workbook
@@ -182,18 +189,19 @@ export function exportRelatorioFinanceiro(relatorioData: any) {
   XLSX.utils.book_append_sheet(workbook, resumoSheet, 'Resumo Financeiro')
   
   // Planilha 2: Detalhamento por Lote
-  const lotesData = lotes.map((lote: any) => {
-    const valorLote = lote.valorTotal || 0
+  const lotesData = lotesArray.map((lote: any) => {
+    // O relatório financeiro retorna valorFinal diretamente
+    const valorLote = lote.valorFinal || lote.valorTotal || 0
     return {
-      'Código': lote.codigo,
-      'Cliente': lote.cliente?.nome || '-',
-      'Data Entrega': new Date(lote.dataEntrega).toLocaleDateString('pt-BR'),
-      'Amostras': lote.amostras?.length || 0,
+      'Código': lote?.codigo || '-',
+      'Cliente': lote?.cliente || lote?.cliente_nome || '-',
+      'Data Entrega': lote?.dataEntrega ? new Date(lote.dataEntrega).toLocaleDateString('pt-BR') : '-',
+      'Amostras': lote?.totalAmostras || lote?.amostras?.length || 0,
       'Valor Total': `R$ ${valorLote.toFixed(2).replace('.', ',')}`,
-      'Status Pagamento': lote.pago ? 'Pago' : 'Pendente',
-      'Status Lote': lote.status === 'pendente' ? 'Pendente' :
-                    lote.status === 'em_analise' ? 'Em Análise' :
-                    lote.status === 'concluido' ? 'Concluído' : 'Pago'
+      'Status Pagamento': lote?.pago ? 'Pago' : 'Pendente',
+      'Status Lote': lote?.status === 'pendente' ? 'Pendente' :
+                    lote?.status === 'em_analise' ? 'Em Análise' :
+                    lote?.status === 'concluido' ? 'Concluído' : 'Pago'
     }
   })
   
