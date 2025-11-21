@@ -193,6 +193,11 @@ export function exportRelatorioEstatisticas(relatorioData: any) {
 
   const { estatisticas } = relatorioData
   
+  if (!estatisticas) {
+    console.error('Estatísticas não disponíveis')
+    throw new Error('Estatísticas não disponíveis')
+  }
+  
   const statsData = [
     { Métrica: 'Total de Lotes', Valor: estatisticas.totalLotes },
     { Métrica: 'Total de Amostras', Valor: estatisticas.totalAmostras },
