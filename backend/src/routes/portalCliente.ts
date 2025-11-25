@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { authenticateToken, authorizeRoles } from './auth';
 import { SQL_QUERIES } from '../database/queries';
 import { query } from '../database/connection';
-import { calcularResultados, prepararDadosBrutos } from '../utils/calculosResultados';
+import { calcularResultados, prepararDadosBrutos, calcularResultadosFoliar } from '../utils/calculosResultados';
 
 const router = Router();
 
@@ -137,15 +137,24 @@ router.get('/lotes', async (req: any, res) => {
           const resultadosBrutos = resultadosResult.rows;
 
           try {
-            const dadosBrutos = prepararDadosBrutos(resultadosBrutos);
-            const calculados = calcularResultados(dadosBrutos);
+            // Detectar módulo da amostra ou lote
+            const moduloAmostra = amostra.modulo || amostra.tipoAnalise || lote.modulo || lote.tipoAnalise || 'solo'
+            
+            // Usar função correta baseada no módulo
+            let calculados: any = {}
+            if (moduloAmostra === 'foliar') {
+              calculados = calcularResultadosFoliar(resultadosBrutos)
+            } else {
+              const dadosBrutos = prepararDadosBrutos(resultadosBrutos)
+              calculados = calcularResultados(dadosBrutos)
+            }
 
             const resultadosCalculados = Object.entries(calculados)
               .filter(([, valor]) => valor !== undefined && !Number.isNaN(valor))
               .map(([tipo, valor]) => ({
                 id: `${amostra.id}-${tipo}-calculado`,
                 amostraId: amostra.id,
-                categoria: resultadosBrutos[0]?.categoria ?? 'solo',
+                categoria: resultadosBrutos[0]?.categoria ?? moduloAmostra,
                 tipo: tipo.toUpperCase(),
                 valor: valor?.toString() ?? null,
                 unidade: inferirUnidade(tipo),

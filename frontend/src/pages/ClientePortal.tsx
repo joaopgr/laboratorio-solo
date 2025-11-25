@@ -111,45 +111,52 @@ export function ClientePortal() {
   
   // Filtrar lotes baseado nos filtros
   const lotes = useMemo(() => {
-    if (!Array.isArray(lotesBrutos)) {
-      return []
-    }
-    
-    let lotesFiltrados = [...lotesBrutos]
-    
-    // Filtro por amostra - se encontrar a amostra, mostrar o lote correspondente
-    if (filtroAmostra && filtroAmostra.trim()) {
-      const codigoAmostra = filtroAmostra.trim().toLowerCase()
-      lotesFiltrados = lotesFiltrados.filter(lote => {
-        if (!lote.amostras || !Array.isArray(lote.amostras)) return false
-        return lote.amostras.some(amostra => 
-          (amostra.codigo && amostra.codigo.toLowerCase().includes(codigoAmostra)) ||
-          (amostra.identificacao && amostra.identificacao.toLowerCase().includes(codigoAmostra))
-        )
-      })
-    }
-    
-    // Filtro por data (mês-ano)
-    if (filtroMesAno && filtroMesAno.trim()) {
-      const partes = filtroMesAno.split('/').filter(p => p)
-      if (partes.length === 2) {
-        const mes = parseInt(partes[0], 10)
-        const ano = parseInt(partes[1], 10)
-        if (mes && ano && mes >= 1 && mes <= 12) {
-          lotesFiltrados = lotesFiltrados.filter(lote => {
-            if (!lote.dataEntrega) return false
-            try {
-              const dataLote = new Date(lote.dataEntrega)
-              return dataLote.getMonth() + 1 === mes && dataLote.getFullYear() === ano
-            } catch {
-              return false
-            }
-          })
+    try {
+      if (!Array.isArray(lotesBrutos)) {
+        console.warn('lotesBrutos não é um array:', lotesBrutos)
+        return []
+      }
+      
+      let lotesFiltrados = [...lotesBrutos]
+      
+      // Filtro por amostra - se encontrar a amostra, mostrar o lote correspondente
+      if (filtroAmostra && filtroAmostra.trim()) {
+        const codigoAmostra = filtroAmostra.trim().toLowerCase()
+        lotesFiltrados = lotesFiltrados.filter(lote => {
+          if (!lote || !lote.amostras || !Array.isArray(lote.amostras)) return false
+          return lote.amostras.some(amostra => 
+            (amostra && amostra.codigo && amostra.codigo.toLowerCase().includes(codigoAmostra)) ||
+            (amostra && amostra.identificacao && amostra.identificacao.toLowerCase().includes(codigoAmostra))
+          )
+        })
+      }
+      
+      // Filtro por data (mês-ano)
+      if (filtroMesAno && filtroMesAno.trim()) {
+        const partes = filtroMesAno.split('/').filter(p => p)
+        if (partes.length === 2) {
+          const mes = parseInt(partes[0], 10)
+          const ano = parseInt(partes[1], 10)
+          if (mes && ano && mes >= 1 && mes <= 12) {
+            lotesFiltrados = lotesFiltrados.filter(lote => {
+              if (!lote || !lote.dataEntrega) return false
+              try {
+                const dataLote = new Date(lote.dataEntrega)
+                if (isNaN(dataLote.getTime())) return false
+                return dataLote.getMonth() + 1 === mes && dataLote.getFullYear() === ano
+              } catch {
+                return false
+              }
+            })
+          }
         }
       }
+      
+      return lotesFiltrados
+    } catch (error) {
+      console.error('Erro ao filtrar lotes:', error)
+      return lotesBrutos || []
     }
-    
-    return lotesFiltrados
   }, [lotesBrutos, filtroAmostra, filtroMesAno])
 
   return (
