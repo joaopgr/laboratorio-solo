@@ -24,9 +24,12 @@ export function GerarLaudoModal({ isOpen, onClose, lote, amostras, resultados }:
       return
     }
 
+    // Se módulo é foliar, enviar 'foliar' como tipoAnalise
+    const tipoAnaliseEnviado = modulo === 'foliar' ? 'foliar' : tipoLaudo
+
     gerarLaudo.mutate({
       loteId: lote.id,
-      tipoAnalise: tipoLaudo
+      tipoAnalise: tipoAnaliseEnviado
     }, {
       onSuccess: () => {
         onClose()

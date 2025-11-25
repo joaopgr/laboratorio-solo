@@ -872,14 +872,23 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
         if (modulo === 'foliar' && resultadosAmostra.length > 0) {
           console.log(`🔍 Laudo Foliar - Amostra ${amostra.codigo}: ${resultadosAmostra.length} resultados brutos encontrados`)
           console.log(`   Tipos: ${resultadosAmostra.map((r: any) => r.tipo).join(', ')}`)
+          console.log(`   Resultados brutos:`, resultadosAmostra.map((r: any) => ({ tipo: r.tipo, valor: r.valor, categoria: r.categoria })))
         }
         
-        const calculados = modulo === 'foliar' ? calcularResultadosFoliar(resultadosAmostra) : calcularResultadosFinais(resultadosAmostra)
+        // Usar calcularResultadosFoliar se módulo é foliar OU se tipoAnalise é foliar
+        const usarFoliar = modulo === 'foliar' || tipoAnalise === 'foliar'
+        const calculados = usarFoliar ? calcularResultadosFoliar(resultadosAmostra) : calcularResultadosFinais(resultadosAmostra)
         
         // Debug: log dos resultados calculados
-        if (modulo === 'foliar') {
-          const calculadosKeys = Object.keys(calculados).filter(k => calculados[k] !== undefined && calculados[k] !== null)
-          console.log(`   Resultados calculados: ${calculadosKeys.length > 0 ? calculadosKeys.join(', ') : 'NENHUM'}`)
+        if (usarFoliar) {
+          const calculadosKeys = Object.keys(calculados).filter(k => calculados[k] !== undefined && calculados[k] !== null && !Number.isNaN(calculados[k]))
+          console.log(`   Resultados calculados para ${amostra.codigo}: ${calculadosKeys.length > 0 ? calculadosKeys.join(', ') : 'NENHUM'}`)
+          if (calculadosKeys.length > 0) {
+            console.log(`   Valores:`, calculadosKeys.reduce((acc, key) => {
+              acc[key] = calculados[key]
+              return acc
+            }, {} as any))
+          }
         }
         
         resultadosCalculadosPorAmostra[amostra.id] = calculados
@@ -1601,7 +1610,16 @@ router.post('/gerar', async (req: any, res): Promise<any> => {
     }
 
     // Detectar módulo corretamente (foliar ou solo)
-    const moduloDetectado = lote.modulo || lote.tipoAnalise || (amostras[0]?.modulo || amostras[0]?.tipoAnalise) || 'solo'
+    // Se tipoAnalise é 'foliar', forçar módulo foliar
+    let moduloDetectado = lote.modulo || lote.tipoAnalise || (amostras[0]?.modulo || amostras[0]?.tipoAnalise) || 'solo'
+    
+    // Se tipoAnalise é 'foliar', garantir que o módulo seja foliar
+    if (tipoAnalise === 'foliar') {
+      moduloDetectado = 'foliar'
+    }
+    
+    // Log para debug
+    console.log(`📋 Gerando laudo - Lote: ${lote.codigo}, Módulo detectado: ${moduloDetectado}, Tipo análise: ${tipoAnalise}, Total resultados: ${resultados.length}`)
     
     // Gerar HTML do laudo
     const htmlContent = await gerarPDFLaudoSobrio(lote, amostras, resultados, tipoAnalise, cliente, moduloDetectado)
