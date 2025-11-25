@@ -7,7 +7,7 @@ import { jsPDF } from 'jspdf'
 
 interface GerarLaudoData {
   loteId: string
-  tipoAnalise?: 'geral' | 'granulometrica'
+  tipoAnalise?: 'geral' | 'granulometrica' | 'foliar'
 }
 
 interface GerarLaudoResponse {
