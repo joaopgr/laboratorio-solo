@@ -882,12 +882,16 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
         // Debug: log dos resultados calculados
         if (usarFoliar) {
           const calculadosKeys = Object.keys(calculados).filter(k => calculados[k] !== undefined && calculados[k] !== null && !Number.isNaN(calculados[k]))
-          console.log(`   Resultados calculados para ${amostra.codigo}: ${calculadosKeys.length > 0 ? calculadosKeys.join(', ') : 'NENHUM'}`)
+          console.log(`   ✅ Resultados calculados para ${amostra.codigo}: ${calculadosKeys.length > 0 ? calculadosKeys.join(', ') : 'NENHUM'}`)
           if (calculadosKeys.length > 0) {
-            console.log(`   Valores:`, calculadosKeys.reduce((acc, key) => {
+            const valores = calculadosKeys.reduce((acc, key) => {
               acc[key] = calculados[key]
               return acc
-            }, {} as any))
+            }, {} as any)
+            console.log(`   📊 Valores calculados:`, JSON.stringify(valores, null, 2))
+          } else {
+            console.log(`   ⚠️ NENHUM resultado calculado para ${amostra.codigo}!`)
+            console.log(`   🔍 Resultados brutos disponíveis:`, resultadosAmostra.map((r: any) => ({ tipo: r.tipo, valor: r.valor })))
           }
         }
         
