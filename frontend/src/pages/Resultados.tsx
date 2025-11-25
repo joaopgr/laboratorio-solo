@@ -138,13 +138,33 @@ export function Resultados() {
 
   // Função para atualizar filtros de tipos de análise
   const updateTipoAnalise = (tipo: string, checked: boolean) => {
-    setFilters(prev => ({
-      ...prev,
-      tiposAnalise: {
-        ...prev.tiposAnalise,
-        [tipo]: checked
+    setFilters(prev => {
+      // Se está marcando, desmarcar todos os outros
+      if (checked) {
+        return {
+          ...prev,
+          tiposAnalise: {
+            rotina: false,
+            organica: false,
+            micronutrientes: false,
+            enxofre: false,
+            prem: false,
+            nitrogenio: false,
+            granulometria: false,
+            [tipo]: true
+          }
+        }
+      } else {
+        // Se está desmarcando, apenas desmarcar este
+        return {
+          ...prev,
+          tiposAnalise: {
+            ...prev.tiposAnalise,
+            [tipo]: false
+          }
+        }
       }
-    }))
+    })
     resetDisplayedResults()
   }
 

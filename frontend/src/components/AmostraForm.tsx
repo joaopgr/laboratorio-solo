@@ -323,54 +323,88 @@ export function AmostraForm({ amostra, isOpen, onClose }: AmostraFormProps) {
         }
 
 
-        // Criar lote
-        const novoLote = await createLote.mutateAsync(loteData)
+        // Dividir amostras em lotes de 11
+        const MAX_AMOSTRAS_POR_LOTE = 11
+        const lotesAmostras: typeof amostras[] = []
         
-        // Criar todas as amostras
+        for (let i = 0; i < amostras.length; i += MAX_AMOSTRAS_POR_LOTE) {
+          lotesAmostras.push(amostras.slice(i, i + MAX_AMOSTRAS_POR_LOTE))
+        }
+        
+        // Criar um lote para cada grupo de amostras
         let amostrasSalvas = 0
-        for (const amostraData of amostras) {
-          const amostraParaEnviar: CreateAmostraData = {
-            codigo: amostraData.codigo,
-            identificacao: amostraData.identificacao,
-            cultura: amostraData.cultura,
-            tipoAnalise: amostraData.tipoAnalise,
-            rotina: amostraData.rotina || false,
-            organica: amostraData.organica || false,
-            micronutrientes: amostraData.micronutrientes || false,
-            enxofre: amostraData.enxofre || false,
-            prem: amostraData.prem || false,
-            nitrogenio: amostraData.nitrogenio || false,
-            granulometria: amostraData.granulometria || false,
-            foliar: amostraData.foliar || false,
-            pago: amostraData.pago || false,
-            loteId: novoLote.id,
+        for (let loteIndex = 0; loteIndex < lotesAmostras.length; loteIndex++) {
+          const amostrasDoLote = lotesAmostras[loteIndex]
+          
+          // Criar lote com tipos de análise baseados nas amostras deste lote
+          const loteDataParaLote = {
+            ...loteData,
+            rotina: amostrasDoLote.some(a => a.rotina),
+            organica: amostrasDoLote.some(a => a.organica),
+            micronutrientes: amostrasDoLote.some(a => a.micronutrientes),
+            enxofre: amostrasDoLote.some(a => a.enxofre),
+            prem: amostrasDoLote.some(a => a.prem),
+            nitrogenio: amostrasDoLote.some(a => a.nitrogenio),
+            granulometria: amostrasDoLote.some(a => a.granulometria),
+            foliar: amostrasDoLote.some(a => a.foliar),
+            observacoes: lotesAmostras.length > 1 
+              ? `Lote gerado automaticamente (${loteIndex + 1}/${lotesAmostras.length})`
+              : '',
           }
           
-          // Adicionar campos opcionais apenas se não estiverem vazios
-          if (amostraData.localidade && amostraData.localidade.trim()) {
-            amostraParaEnviar.localidade = amostraData.localidade
-          }
-          if (amostraData.propriedade && amostraData.propriedade.trim()) {
-            amostraParaEnviar.propriedade = amostraData.propriedade
-          }
-          if (amostraData.solicitante && amostraData.solicitante.trim()) {
-            amostraParaEnviar.solicitante = amostraData.solicitante
-          }
-          if (amostraData.dataColeta && amostraData.dataColeta.trim()) {
-            amostraParaEnviar.dataColeta = amostraData.dataColeta
-          }
-          if (amostraData.observacoes && amostraData.observacoes.trim()) {
-            amostraParaEnviar.observacoes = amostraData.observacoes
-          }
+          const novoLote = await createLote.mutateAsync(loteDataParaLote)
           
-          await createAmostra.mutateAsync(amostraParaEnviar)
-          amostrasSalvas++
+          // Criar todas as amostras deste lote
+          for (const amostraData of amostrasDoLote) {
+            const amostraParaEnviar: CreateAmostraData = {
+              codigo: amostraData.codigo,
+              identificacao: amostraData.identificacao,
+              cultura: amostraData.cultura,
+              tipoAnalise: amostraData.tipoAnalise,
+              rotina: amostraData.rotina || false,
+              organica: amostraData.organica || false,
+              micronutrientes: amostraData.micronutrientes || false,
+              enxofre: amostraData.enxofre || false,
+              prem: amostraData.prem || false,
+              nitrogenio: amostraData.nitrogenio || false,
+              granulometria: amostraData.granulometria || false,
+              foliar: amostraData.foliar || false,
+              pago: amostraData.pago || false,
+              loteId: novoLote.id,
+            }
+            
+            // Adicionar campos opcionais apenas se não estiverem vazios
+            if (amostraData.localidade && amostraData.localidade.trim()) {
+              amostraParaEnviar.localidade = amostraData.localidade
+            }
+            if (amostraData.propriedade && amostraData.propriedade.trim()) {
+              amostraParaEnviar.propriedade = amostraData.propriedade
+            }
+            if (amostraData.solicitante && amostraData.solicitante.trim()) {
+              amostraParaEnviar.solicitante = amostraData.solicitante
+            }
+            if (amostraData.dataColeta && amostraData.dataColeta.trim()) {
+              amostraParaEnviar.dataColeta = amostraData.dataColeta
+            }
+            if (amostraData.observacoes && amostraData.observacoes.trim()) {
+              amostraParaEnviar.observacoes = amostraData.observacoes
+            }
+            
+            await createAmostra.mutateAsync(amostraParaEnviar)
+            amostrasSalvas++
+          }
         }
         
         // Mostrar mensagem de sucesso com o número correto de amostras
-        toast.success(`${amostrasSalvas} amostra(s) salva(s) com sucesso!`, {
-          duration: 3000
-        })
+        if (lotesAmostras.length > 1) {
+          toast.success(`${amostrasSalvas} amostra(s) dividida(s) em ${lotesAmostras.length} lote(s) com sucesso!`, {
+            duration: 3000
+          })
+        } else {
+          toast.success(`${amostrasSalvas} amostra(s) salva(s) com sucesso!`, {
+            duration: 3000
+          })
+        }
       }
 
       onClose()

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useCreateLote } from '../hooks/useLotes'
 import { useCreateAmostra } from '../hooks/useAmostras'
 import { useModule } from '../contexts/ModuleContext'
+import toast from 'react-hot-toast'
 import { Plus, X, Trash2 } from 'lucide-react'
 import { Cliente, CreateAmostraData } from '../../../shared/types'
 
@@ -188,52 +189,73 @@ export function AmostrasLoteForm({ cliente, isOpen, onClose }: AmostrasLoteFormP
       return
     }
     try {
-      // 1. Criar o lote automaticamente
-      const loteData = {
-        codigo: '', // Será gerado automaticamente pelo backend
-        dataEntrega: new Date().toISOString(), // Data atual em formato ISO
-        observacoes: 'Lote gerado automaticamente',
-        status: 'pendente' as const,
-        pago: false,
-        clienteId: cliente.id,
-        tipoAnalise: modulo,
-        // Tipos de análise - determinar baseado nas amostras
-        rotina: amostras.some(a => a.rotina),
-        organica: amostras.some(a => a.organica),
-        micronutrientes: amostras.some(a => a.micronutrientes),
-        enxofre: amostras.some(a => a.enxofre),
-        prem: amostras.some(a => a.prem),
-        nitrogenio: amostras.some(a => a.nitrogenio),
-        granulometria: amostras.some(a => a.granulometria),
-        foliar: amostras.some(a => a.foliar),
-      }
-
-
-           const lote = await createLote.mutateAsync(loteData)
+      // Dividir amostras em lotes de 11
+      const MAX_AMOSTRAS_POR_LOTE = 11
+      const lotesAmostras: typeof amostras[] = []
       
-      // 2. Criar todas as amostras vinculadas ao lote
-      const amostrasData = amostras.map(amostra => ({
-        codigo: amostra.codigo,
-        identificacao: amostra.identificacao,
-        cultura: amostra.cultura,
-        localidade: amostra.localidade || '',
-        dataColeta: amostra.dataColeta ? new Date(amostra.dataColeta).toISOString() : undefined,
-        observacoes: amostra.observacoes || '',
-        tipoAnalise: modulo,
-        rotina: amostra.rotina,
-        organica: amostra.organica,
-        micronutrientes: amostra.micronutrientes,
-        enxofre: amostra.enxofre,
-        prem: amostra.prem,
-        nitrogenio: amostra.nitrogenio,
-        granulometria: amostra.granulometria,
-        foliar: amostra.foliar,
-        pago: amostra.pago,
-        loteId: lote.id,
-      }))
+      for (let i = 0; i < amostras.length; i += MAX_AMOSTRAS_POR_LOTE) {
+        lotesAmostras.push(amostras.slice(i, i + MAX_AMOSTRAS_POR_LOTE))
+      }
+      
+      // Criar um lote para cada grupo de amostras
+      for (let loteIndex = 0; loteIndex < lotesAmostras.length; loteIndex++) {
+        const amostrasDoLote = lotesAmostras[loteIndex]
+        
+        // 1. Criar o lote automaticamente
+        const loteData = {
+          codigo: '', // Será gerado automaticamente pelo backend
+          dataEntrega: new Date().toISOString(), // Data atual em formato ISO
+          observacoes: lotesAmostras.length > 1 
+            ? `Lote gerado automaticamente (${loteIndex + 1}/${lotesAmostras.length})`
+            : 'Lote gerado automaticamente',
+          status: 'pendente' as const,
+          pago: false,
+          clienteId: cliente.id,
+          tipoAnalise: modulo,
+          // Tipos de análise - determinar baseado nas amostras deste lote
+          rotina: amostrasDoLote.some(a => a.rotina),
+          organica: amostrasDoLote.some(a => a.organica),
+          micronutrientes: amostrasDoLote.some(a => a.micronutrientes),
+          enxofre: amostrasDoLote.some(a => a.enxofre),
+          prem: amostrasDoLote.some(a => a.prem),
+          nitrogenio: amostrasDoLote.some(a => a.nitrogenio),
+          granulometria: amostrasDoLote.some(a => a.granulometria),
+          foliar: amostrasDoLote.some(a => a.foliar),
+        }
 
-      for (const amostraData of amostrasData) {
-        await createAmostra.mutateAsync(amostraData)
+        const lote = await createLote.mutateAsync(loteData)
+        
+        // 2. Criar todas as amostras vinculadas ao lote
+        const amostrasData = amostrasDoLote.map(amostra => ({
+          codigo: amostra.codigo,
+          identificacao: amostra.identificacao,
+          cultura: amostra.cultura,
+          localidade: amostra.localidade || '',
+          dataColeta: amostra.dataColeta ? new Date(amostra.dataColeta).toISOString() : undefined,
+          observacoes: amostra.observacoes || '',
+          tipoAnalise: modulo,
+          rotina: amostra.rotina,
+          organica: amostra.organica,
+          micronutrientes: amostra.micronutrientes,
+          enxofre: amostra.enxofre,
+          prem: amostra.prem,
+          nitrogenio: amostra.nitrogenio,
+          granulometria: amostra.granulometria,
+          foliar: amostra.foliar,
+          pago: amostra.pago,
+          loteId: lote.id,
+        }))
+
+        for (const amostraData of amostrasData) {
+          await createAmostra.mutateAsync(amostraData)
+        }
+      }
+      
+      // Mostrar mensagem de sucesso
+      if (lotesAmostras.length > 1) {
+        toast.success(`${amostras.length} amostra(s) dividida(s) em ${lotesAmostras.length} lote(s) com sucesso!`)
+      } else {
+        toast.success(`${amostras.length} amostra(s) salva(s) com sucesso!`)
       }
       
       // 3. Limpar formulário e fechar

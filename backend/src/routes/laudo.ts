@@ -867,7 +867,21 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
       
       amostrasOrdenadas.forEach(amostra => {
         const resultadosAmostra = resultados.filter((r: any) => r.amostraId === amostra.id)
+        
+        // Debug: log dos resultados para diagnóstico
+        if (modulo === 'foliar' && resultadosAmostra.length > 0) {
+          console.log(`🔍 Laudo Foliar - Amostra ${amostra.codigo}: ${resultadosAmostra.length} resultados brutos encontrados`)
+          console.log(`   Tipos: ${resultadosAmostra.map((r: any) => r.tipo).join(', ')}`)
+        }
+        
         const calculados = modulo === 'foliar' ? calcularResultadosFoliar(resultadosAmostra) : calcularResultadosFinais(resultadosAmostra)
+        
+        // Debug: log dos resultados calculados
+        if (modulo === 'foliar') {
+          const calculadosKeys = Object.keys(calculados).filter(k => calculados[k] !== undefined && calculados[k] !== null)
+          console.log(`   Resultados calculados: ${calculadosKeys.length > 0 ? calculadosKeys.join(', ') : 'NENHUM'}`)
+        }
+        
         resultadosCalculadosPorAmostra[amostra.id] = calculados
       })
     }
@@ -1502,7 +1516,10 @@ router.post('/gerar-lote', async (req, res): Promise<any> => {
           resultadosArray.push(...resultadosResult.rows)
         }
 
-        const htmlContent = await gerarPDFLaudoSobrio(lote, amostras, resultadosArray, tipoAnalise || 'geral', cliente, lote.modulo)
+        // Detectar módulo corretamente (foliar ou solo)
+        const moduloDetectado = lote.modulo || lote.tipoAnalise || (amostras[0]?.modulo || amostras[0]?.tipoAnalise) || 'solo'
+        
+        const htmlContent = await gerarPDFLaudoSobrio(lote, amostras, resultadosArray, tipoAnalise || 'geral', cliente, moduloDetectado)
 
         resultados.push({
           loteId,
@@ -1583,8 +1600,11 @@ router.post('/gerar', async (req: any, res): Promise<any> => {
       resultados.push(...resultadosResult.rows)
     }
 
+    // Detectar módulo corretamente (foliar ou solo)
+    const moduloDetectado = lote.modulo || lote.tipoAnalise || (amostras[0]?.modulo || amostras[0]?.tipoAnalise) || 'solo'
+    
     // Gerar HTML do laudo
-    const htmlContent = await gerarPDFLaudoSobrio(lote, amostras, resultados, tipoAnalise, cliente, lote.modulo)
+    const htmlContent = await gerarPDFLaudoSobrio(lote, amostras, resultados, tipoAnalise, cliente, moduloDetectado)
     
     // Retornar HTML para o frontend gerar o PDF
     // O PDF será gerado no frontend usando jsPDF ou html2canvas

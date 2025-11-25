@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { api } from '../services/api'
 import { Amostra, Cliente, LoteAmostra, Resultado } from '../../../shared/types'
 import { useAuth } from '../contexts/AuthContext'
-import { LogOut, FileText, MapPin, Phone, Mail } from 'lucide-react'
+import { LogOut, FileText, MapPin, Phone, Mail, Search, Filter, X } from 'lucide-react'
 import { GerarLaudoModal } from '../components/GerarLaudoModal'
 import toast from 'react-hot-toast'
 import { useModule } from '../contexts/ModuleContext'
@@ -28,6 +28,8 @@ export function ClientePortal() {
   const [modalAberto, setModalAberto] = useState(false)
   const [loteExpandido, setLoteExpandido] = useState<string | null>(null)
   const { setModulo } = useModule()
+  const [filtroAmostra, setFiltroAmostra] = useState('')
+  const [filtroMesAno, setFiltroMesAno] = useState('')
   // Toggle simples para bloquear/desbloquear a página no futuro
   // const BLOQUEAR_PAGINA = true // DESABILITADO TEMPORARIAMENTE - Para reativar, descomente esta linha
 
@@ -105,7 +107,37 @@ export function ClientePortal() {
   }
 
   const perfil = perfilQuery.data
-  const lotes = lotesQuery.data ?? []
+  const lotesBrutos = lotesQuery.data ?? []
+  
+  // Filtrar lotes baseado nos filtros
+  const lotes = useMemo(() => {
+    let lotesFiltrados = [...lotesBrutos]
+    
+    // Filtro por amostra - se encontrar a amostra, mostrar o lote correspondente
+    if (filtroAmostra.trim()) {
+      const codigoAmostra = filtroAmostra.trim().toLowerCase()
+      lotesFiltrados = lotesFiltrados.filter(lote => {
+        return lote.amostras?.some(amostra => 
+          amostra.codigo.toLowerCase().includes(codigoAmostra) ||
+          amostra.identificacao?.toLowerCase().includes(codigoAmostra)
+        )
+      })
+    }
+    
+    // Filtro por data (mês-ano)
+    if (filtroMesAno.trim()) {
+      const [mes, ano] = filtroMesAno.split('/').map(Number)
+      if (mes && ano) {
+        lotesFiltrados = lotesFiltrados.filter(lote => {
+          if (!lote.dataEntrega) return false
+          const dataLote = new Date(lote.dataEntrega)
+          return dataLote.getMonth() + 1 === mes && dataLote.getFullYear() === ano
+        })
+      }
+    }
+    
+    return lotesFiltrados
+  }, [lotesBrutos, filtroAmostra, filtroMesAno])
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100">
@@ -170,12 +202,65 @@ export function ClientePortal() {
         </section>
 
         <section className="space-y-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <h2 className="text-xl font-semibold text-slate-900">Seus lotes</h2>
-            <p className="text-sm text-slate-500">
-              Última atualização em {new Date().toLocaleDateString()}
-            </p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              {/* Filtro de pesquisa por amostra */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Pesquisar amostra..."
+                  value={filtroAmostra}
+                  onChange={(e) => setFiltroAmostra(e.target.value)}
+                  className="pl-10 pr-10 py-2 border border-emerald-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm w-full sm:w-48"
+                />
+                {filtroAmostra && (
+                  <button
+                    onClick={() => setFiltroAmostra('')}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+              
+              {/* Filtro por data (mês/ano) */}
+              <div className="relative">
+                <Filter className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="MM/AAAA"
+                  value={filtroMesAno}
+                  onChange={(e) => {
+                    const valor = e.target.value.replace(/\D/g, '')
+                    if (valor.length <= 6) {
+                      let formatado = valor
+                      if (valor.length > 2) {
+                        formatado = valor.slice(0, 2) + '/' + valor.slice(2, 6)
+                      }
+                      setFiltroMesAno(formatado)
+                    }
+                  }}
+                  className="pl-10 pr-10 py-2 border border-emerald-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm w-full sm:w-32"
+                />
+                {filtroMesAno && (
+                  <button
+                    onClick={() => setFiltroMesAno('')}
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
+          
+          {(filtroAmostra || filtroMesAno) && (
+            <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-3 text-sm text-emerald-700">
+              Mostrando {lotes.length} lote(s) filtrado(s)
+            </div>
+          )}
 
           {lotes.length === 0 ? (
             <div className="bg-white border border-dashed border-slate-200 rounded-2xl p-10 text-center">
