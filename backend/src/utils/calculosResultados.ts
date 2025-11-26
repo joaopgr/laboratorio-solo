@@ -221,9 +221,6 @@ export function calcularResultadosFoliar(resultados: any[]): CalculadosResultado
   // Preparar dados brutos para os cálculos
   const dadosBrutos: any = {}
   
-  console.log(`🔬 calcularResultadosFoliar - Total de resultados recebidos: ${resultados.length}`)
-  console.log(`   Tipos encontrados:`, resultados.map((r: any) => r.tipo).join(', '))
-  
   resultados.forEach(resultado => {
     const { tipo, valor, diluicao, massa, branco, al, h_al, param_a, param_b, massaN, volumeN, brancoN, fatorF, massaGeral, massaBFoliar, diluicaoBFoliar, brancoBFoliar, dilB, brancoB } = resultado
     const valorNum = parseFloat(valor) || 0
@@ -324,19 +321,9 @@ export function calcularResultadosFoliar(resultados: any[]): CalculadosResultado
       case 'MASSA_GERAL':
         dadosBrutos.massaGeral = parseFloat(massaGeral) || parseFloat(valor) || 0
         dadosBrutos.massaGeralBruto = parseFloat(massaGeral) || parseFloat(valor) || 0
-        console.log(`   ✅ MASSA_GERAL encontrada: ${dadosBrutos.massaGeralBruto}`)
         break
     }
   })
-  
-  // Verificar se temos MASSA_GERAL (essencial para cálculos foliares)
-  if (!dadosBrutos.massaGeralBruto || dadosBrutos.massaGeralBruto === 0) {
-    console.log(`   ⚠️ ATENÇÃO: MASSA_GERAL não encontrada ou é zero!`)
-    console.log(`   📋 Dados brutos preparados:`, Object.keys(dadosBrutos))
-    // Tentar usar valor padrão de 0.2g se não houver MASSA_GERAL (fallback)
-    dadosBrutos.massaGeralBruto = 0.2
-    console.log(`   🔧 Usando valor padrão de MASSA_GERAL: 0.2g`)
-  }
   
   // Calcular resultados usando as fórmulas específicas do foliar
   const resultadosCalculados: any = {}
@@ -356,10 +343,9 @@ export function calcularResultadosFoliar(resultados: any[]): CalculadosResultado
   
   // K = SE(Massa Geral Bruto="";"";((Valor de K Bruto*(21/Massa Geral Bruto)*5)*Dil K Bruto)/1000)
   if (dadosBrutos.k !== undefined && dadosBrutos.massaGeralBruto !== undefined && 
-      dadosBrutos.massaGeralBruto > 0) {
-    // Se não tiver diluição, usar 1 como padrão
-    const diluicaoKBruto = dadosBrutos.k_dil !== undefined ? dadosBrutos.k_dil : 1
+      dadosBrutos.massaGeralBruto > 0 && dadosBrutos.k_dil !== undefined) {
     const valorKBruto = dadosBrutos.k
+    const diluicaoKBruto = dadosBrutos.k_dil
     const massaGeralBruto = dadosBrutos.massaGeralBruto
     const resultadoK = ((valorKBruto * (21 / massaGeralBruto) * 5) * diluicaoKBruto) / 1000
     resultadosCalculados.k = resultadoK
@@ -404,9 +390,9 @@ export function calcularResultadosFoliar(resultados: any[]): CalculadosResultado
   
   // Fe = SE(Massa Geral Bruto="";"";((21/Massa Geral Bruto)*Valor Fe Bruto*Dil Fe Bruto))
   if (dadosBrutos.fe !== undefined && dadosBrutos.massaGeralBruto !== undefined && 
-      dadosBrutos.massaGeralBruto > 0) {
-    const diluicaoFeBruto = dadosBrutos.fe_dil !== undefined ? dadosBrutos.fe_dil : 1
+      dadosBrutos.massaGeralBruto > 0 && dadosBrutos.fe_dil !== undefined) {
     const valorFeBruto = dadosBrutos.fe
+    const diluicaoFeBruto = dadosBrutos.fe_dil
     const massaGeralBruto = dadosBrutos.massaGeralBruto
     const resultadoFe = ((21 / massaGeralBruto) * valorFeBruto * diluicaoFeBruto)
     resultadosCalculados.fe = resultadoFe
@@ -414,9 +400,9 @@ export function calcularResultadosFoliar(resultados: any[]): CalculadosResultado
   
   // Cu = SE(Massa Geral Bruto="";"";((21/Massa Geral Bruto)*Valor Cu Bruto*Dil Cu Bruto))
   if (dadosBrutos.cu !== undefined && dadosBrutos.massaGeralBruto !== undefined && 
-      dadosBrutos.massaGeralBruto > 0) {
-    const diluicaoCuBruto = dadosBrutos.cu_dil !== undefined ? dadosBrutos.cu_dil : 1
+      dadosBrutos.massaGeralBruto > 0 && dadosBrutos.cu_dil !== undefined) {
     const valorCuBruto = dadosBrutos.cu
+    const diluicaoCuBruto = dadosBrutos.cu_dil
     const massaGeralBruto = dadosBrutos.massaGeralBruto
     const resultadoCu = ((21 / massaGeralBruto) * valorCuBruto * diluicaoCuBruto)
     resultadosCalculados.cu = resultadoCu
@@ -424,9 +410,9 @@ export function calcularResultadosFoliar(resultados: any[]): CalculadosResultado
   
   // Zn = SE(Massa Geral Bruto="";"";((21/Massa Geral Bruto)*Valor Zn Bruto*Dil Zn Bruto))
   if (dadosBrutos.zn !== undefined && dadosBrutos.massaGeralBruto !== undefined && 
-      dadosBrutos.massaGeralBruto > 0) {
-    const diluicaoZnBruto = dadosBrutos.zn_dil !== undefined ? dadosBrutos.zn_dil : 1
+      dadosBrutos.massaGeralBruto > 0 && dadosBrutos.zn_dil !== undefined) {
     const valorZnBruto = dadosBrutos.zn
+    const diluicaoZnBruto = dadosBrutos.zn_dil
     const massaGeralBruto = dadosBrutos.massaGeralBruto
     const resultadoZn = ((21 / massaGeralBruto) * valorZnBruto * diluicaoZnBruto)
     resultadosCalculados.zn = resultadoZn
@@ -434,18 +420,12 @@ export function calcularResultadosFoliar(resultados: any[]): CalculadosResultado
   
   // Mn = SE(Massa Geral Bruto="";"";((21/Massa Geral Bruto)*Valor Mn Bruto*Dil Mn Bruto))
   if (dadosBrutos.mn !== undefined && dadosBrutos.massaGeralBruto !== undefined && 
-      dadosBrutos.massaGeralBruto > 0) {
-    // Se não tiver diluição, usar 1 como padrão
-    const diluicaoMnBruto = dadosBrutos.mn_dil !== undefined ? dadosBrutos.mn_dil : 1
+      dadosBrutos.massaGeralBruto > 0 && dadosBrutos.mn_dil !== undefined) {
     const valorMnBruto = dadosBrutos.mn
+    const diluicaoMnBruto = dadosBrutos.mn_dil
     const massaGeralBruto = dadosBrutos.massaGeralBruto
     const resultadoMn = ((21 / massaGeralBruto) * valorMnBruto * diluicaoMnBruto)
     resultadosCalculados.mn = resultadoMn
-    console.log(`   ✅ Mn calculado: ${resultadoMn} (valor: ${valorMnBruto}, dil: ${diluicaoMnBruto}, massa: ${massaGeralBruto})`)
-  } else {
-    if (dadosBrutos.mn !== undefined) {
-      console.log(`   ⚠️ Mn não calculado - faltando: massaGeralBruto=${dadosBrutos.massaGeralBruto}, mn_dil=${dadosBrutos.mn_dil}`)
-    }
   }
   
   // B = SEERRO((((2-LOG10(Valor B Bruto)-B do B bruto)/A do B Bruto)-((2-LOG10(Branco do B Bruto)-B do B Bruto)/A do B Bruto))*((25/Massa do B Bruto)*(6/4))*Dil B Bruto;"")
@@ -480,11 +460,6 @@ export function calcularResultadosFoliar(resultados: any[]): CalculadosResultado
     if (massaN !== 0) {
       resultadosCalculados.n = ((volumeN - brancoN) * fatorF * 1.4) / massaN
     }
-  }
-  
-  console.log(`   📊 Resultados finais calculados:`, Object.keys(resultadosCalculados).length > 0 ? Object.keys(resultadosCalculados).join(', ') : 'NENHUM')
-  if (Object.keys(resultadosCalculados).length > 0) {
-    console.log(`   📈 Valores:`, JSON.stringify(resultadosCalculados, null, 2))
   }
   
   return resultadosCalculados
