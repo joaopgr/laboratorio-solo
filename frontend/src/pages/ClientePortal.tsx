@@ -109,17 +109,30 @@ export function ClientePortal() {
   const perfil = perfilQuery.data
   const lotesBrutos = lotesQuery.data ?? []
   
+  // Debug: verificar dados recebidos
+  if (lotesQuery.data) {
+    console.log('📦 Dados de lotes recebidos:', {
+      tipo: typeof lotesQuery.data,
+      isArray: Array.isArray(lotesQuery.data),
+      length: Array.isArray(lotesQuery.data) ? lotesQuery.data.length : 'N/A',
+      dados: lotesQuery.data
+    })
+  }
+  
   // Filtrar lotes baseado nos filtros
   const lotes = useMemo(() => {
     try {
       if (!lotesBrutos) {
+        console.log('⚠️ lotesBrutos é null/undefined')
         return []
       }
       
       if (!Array.isArray(lotesBrutos)) {
-        console.warn('lotesBrutos não é um array:', typeof lotesBrutos, lotesBrutos)
+        console.warn('⚠️ lotesBrutos não é um array:', typeof lotesBrutos, lotesBrutos)
         return []
       }
+      
+      console.log(`✅ Processando ${lotesBrutos.length} lote(s)`)
       
       let lotesFiltrados = [...lotesBrutos]
       
