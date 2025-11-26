@@ -112,8 +112,12 @@ export function ClientePortal() {
   // Filtrar lotes baseado nos filtros
   const lotes = useMemo(() => {
     try {
+      if (!lotesBrutos) {
+        return []
+      }
+      
       if (!Array.isArray(lotesBrutos)) {
-        console.warn('lotesBrutos não é um array:', lotesBrutos)
+        console.warn('lotesBrutos não é um array:', typeof lotesBrutos, lotesBrutos)
         return []
       }
       
@@ -155,9 +159,23 @@ export function ClientePortal() {
       return lotesFiltrados
     } catch (error) {
       console.error('Erro ao filtrar lotes:', error)
-      return lotesBrutos || []
+      // Em caso de erro, retornar array vazio para não quebrar a renderização
+      return []
     }
   }, [lotesBrutos, filtroAmostra, filtroMesAno])
+  
+  // Verificar se perfil existe antes de renderizar
+  if (!perfil || !perfil.cliente) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="bg-white shadow-lg rounded-2xl p-8 text-center space-y-4">
+          <p className="text-lg font-semibold text-red-600">
+            Erro ao carregar dados do perfil.
+          </p>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100">
