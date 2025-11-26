@@ -78,48 +78,7 @@ export function ClientePortal() {
     setLoteExpandido(prev => (prev === lote.id ? null : lote.id))
   }
 
-  const resultadosSelecionados = useMemo(() => {
-    if (!loteSelecionado?.amostras) return []
-    return loteSelecionado.amostras.flatMap(amostra => amostra.resultados ?? [])
-  }, [loteSelecionado])
-
-  if (carregando) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-600" />
-      </div>
-    )
-  }
-
-  if (erro || !perfilQuery.data) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="bg-white shadow-lg rounded-2xl p-8 text-center space-y-4">
-          <p className="text-lg font-semibold text-red-600">
-            Não foi possível carregar seus dados agora.
-          </p>
-          <p className="text-sm text-slate-500">
-            Tente novamente em instantes. Caso o problema persista, entre em contato com o laboratório.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
-  // Verificar se perfil existe antes de renderizar
-  if (!perfilQuery.data || !perfilQuery.data.cliente) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="bg-white shadow-lg rounded-2xl p-8 text-center space-y-4">
-          <p className="text-lg font-semibold text-red-600">
-            Erro ao carregar dados do perfil.
-          </p>
-        </div>
-      </div>
-    )
-  }
-
-  const perfil = perfilQuery.data
+  // TODOS OS HOOKS DEVEM SER CHAMADOS ANTES DE QUALQUER RETURN CONDICIONAL
   const lotesBrutos = Array.isArray(lotesQuery.data) ? lotesQuery.data : []
   
   // Filtrar lotes baseado nos filtros
@@ -165,6 +124,50 @@ export function ClientePortal() {
     
     return lotesFiltrados
   }, [lotesBrutos, filtroAmostra, filtroMesAno])
+
+  const resultadosSelecionados = useMemo(() => {
+    if (!loteSelecionado?.amostras) return []
+    return loteSelecionado.amostras.flatMap(amostra => amostra.resultados ?? [])
+  }, [loteSelecionado])
+
+  // AGORA PODEMOS FAZER RETURNS CONDICIONAIS
+  if (carregando) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-600" />
+      </div>
+    )
+  }
+
+  if (erro || !perfilQuery.data) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="bg-white shadow-lg rounded-2xl p-8 text-center space-y-4">
+          <p className="text-lg font-semibold text-red-600">
+            Não foi possível carregar seus dados agora.
+          </p>
+          <p className="text-sm text-slate-500">
+            Tente novamente em instantes. Caso o problema persista, entre em contato com o laboratório.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  // Verificar se perfil existe antes de renderizar
+  if (!perfilQuery.data || !perfilQuery.data.cliente) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="bg-white shadow-lg rounded-2xl p-8 text-center space-y-4">
+          <p className="text-lg font-semibold text-red-600">
+            Erro ao carregar dados do perfil.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  const perfil = perfilQuery.data
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100">
