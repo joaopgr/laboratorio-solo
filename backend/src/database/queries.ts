@@ -1,6 +1,15 @@
 // Queries SQL para substituir o Prisma
 // Baseado no schema.prisma original
 
+// Função para normalizar acentos em SQL (remove acentos)
+const normalizeAccentsSQL = (field: string) => {
+  return `translate(
+    lower(${field}),
+    'áàâãäéèêëíìîïóòôõöúùûüçñÁÀÂÃÄÉÈÊËÍÌÎÏÓÒÔÕÖÚÙÛÜÇÑ',
+    'aaaaaeeeeiiiioooouuuucnAAAAAEEEEIIIIOOOOUUUUCN'
+  )`;
+};
+
 export const SQL_QUERIES = {
   // ===== CLIENTES =====
   clientes: {
@@ -15,8 +24,18 @@ export const SQL_QUERIES = {
       const params: any[] = [];
       
       if (search) {
-        query += ` WHERE nome ILIKE $1 OR cpf ILIKE $1 OR email ILIKE $1 OR cidade ILIKE $1`;
-        params.push(`%${search}%`);
+        // Normalizar o termo de busca removendo acentos
+        const normalizedSearch = search
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+        
+        query += ` WHERE 
+          ${normalizeAccentsSQL('nome')} ILIKE $1 OR 
+          ${normalizeAccentsSQL('cidade')} ILIKE $1 OR 
+          cpf ILIKE $2 OR 
+          email ILIKE $2`;
+        params.push(`%${normalizedSearch}%`, `%${search}%`);
       }
       
       query += ` ORDER BY "createdAt" DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;
@@ -31,8 +50,18 @@ export const SQL_QUERIES = {
       const params: any[] = [];
       
       if (search) {
-        query += ` WHERE nome ILIKE $1 OR cpf ILIKE $1 OR email ILIKE $1 OR cidade ILIKE $1`;
-        params.push(`%${search}%`);
+        // Normalizar o termo de busca removendo acentos
+        const normalizedSearch = search
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '');
+        
+        query += ` WHERE 
+          ${normalizeAccentsSQL('nome')} ILIKE $1 OR 
+          ${normalizeAccentsSQL('cidade')} ILIKE $1 OR 
+          cpf ILIKE $2 OR 
+          email ILIKE $2`;
+        params.push(`%${normalizedSearch}%`, `%${search}%`);
       }
       
       return { query, params };
