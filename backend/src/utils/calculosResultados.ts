@@ -283,8 +283,9 @@ export function prepararDadosBrutos(resultados: any[]): DadosBrutos {
         dadosBrutos.al = valorNum
         break
       case 'H+Al':
-        dadosBrutos.h_al = hAlNum || valorNum
-        dadosBrutos.h_al_branco = brancoNum
+        if (al) dadosBrutos.al = alNum
+        if (h_al) dadosBrutos.h_al = hAlNum || valorNum
+        if (branco) dadosBrutos.h_al_branco = brancoNum
         break
       case 'MO':
         dadosBrutos.mo = valorNum
