@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useValoresAnalise, useUpdateValorAnalise } from '../hooks/useValoresAnalise';
 import toast from 'react-hot-toast';
-import { DollarSign, Save, Loader2 } from 'lucide-react';
+import { DollarSign, Edit2, Save, X, Loader2 } from 'lucide-react';
 
 const TIPOS_ANALISE = {
   solo: [
@@ -26,7 +26,8 @@ const TIPOS_ANALISE = {
 
 export function ValoresAnalise() {
   const [moduloSelecionado, setModuloSelecionado] = useState<'solo' | 'foliar'>('solo');
-  const [valoresEditados, setValoresEditados] = useState<Record<string, number>>({});
+  const [editandoTipo, setEditandoTipo] = useState<string | null>(null);
+  const [valorEditado, setValorEditado] = useState<string>('');
   
   const { data: valoresData, isLoading } = useValoresAnalise();
   const updateValor = useUpdateValorAnalise();
@@ -34,19 +35,23 @@ export function ValoresAnalise() {
   const valores: Record<string, number> = valoresData?.[moduloSelecionado] || {};
   const tiposAnalise = TIPOS_ANALISE[moduloSelecionado];
 
-  const handleValorChange = (tipo: string, novoValor: string) => {
-    const valor = parseFloat(novoValor);
-    if (isNaN(valor) || valor < 0) return;
-    
-    setValoresEditados(prev => ({
-      ...prev,
-      [tipo]: valor
-    }));
+  const handleIniciarEdicao = (tipo: string) => {
+    const valorAtual = valores[tipo] || 0;
+    setEditandoTipo(tipo);
+    setValorEditado(valorAtual.toString());
+  };
+
+  const handleCancelarEdicao = () => {
+    setEditandoTipo(null);
+    setValorEditado('');
   };
 
   const handleSalvar = async (tipo: string) => {
-    const novoValor = valoresEditados[tipo];
-    if (novoValor === undefined) return;
+    const novoValor = parseFloat(valorEditado);
+    if (isNaN(novoValor) || novoValor < 0) {
+      toast.error('Valor inválido');
+      return;
+    }
 
     try {
       await updateValor.mutateAsync({
@@ -55,12 +60,8 @@ export function ValoresAnalise() {
         valor: novoValor
       });
       
-      // Remover do estado de edição
-      setValoresEditados(prev => {
-        const novo = { ...prev };
-        delete novo[tipo];
-        return novo;
-      });
+      setEditandoTipo(null);
+      setValorEditado('');
       
       toast.success(`Valor de ${TIPOS_ANALISE[moduloSelecionado].find(t => t.key === tipo)?.label} atualizado com sucesso!`);
     } catch (error) {
@@ -98,7 +99,8 @@ export function ValoresAnalise() {
           <button
             onClick={() => {
               setModuloSelecionado('solo');
-              setValoresEditados({});
+              setEditandoTipo(null);
+              setValorEditado('');
             }}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               moduloSelecionado === 'solo'
@@ -111,7 +113,8 @@ export function ValoresAnalise() {
           <button
             onClick={() => {
               setModuloSelecionado('foliar');
-              setValoresEditados({});
+              setEditandoTipo(null);
+              setValorEditado('');
             }}
             className={`px-6 py-3 rounded-lg font-semibold transition-all ${
               moduloSelecionado === 'foliar'
@@ -137,22 +140,17 @@ export function ValoresAnalise() {
                   Descrição
                 </th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                  Valor Atual (R$)
+                  Valor (R$)
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
-                  Novo Valor (R$)
-                </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900">
-                  Ações
+                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 w-24">
+                  Editar
                 </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {tiposAnalise.map((tipo) => {
                 const valorAtual = valores[tipo.key] || 0;
-                const valorEditado = valoresEditados[tipo.key];
-                const valorExibido = valorEditado !== undefined ? valorEditado : valorAtual;
-                const foiEditado = valorEditado !== undefined && valorEditado !== valorAtual;
+                const estaEditando = editandoTipo === tipo.key;
                 const isSaving = updateValor.isPending;
 
                 return (
@@ -164,40 +162,55 @@ export function ValoresAnalise() {
                       <div className="text-sm text-gray-600">{tipo.descricao}</div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-lg font-semibold text-gray-900">
-                        R$ {valorAtual.toFixed(2)}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={valorExibido}
-                        onChange={(e) => handleValorChange(tipo.key, e.target.value)}
-                        className={`w-32 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                          foiEditado ? 'border-blue-500 bg-blue-50' : 'border-gray-300'
-                        }`}
-                        placeholder="0.00"
-                      />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-center">
-                        {foiEditado ? (
+                      {estaEditando ? (
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={valorEditado}
+                            onChange={(e) => setValorEditado(e.target.value)}
+                            className="w-32 px-3 py-2 border border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-50"
+                            placeholder="0.00"
+                            autoFocus
+                          />
                           <button
                             onClick={() => handleSalvar(tipo.key)}
                             disabled={isSaving}
-                            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            title="Salvar"
                           >
                             {isSaving ? (
                               <Loader2 className="w-4 h-4 animate-spin" />
                             ) : (
                               <Save className="w-4 h-4" />
                             )}
-                            Salvar
                           </button>
-                        ) : (
-                          <span className="text-sm text-gray-400">Sem alterações</span>
+                          <button
+                            onClick={handleCancelarEdicao}
+                            disabled={isSaving}
+                            className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            title="Cancelar"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="text-lg font-semibold text-gray-900">
+                          R$ {valorAtual.toFixed(2)}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex justify-center">
+                        {!estaEditando && (
+                          <button
+                            onClick={() => handleIniciarEdicao(tipo.key)}
+                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="Editar valor"
+                          >
+                            <Edit2 className="w-5 h-5" />
+                          </button>
                         )}
                       </div>
                     </td>
@@ -213,10 +226,9 @@ export function ValoresAnalise() {
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <p className="text-sm text-blue-800">
           <strong>Nota:</strong> As alterações nos valores serão refletidas imediatamente em todo o sistema, 
-          incluindo cálculos de lotes, relatórios financeiros e geração de laudos.
+          incluindo cálculos de lotes, relatórios financeiros e geração de laudos. Todas as alterações são registradas na aba "Registro de Atividades".
         </p>
       </div>
     </div>
   );
 }
-

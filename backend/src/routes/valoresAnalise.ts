@@ -29,7 +29,7 @@ router.get('/', async (req, res): Promise<any> => {
     };
     
     result.rows.forEach((row: any) => {
-      valoresPorModulo[row.modulo][row.tipo] = row.valor;
+      valoresPorModulo[row.modulo][row.tipo] = parseFloat(row.valor);
     });
     
     res.json(valoresPorModulo);
@@ -54,7 +54,7 @@ router.get('/:modulo', async (req, res): Promise<any> => {
     // Converter para objeto chave-valor
     const valores: any = {};
     result.rows.forEach((row: any) => {
-      valores[row.tipo] = row.valor;
+      valores[row.tipo] = parseFloat(row.valor);
     });
     
     res.json(valores);
@@ -65,9 +65,15 @@ router.get('/:modulo', async (req, res): Promise<any> => {
 });
 
 // PUT /api/valores-analise - Atualizar valor (apenas admin)
-router.put('/', authorizeRoles('admin'), async (req, res): Promise<any> => {
+router.put('/', authorizeRoles('admin'), async (req: any, res): Promise<any> => {
   try {
     const data = updateValorSchema.parse(req.body);
+    const usuario = req.user;
+    
+    // Buscar valor antigo para log
+    const { query: valorAntigoQuery, params: valorAntigoParams } = SQL_QUERIES.valoresAnalise.findByModulo(data.modulo);
+    const valorAntigoResult = await query(valorAntigoQuery, valorAntigoParams);
+    const valorAntigo = valorAntigoResult.rows.find((r: any) => r.tipo === data.tipo);
     
     const { query: updateQuery, params } = SQL_QUERIES.valoresAnalise.upsert(
       data.modulo,
@@ -79,6 +85,39 @@ router.put('/', authorizeRoles('admin'), async (req, res): Promise<any> => {
     
     // Limpar cache para forçar atualização
     limparCacheValores();
+    
+    // Registrar log da alteração
+    const tipoLabel = data.tipo === 'rotina' ? 'Rotina' :
+                     data.tipo === 'organica' ? 'Matéria Orgânica' :
+                     data.tipo === 'micronutrientes' ? 'Micronutrientes' :
+                     data.tipo === 'prem' ? 'PREM' :
+                     data.tipo === 'enxofre' ? 'Enxofre' :
+                     data.tipo === 'nitrogenio' ? 'Nitrogênio' :
+                     data.tipo === 'granulometria' ? 'Granulometria' : data.tipo;
+    
+    const moduloLabel = data.modulo === 'solo' ? 'Solo' : 'Foliar';
+    
+    const { query: logQuery, params: logParams } = SQL_QUERIES.logs.create({
+      usuarioId: usuario.id,
+      usuarioNome: usuario.nome || 'Admin',
+      usuarioEmail: usuario.email || '',
+      acao: 'atualizar',
+      entidade: 'valor_analise',
+      entidadeId: result.rows[0].id,
+      entidadeNome: `${tipoLabel} (${moduloLabel})`,
+      detalhes: JSON.stringify({
+        modulo: data.modulo,
+        tipo: data.tipo,
+        valorAnterior: valorAntigo ? parseFloat(valorAntigo.valor) : null,
+        valorNovo: data.valor,
+        tipoLabel,
+        moduloLabel
+      }),
+      ip: req.ip || req.connection?.remoteAddress || null,
+      userAgent: req.get('user-agent') || null
+    });
+    
+    await query(logQuery, logParams);
     
     res.json({
       success: true,
