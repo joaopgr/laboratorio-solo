@@ -806,16 +806,16 @@ async function gerarQRCodeLaudo(lote: any, amostras: any[], cliente: any): Promi
       minute: '2-digit'
     })
     
-    // Criar texto formatado e legível para o QR Code
-    const textoQRCode = `LAUDO DE ANÁLISE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    // Criar texto formatado usando apenas caracteres ASCII para evitar problemas de encoding
+    const textoQRCode = `LAUDO DE ANALISE
+--------------------------------
 Cliente: ${cliente?.nome || 'N/A'}
 CPF: ${cliente?.cpf || 'N/A'}
 Lote: ${lote?.codigo || 'N/A'}
-Data de Geração: ${dataGeracao}
+Data de Geracao: ${dataGeracao}
 Quantidade de Amostras: ${amostras?.length || 0}
-Módulo: ${lote?.modulo || lote?.tipoAnalise || 'solo'}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Modulo: ${lote?.modulo || lote?.tipoAnalise || 'solo'}
+--------------------------------
 Este QR Code valida a autenticidade do laudo.`
     
     // Gerar QR Code com o texto formatado
