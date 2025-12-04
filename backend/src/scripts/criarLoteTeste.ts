@@ -58,10 +58,10 @@ async function criarLoteTeste() {
         identificacao: `Amostra Teste ${i}`,
         cultura: i % 3 === 0 ? 'Café' : i % 3 === 1 ? 'Milho' : 'Soja',
         localidade: `Localidade Teste ${i}`,
-        dataColeta: new Date(2024, 0, i).toISOString(),
+        dataColeta: new Date(2024, 0, i),
         observacoes: `Amostra de teste ${i} para geração de laudos`,
         loteId: loteId,
-        tipoAnalise: 'solo',
+        modulo: 'solo',
         rotina: true,
         organica: i % 2 === 0, // Metade com matéria orgânica
         micronutrientes: true,

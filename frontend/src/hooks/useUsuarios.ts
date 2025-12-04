@@ -58,7 +58,6 @@ export function useUsuarios() {
     retry: 1,
     refetchOnWindowFocus: false,
     staleTime: 0, // Sempre buscar dados frescos
-    cacheTime: 0, // Não cachear
   });
 }
 

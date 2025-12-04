@@ -23,14 +23,15 @@ export function ControleUsuarios() {
   const deleteUsuario = useDeleteUsuario();
 
   // Filtrar usuários por busca
-  const filteredUsuarios = usuarios?.filter(usuario => {
+  const usuariosArray = Array.isArray(usuarios) ? usuarios : [];
+  const filteredUsuarios = usuariosArray.filter((usuario: Usuario) => {
     const search = searchInput.toLowerCase();
     return (
       usuario.nome.toLowerCase().includes(search) ||
       usuario.email.toLowerCase().includes(search) ||
       ROLE_LABELS[usuario.role].toLowerCase().includes(search)
     );
-  }) || [];
+  });
 
   const togglePasswordVisibility = (id: string) => {
     setVisiblePasswords(prev => ({
