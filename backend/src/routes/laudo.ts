@@ -798,6 +798,16 @@ async function calcularResultadosGranulometricos(amostraId: string) {
 // Função para gerar QR Code com dados de validação do laudo
 async function gerarQRCodeLaudo(lote: any, amostras: any[], cliente: any): Promise<string> {
   try {
+    // Data de entrada (criação do lote)
+    const dataEntrada = lote?.createdAt 
+      ? new Date(lote.createdAt).toLocaleDateString('pt-BR', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        })
+      : 'N/A'
+    
+    // Data de geração do laudo/QR Code
     const dataGeracao = new Date().toLocaleDateString('pt-BR', {
       day: '2-digit',
       month: '2-digit',
@@ -812,9 +822,10 @@ async function gerarQRCodeLaudo(lote: any, amostras: any[], cliente: any): Promi
 Cliente: ${cliente?.nome || 'N/A'}
 CPF: ${cliente?.cpf || 'N/A'}
 Lote: ${lote?.codigo || 'N/A'}
-Data de Geracao: ${dataGeracao}
+Data de Entrada: ${dataEntrada}
 Quantidade de Amostras: ${amostras?.length || 0}
 Modulo: ${lote?.modulo || lote?.tipoAnalise || 'solo'}
+Data de Geracao: ${dataGeracao}
 --------------------------------
 Este QR Code valida a autenticidade do laudo.`
     
