@@ -46,6 +46,10 @@ export interface CalculadosResultados {
   cu?: number
   zn?: number
   mn?: number
+  b?: number
+  s?: number
+  prem?: number
+  n?: number
 }
 
 export function calcularResultados(dadosBrutos: DadosBrutos): CalculadosResultados {
