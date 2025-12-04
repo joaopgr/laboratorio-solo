@@ -15,12 +15,9 @@ const TIPOS_ANALISE = {
   ],
   foliar: [
     { key: 'rotina', label: 'Rotina', descricao: 'Análise de rotina' },
-    { key: 'organica', label: 'Matéria Orgânica', descricao: 'Análise de matéria orgânica' },
     { key: 'micronutrientes', label: 'Micronutrientes', descricao: 'Análise de micronutrientes' },
-    { key: 'prem', label: 'PREM', descricao: 'Análise PREM' },
     { key: 'enxofre', label: 'Enxofre', descricao: 'Análise de enxofre' },
     { key: 'nitrogenio', label: 'Nitrogênio', descricao: 'Análise de nitrogênio' },
-    { key: 'granulometria', label: 'Granulometria', descricao: 'Análise granulométrica' },
   ],
 };
 
@@ -79,70 +76,67 @@ export function ValoresAnalise() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
-            <DollarSign className="w-8 h-8 text-blue-600" />
-            Valores de Análise
-          </h1>
-          <p className="text-gray-600 mt-2">
-            Gerencie os valores dos tipos de análise por módulo
-          </p>
+          <h1 className="text-2xl font-bold text-gray-900">Valores de Análise</h1>
+          <p className="text-gray-600">Gerencie os valores dos tipos de análise por módulo</p>
         </div>
       </div>
 
       {/* Seletor de Módulo */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-        <div className="flex gap-4">
-          <button
-            onClick={() => {
-              setModuloSelecionado('solo');
-              setEditandoTipo(null);
-              setValorEditado('');
-            }}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              moduloSelecionado === 'solo'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            Solo
-          </button>
-          <button
-            onClick={() => {
-              setModuloSelecionado('foliar');
-              setEditandoTipo(null);
-              setValorEditado('');
-            }}
-            className={`px-6 py-3 rounded-lg font-semibold transition-all ${
-              moduloSelecionado === 'foliar'
-                ? 'bg-blue-600 text-white shadow-md'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-            }`}
-          >
-            Foliar
-          </button>
+      <div className="card border-emerald-300">
+        <div className="card-header">
+          <h3 className="card-title">Módulo</h3>
+        </div>
+        <div className="card-content">
+          <div className="flex gap-4">
+            <button
+              onClick={() => {
+                setModuloSelecionado('solo');
+                setEditandoTipo(null);
+                setValorEditado('');
+              }}
+              className={`btn ${moduloSelecionado === 'solo' ? 'btn-primary' : 'btn-outline'}`}
+            >
+              Solo
+            </button>
+            <button
+              onClick={() => {
+                setModuloSelecionado('foliar');
+                setEditandoTipo(null);
+                setValorEditado('');
+              }}
+              className={`btn ${moduloSelecionado === 'foliar' ? 'btn-primary' : 'btn-outline'}`}
+            >
+              Foliar
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Tabela de Valores */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      <div className="card border-emerald-300">
+        <div className="card-header">
+          <h3 className="card-title">Valores - {moduloSelecionado === 'solo' ? 'Solo' : 'Foliar'}</h3>
+        </div>
+        <div className="card-content p-0">
+          <div className="overflow-x-auto">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Tipo de Análise
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Descrição
                 </th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Valor (R$)
                 </th>
-                <th className="px-6 py-4 text-center text-sm font-semibold text-gray-900 w-24">
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
                   Editar
                 </th>
               </tr>
@@ -170,14 +164,14 @@ export function ValoresAnalise() {
                             step="0.01"
                             value={valorEditado}
                             onChange={(e) => setValorEditado(e.target.value)}
-                            className="w-32 px-3 py-2 border border-blue-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-blue-50"
+                            className="w-32 px-3 py-2 border border-emerald-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-emerald-50"
                             placeholder="0.00"
                             autoFocus
                           />
                           <button
                             onClick={() => handleSalvar(tipo.key)}
                             disabled={isSaving}
-                            className="p-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="btn btn-primary btn-sm"
                             title="Salvar"
                           >
                             {isSaving ? (
@@ -189,7 +183,7 @@ export function ValoresAnalise() {
                           <button
                             onClick={handleCancelarEdicao}
                             disabled={isSaving}
-                            className="p-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            className="btn btn-outline btn-sm"
                             title="Cancelar"
                           >
                             <X className="w-4 h-4" />
@@ -206,7 +200,7 @@ export function ValoresAnalise() {
                         {!estaEditando && (
                           <button
                             onClick={() => handleIniciarEdicao(tipo.key)}
-                            className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
                             title="Editar valor"
                           >
                             <Edit2 className="w-5 h-5" />
@@ -219,15 +213,18 @@ export function ValoresAnalise() {
               })}
             </tbody>
           </table>
+          </div>
         </div>
       </div>
 
       {/* Aviso */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <p className="text-sm text-blue-800">
-          <strong>Nota:</strong> As alterações nos valores serão refletidas imediatamente em todo o sistema, 
-          incluindo cálculos de lotes, relatórios financeiros e geração de laudos. Todas as alterações são registradas na aba "Registro de Atividades".
-        </p>
+      <div className="card border-emerald-300">
+        <div className="card-content">
+          <p className="text-sm text-gray-700">
+            <strong>Nota:</strong> As alterações nos valores serão refletidas imediatamente em todo o sistema, 
+            incluindo cálculos de lotes, relatórios financeiros e geração de laudos. Todas as alterações são registradas na aba "Registro de Atividades".
+          </p>
+        </div>
       </div>
     </div>
   );
