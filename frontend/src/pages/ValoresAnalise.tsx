@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useValoresAnalise, useUpdateValorAnalise } from '../hooks/useValoresAnalise';
 import toast from 'react-hot-toast';
-import { DollarSign, Edit2, Save, X, Loader2 } from 'lucide-react';
+import { Edit2, Save, X, Loader2 } from 'lucide-react';
 
 const TIPOS_ANALISE = {
   solo: [
