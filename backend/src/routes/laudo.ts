@@ -798,6 +798,29 @@ async function calcularResultadosGranulometricos(amostraId: string) {
 // Função para gerar HTML do laudo (template completo)
 async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[], tipoAnalise: string, cliente: any, modulo: string = 'solo') {
   try {
+    // Gerar QR Code de validação
+    const qrCodeBase64 = await gerarQRCodeLaudo(lote, amostras, cliente)
+    const dataGeracao = new Date().toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
+    
+    // HTML do QR Code (se gerado com sucesso)
+    const qrCodeHTML = qrCodeBase64 ? `
+    <div class="qrcode-container">
+        <div class="qrcode-title">Validação Digital</div>
+        <img src="${qrCodeBase64}" alt="QR Code de Validação" class="qrcode-image">
+        <div class="qrcode-info">
+            <p><strong>Data de Geração:</strong> ${dataGeracao}</p>
+            <p><strong>Cliente:</strong> ${cliente?.nome || 'N/A'}</p>
+            <p><strong>Lote:</strong> ${lote?.codigo || 'N/A'} | <strong>Amostras:</strong> ${amostras?.length || 0}</p>
+            <p style="font-size: 7px; margin-top: 5px; font-style: italic;">Este QR Code contém informações de validação do laudo. Escaneie para verificar a autenticidade do documento.</p>
+        </div>
+    </div>` : ''
+    
     // Agrupar resultados por amostra e calcular resultados finais
     const resultadosCalculadosPorAmostra: Record<string, any> = {}
     let amostrasOrdenadas = [...amostras]
@@ -1487,6 +1510,7 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
         <p>De acordo com o Código Penal, art. 297 a falsificação ou alteração, no todo ou em parte, de documento público, acarreta multa e pena com reclusão de dois a seis anos.</p>
         </div>
 
+    ${qrCodeHTML}
     
     <div class="footer-images">
         <div class="footer-selo">
