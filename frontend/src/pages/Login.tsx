@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -24,8 +24,19 @@ type ClienteLoginData = z.infer<typeof clienteSchema>
 export function Login() {
   const [showPassword, setShowPassword] = useState(false)
   const [mode, setMode] = useState<'funcionario' | 'cliente'>('funcionario')
-  const { loginFuncionario, loginCliente, loading } = useAuth()
+  const { loginFuncionario, loginCliente, loading, user } = useAuth()
   const navigate = useNavigate()
+
+  // Redirecionar se já estiver autenticado
+  useEffect(() => {
+    if (user && !loading) {
+      if (user.role === 'cliente') {
+        navigate('/cliente', { replace: true })
+      } else {
+        navigate('/dashboard', { replace: true })
+      }
+    }
+  }, [user, loading, navigate])
 
   const {
     register: registerFuncionario,

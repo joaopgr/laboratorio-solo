@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react'
 import { AuthenticatedUser, ClienteAuthUser } from '../../../shared/types'
 import { api } from '../services/api'
 import toast from 'react-hot-toast'
@@ -30,8 +30,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<AuthenticatedUser | null>(null)
   const [token, setToken] = useState<string | null>(localStorage.getItem('token'))
   const [loading, setLoading] = useState(true)
+  const hasInitialized = useRef(false)
 
   useEffect(() => {
+    // Evitar múltiplas execuções
+    if (hasInitialized.current) return
+    hasInitialized.current = true
+
     const initAuth = async () => {
       const storedToken = localStorage.getItem('token')
       if (storedToken) {
