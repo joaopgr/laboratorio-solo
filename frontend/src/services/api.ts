@@ -36,8 +36,13 @@ api.interceptors.response.use(
   (error) => {
     if (error.response?.status === 401) {
       // Token expirado ou inválido
-      localStorage.removeItem('token')
-      window.location.href = '/login'
+      const currentPath = window.location.pathname
+      // Só redirecionar se não estiver já na página de login
+      // Isso evita loops infinitos quando validando token inválido na página de login
+      if (currentPath !== '/login') {
+        localStorage.removeItem('token')
+        window.location.href = '/login'
+      }
     }
     return Promise.reject(error)
   }
