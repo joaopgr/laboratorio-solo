@@ -90,7 +90,7 @@ export function ControleUsuarios() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Controle de Usuários</h1>
@@ -98,7 +98,7 @@ export function ControleUsuarios() {
         </div>
         <button
           onClick={handleCreateUsuario}
-          className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
         >
           <Plus className="w-4 h-4" />
           Novo Usuário
@@ -106,21 +106,30 @@ export function ControleUsuarios() {
       </div>
 
       {/* Busca */}
-      <div className="bg-white rounded-lg shadow p-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-          <input
-            type="text"
-            placeholder="Buscar por nome, email ou cargo..."
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
+      <div className="card border-emerald-300">
+        <div className="card-header">
+          <h3 className="card-title">Buscar Usuário</h3>
+        </div>
+        <div className="card-content">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              placeholder="Buscar por nome, email ou cargo..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            />
+          </div>
         </div>
       </div>
 
       {/* Tabela de usuários */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="card border-emerald-300">
+        <div className="card-header">
+          <h3 className="card-title">Lista de Usuários</h3>
+        </div>
+        <div className="card-content p-0">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
@@ -207,14 +216,14 @@ export function ControleUsuarios() {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => handleEditUsuario(usuario)}
-                          className="text-blue-600 hover:text-blue-900 transition-colors"
+                          className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
                           title="Editar usuário"
                         >
                           <Edit className="w-5 h-5" />
                         </button>
                         <button
                           onClick={() => handleDeleteUsuario(usuario)}
-                          className="text-red-600 hover:text-red-900 transition-colors"
+                          className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                           title="Deletar usuário"
                         >
                           <Trash2 className="w-5 h-5" />
@@ -298,7 +307,7 @@ function UsuarioForm({ usuario, onClose, onSubmit }: UsuarioFormProps) {
               type="text"
               value={formData.nome}
               onChange={(e) => setFormData({ ...formData, nome: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               required
             />
           </div>
@@ -311,7 +320,7 @@ function UsuarioForm({ usuario, onClose, onSubmit }: UsuarioFormProps) {
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               required
             />
           </div>
@@ -324,7 +333,7 @@ function UsuarioForm({ usuario, onClose, onSubmit }: UsuarioFormProps) {
               type="text"
               value={formData.senha}
               onChange={(e) => setFormData({ ...formData, senha: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               required
               minLength={6}
             />
@@ -338,7 +347,7 @@ function UsuarioForm({ usuario, onClose, onSubmit }: UsuarioFormProps) {
             <select
               value={formData.role}
               onChange={(e) => setFormData({ ...formData, role: e.target.value as any })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
               required
             >
               <option value="funcionario">Funcionário</option>
@@ -355,7 +364,7 @@ function UsuarioForm({ usuario, onClose, onSubmit }: UsuarioFormProps) {
               id="ativo"
               checked={formData.ativo}
               onChange={(e) => setFormData({ ...formData, ativo: e.target.checked })}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-emerald-600 border-gray-300 rounded focus:ring-emerald-500"
             />
             <label htmlFor="ativo" className="ml-2 text-sm font-medium text-gray-700">
               Usuário ativo
@@ -372,7 +381,7 @@ function UsuarioForm({ usuario, onClose, onSubmit }: UsuarioFormProps) {
             </button>
             <button
               type="submit"
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="flex-1 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors"
             >
               {usuario ? 'Atualizar' : 'Criar'}
             </button>
