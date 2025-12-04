@@ -395,9 +395,6 @@ export function exportRelatorioCompleto(relatorioData: any) {
     throw new Error('Dados de amostras inválidos')
   }
 
-  // Determinar módulo (verificar primeira amostra ou usar módulo do filtro)
-  const modulo = amostrasArray.length > 0 ? amostrasArray[0].modulo : 'solo'
-
   // Criar dados formatados para Excel baseado no módulo
   const dadosExcel = amostrasArray.map((amostra: any) => {
     const baseData: any = {
