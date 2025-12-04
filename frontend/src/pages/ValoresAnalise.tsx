@@ -31,7 +31,7 @@ export function ValoresAnalise() {
   const { data: valoresData, isLoading } = useValoresAnalise();
   const updateValor = useUpdateValorAnalise();
 
-  const valores = valoresData?.[moduloSelecionado] || {};
+  const valores: Record<string, number> = valoresData?.[moduloSelecionado] || {};
   const tiposAnalise = TIPOS_ANALISE[moduloSelecionado];
 
   const handleValorChange = (tipo: string, novoValor: string) => {
