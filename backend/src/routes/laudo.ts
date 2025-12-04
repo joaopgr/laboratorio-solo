@@ -795,6 +795,14 @@ async function calcularResultadosGranulometricos(amostraId: string) {
   }
 }
 
+// Função para remover acentos de uma string
+function removerAcentos(texto: string): string {
+  if (!texto) return texto
+  return texto
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+}
+
 // Função para gerar QR Code com dados de validação do laudo
 async function gerarQRCodeLaudo(lote: any, amostras: any[], cliente: any): Promise<string> {
   try {
@@ -816,10 +824,13 @@ async function gerarQRCodeLaudo(lote: any, amostras: any[], cliente: any): Promi
       minute: '2-digit'
     })
     
+    // Remover acentos do nome do cliente
+    const nomeClienteSemAcentos = removerAcentos(cliente?.nome || 'N/A')
+    
     // Criar texto formatado usando apenas caracteres ASCII para evitar problemas de encoding
     const textoQRCode = `LAUDO DE ANALISE
 --------------------------------
-Cliente: ${cliente?.nome || 'N/A'}
+Cliente: ${nomeClienteSemAcentos}
 CPF: ${cliente?.cpf || 'N/A'}
 Lote: ${lote?.codigo || 'N/A'}
 Data de Entrada: ${dataEntrada}
