@@ -14,8 +14,10 @@ interface GerarLaudoResponse {
   success: boolean
   arquivo?: string
   caminho?: string
-  html?: string
+  html?: string | string[]
   tipo?: string
+  multiplasPaginas?: boolean
+  totalPaginas?: number
   lote?: any
   tipoAnalise?: string
 }
@@ -36,76 +38,94 @@ export function useGerarLaudo() {
       
       // Se retornou HTML, gerar PDF no frontend
       if (data.tipo === 'html' && data.html) {
-        // Gerar nome do arquivo
-        const clienteNome = data.lote?.clienteNome?.replace(/\s+/g, '_') || 'laudo'
-        const codigoAmostra = data.lote?.codigo || 'N/A'
-        const tipoSufixo = data.tipoAnalise === 'granulometrica' ? '_Fisica' : (data.lote?.modulo === 'foliar' ? '_Foliar' : '')
-        const nomeArquivo = `${clienteNome}_${codigoAmostra}${tipoSufixo}.pdf`
-        
-        // Criar elemento temporário para renderizar o HTML
-        const tempDiv = document.createElement('div')
-        tempDiv.style.position = 'fixed'
-        tempDiv.style.left = '-9999px'
-        tempDiv.style.width = '210mm'
-        tempDiv.style.padding = '10mm'
-        tempDiv.innerHTML = data.html
-        document.body.appendChild(tempDiv)
-        
-        // Aguardar imagens carregarem
-        setTimeout(async () => {
-          try {
-            // Capturar o conteúdo como canvas
-            const canvas = await html2canvas(tempDiv, {
-              scale: 2,
-              useCORS: true,
-              logging: false,
-              width: tempDiv.scrollWidth,
-              height: tempDiv.scrollHeight
+        // Função assíncrona para processar os PDFs
+        const processarPDFs = async () => {
+          // Verificar se há múltiplas páginas
+          const htmlContents = Array.isArray(data.html) ? data.html : [data.html]
+          const clienteNome = data.lote?.clienteNome?.replace(/\s+/g, '_') || 'laudo'
+          const codigoAmostra = data.lote?.codigo || 'N/A'
+          const tipoSufixo = data.tipoAnalise === 'granulometrica' ? '_Fisica' : (data.lote?.modulo === 'foliar' ? '_Foliar' : '')
+          
+          // Função auxiliar para gerar PDF de um HTML
+          const gerarPDFDeHTML = async (htmlContent: string, paginaNum: number, totalPaginas: number) => {
+            return new Promise<void>((resolve, reject) => {
+              const tempDiv = document.createElement('div')
+              tempDiv.style.position = 'fixed'
+              tempDiv.style.left = '-9999px'
+              tempDiv.style.width = '210mm'
+              tempDiv.style.padding = '10mm'
+              tempDiv.innerHTML = htmlContent
+              document.body.appendChild(tempDiv)
+              
+              setTimeout(async () => {
+                try {
+                  const canvas = await html2canvas(tempDiv, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    width: tempDiv.scrollWidth,
+                    height: tempDiv.scrollHeight
+                  })
+                  
+                  const pdf = new jsPDF('p', 'mm', 'a4')
+                  const imgData = canvas.toDataURL('image/png')
+                  
+                  const imgWidth = 210
+                  const pageHeight = 297
+                  const imgHeight = (canvas.height * imgWidth) / canvas.width
+                  let heightLeft = imgHeight
+                  
+                  let position = 0
+                  
+                  pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+                  heightLeft -= pageHeight
+                  
+                  while (heightLeft >= 0) {
+                    position = heightLeft - imgHeight
+                    pdf.addPage()
+                    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
+                    heightLeft -= pageHeight
+                  }
+                  
+                  // Nome do arquivo: se múltiplas páginas, adicionar número da página
+                  const nomeArquivo = totalPaginas > 1 
+                    ? `${clienteNome}_${codigoAmostra}${tipoSufixo}_P${paginaNum}.pdf`
+                    : `${clienteNome}_${codigoAmostra}${tipoSufixo}.pdf`
+                  
+                  pdf.save(nomeArquivo)
+                  document.body.removeChild(tempDiv)
+                  resolve()
+                } catch (error) {
+                  document.body.removeChild(tempDiv)
+                  reject(error)
+                }
+              }, 1000)
             })
-            
-            // Criar PDF
-            const pdf = new jsPDF('p', 'mm', 'a4')
-            const imgData = canvas.toDataURL('image/png')
-            
-            const imgWidth = 210
-            const pageHeight = 297
-            const imgHeight = (canvas.height * imgWidth) / canvas.width
-            let heightLeft = imgHeight
-            
-            let position = 0
-            
-            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
-            heightLeft -= pageHeight
-            
-            while (heightLeft >= 0) {
-              position = heightLeft - imgHeight
-              pdf.addPage()
-              pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight)
-              heightLeft -= pageHeight
+          }
+          
+          // Gerar PDFs para cada página
+          try {
+            for (let i = 0; i < htmlContents.length; i++) {
+              await gerarPDFDeHTML(htmlContents[i], i + 1, htmlContents.length)
+              // Pequeno delay entre downloads para evitar problemas
+              if (i < htmlContents.length - 1) {
+                await new Promise(resolve => setTimeout(resolve, 500))
+              }
             }
             
-            // Baixar o PDF
-            pdf.save(nomeArquivo)
-            
-            // Remover elemento temporário
-            document.body.removeChild(tempDiv)
-            
-            toast.success('Laudo baixado com sucesso!')
+            if (htmlContents.length > 1) {
+              toast.success(`${htmlContents.length} laudos gerados com sucesso!`)
+            } else {
+              toast.success('Laudo baixado com sucesso!')
+            }
           } catch (error) {
             console.error('Erro ao gerar PDF:', error)
-            // Fallback para impressão
-            const printWindow = window.open('', '_blank')
-            if (printWindow && data.html) {
-              printWindow.document.write(data.html)
-              printWindow.document.close()
-              setTimeout(() => {
-                printWindow.focus()
-                printWindow.print()
-              }, 250)
-            }
-            document.body.removeChild(tempDiv)
+            toast.error('Erro ao gerar PDF')
           }
-        }, 1000)
+        }
+        
+        // Executar função assíncrona
+        processarPDFs()
       } else if (data.arquivo && data.caminho) {
         // Download automático do PDF (comportamento antigo para compatibilidade)
         const link = document.createElement('a')

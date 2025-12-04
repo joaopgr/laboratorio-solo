@@ -1302,6 +1302,7 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
         <div class="client-right">
             <div class="client-row"><span class="client-label">Entrada:</span> <span class="client-value">${lote.dataEntrega ? new Date(lote.dataEntrega).toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}</span></div>
             <div class="client-row"><span class="client-label">Local:</span> <span class="client-value">${cliente?.cidade || 'N/A'} - ${cliente?.estado || 'N/A'}</span></div>
+            ${lote.paginaAtual && lote.totalPaginas && lote.totalPaginas > 1 ? `<div class="client-row"><span class="client-label">Página:</span> <span class="client-value">${lote.paginaAtual} de ${lote.totalPaginas}</span></div>` : ''}
         </div>
       </div>
 
@@ -1714,15 +1715,40 @@ router.post('/gerar', async (req: any, res): Promise<any> => {
     // Log para debug
     console.log(`📋 Gerando laudo - Lote: ${lote.codigo}, Módulo detectado: ${moduloDetectado}, Tipo análise: ${tipoAnalise}, Total resultados: ${resultados.length}`)
     
-    // Gerar HTML do laudo
-    const htmlContent = await gerarPDFLaudoSobrio(lote, amostras, resultados, tipoAnalise, cliente, moduloDetectado)
+    // Dividir amostras em grupos de no máximo 11
+    const MAX_AMOSTRAS_POR_PAGINA = 11
+    const gruposAmostras: any[][] = []
     
-    // Retornar HTML para o frontend gerar o PDF
-    // O PDF será gerado no frontend usando jsPDF ou html2canvas
+    for (let i = 0; i < amostras.length; i += MAX_AMOSTRAS_POR_PAGINA) {
+      gruposAmostras.push(amostras.slice(i, i + MAX_AMOSTRAS_POR_PAGINA))
+    }
+    
+    // Gerar HTML para cada grupo de amostras
+    const htmlContents: string[] = []
+    
+    for (let i = 0; i < gruposAmostras.length; i++) {
+      const grupoAmostras = gruposAmostras[i]
+      const amostraIdsGrupo = grupoAmostras.map((a: any) => a.id)
+      const resultadosGrupo = resultados.filter((r: any) => amostraIdsGrupo.includes(r.amostraId))
+      
+      // Criar um objeto lote modificado para indicar a página
+      const loteComPagina = {
+        ...lote,
+        paginaAtual: i + 1,
+        totalPaginas: gruposAmostras.length
+      }
+      
+      const htmlContent = await gerarPDFLaudoSobrio(loteComPagina, grupoAmostras, resultadosGrupo, tipoAnalise, cliente, moduloDetectado)
+      htmlContents.push(htmlContent)
+    }
+    
+    // Retornar múltiplos HTMLs para o frontend gerar múltiplos PDFs
     res.json({
       success: true,
-      html: htmlContent,
+      html: htmlContents.length === 1 ? htmlContents[0] : htmlContents, // Compatibilidade: se só uma página, retorna string, senão array
       tipo: 'html',
+      multiplasPaginas: htmlContents.length > 1,
+      totalPaginas: htmlContents.length,
       lote: {
         clienteNome: cliente?.nome || '',
         codigo: amostras[0]?.codigo || '',
