@@ -3,6 +3,9 @@
 export interface DadosBrutos {
   ph?: number
   p?: number
+  p_dil?: number
+  p_param_a?: number
+  p_param_b?: number
   na?: number
   na_dil?: number
   k?: number
@@ -25,6 +28,18 @@ export interface DadosBrutos {
   zn_dil?: number
   mn?: number
   mn_dil?: number
+  b?: number
+  b_branco?: number
+  b_param_a?: number
+  b_param_b?: number
+  s?: number
+  s_branco?: number
+  s_param_a?: number
+  s_param_b?: number
+  prem?: number
+  prem_dil?: number
+  prem_param_a?: number
+  prem_param_b?: number
 }
 
 export interface CalculadosResultados {
@@ -60,8 +75,24 @@ export function calcularResultados(dadosBrutos: DadosBrutos): CalculadosResultad
     resultados.ph = dadosBrutos.ph
   }
 
-  // P = vamos pular por enquanto (curvas)
-  // resultados.p = dadosBrutos.p
+  // P = ((valor do P - B do P)/ A do P)* Dil do P
+  if (dadosBrutos.p !== undefined && dadosBrutos.p_param_a !== undefined && 
+      dadosBrutos.p_param_b !== undefined && dadosBrutos.p_dil !== undefined) {
+    const valorP = dadosBrutos.p
+    const paramA = dadosBrutos.p_param_a
+    const paramB = dadosBrutos.p_param_b
+    const diluicaoP = dadosBrutos.p_dil
+    
+    if (valorP === 0 || valorP === null || valorP === undefined) {
+      resultados.p = 0
+    } else if (paramA !== 0) {
+      resultados.p = ((valorP - paramB) / paramA) * diluicaoP
+    } else {
+      resultados.p = 0
+    }
+  } else if (dadosBrutos.p !== undefined) {
+    resultados.p = dadosBrutos.p
+  }
 
   // Na = Na * Dil
   if (dadosBrutos.na !== undefined && dadosBrutos.na_dil !== undefined) {
@@ -83,8 +114,14 @@ export function calcularResultados(dadosBrutos: DadosBrutos): CalculadosResultad
     resultados.mg = dadosBrutos.mg * dadosBrutos.mg_dil * 1.728
   }
 
-  // Al = Al (mesmo valor)
-  if (dadosBrutos.al !== undefined) {
+  // Al = SE(valor pH>=5,5;0;SE(Valor Al="";"-";Valor Al))
+  if (dadosBrutos.al !== undefined && dadosBrutos.ph !== undefined) {
+    if (dadosBrutos.ph >= 5.5) {
+      resultados.al = 0
+    } else {
+      resultados.al = dadosBrutos.al
+    }
+  } else if (dadosBrutos.al !== undefined) {
     resultados.al = dadosBrutos.al
   }
 
@@ -147,6 +184,59 @@ export function calcularResultados(dadosBrutos: DadosBrutos): CalculadosResultad
     resultados.mn = dadosBrutos.mn * dadosBrutos.mn_dil
   }
 
+  // B = (((2-LOG10(valor boro)-B do boro)/A do boro)-[((2-LOG10(branco do boro)-B do boro)/A do boro)])*6/4*2
+  if (dadosBrutos.b !== undefined && dadosBrutos.b_param_a !== undefined && 
+      dadosBrutos.b_param_b !== undefined && dadosBrutos.b_branco !== undefined) {
+    const valorBoro = dadosBrutos.b
+    const paramA = dadosBrutos.b_param_a
+    const paramB = dadosBrutos.b_param_b
+    const brancoBoro = dadosBrutos.b_branco
+    
+    if (valorBoro > 0 && brancoBoro > 0 && paramA !== 0) {
+      const logValor = Math.log10(valorBoro)
+      const logBranco = Math.log10(brancoBoro)
+      resultados.b = (((2 - logValor - paramB) / paramA) - ((2 - logBranco - paramB) / paramA)) * 6 / 4 * 2
+    }
+  }
+
+  // S = SE(Valor de S="";"-";((((Valor de S)-B do S)/A do S)-[=(((Branco do S)-B do S)/A do S)])*15/10*2,5)
+  if (dadosBrutos.s !== undefined && dadosBrutos.s_branco !== undefined && 
+      dadosBrutos.s_param_a !== undefined && dadosBrutos.s_param_b !== undefined) {
+    const valorS = dadosBrutos.s
+    const brancoS = dadosBrutos.s_branco
+    const paramA = dadosBrutos.s_param_a
+    const paramB = dadosBrutos.s_param_b
+    
+    if (valorS === 0 || valorS === null || valorS === undefined) {
+      resultados.s = 0
+    } else if (paramA !== 0) {
+      const parte1 = (valorS - paramB) / paramA
+      const parte2 = (brancoS - paramB) / paramA
+      resultados.s = (parte1 - parte2) * (15/10) * 2.5
+    } else {
+      resultados.s = 0
+    }
+  } else if (dadosBrutos.s !== undefined) {
+    resultados.s = dadosBrutos.s
+  }
+
+  // PREM = ((valor do PREM-B do Prem)/A do PREM)*Dil Prem
+  if (dadosBrutos.prem !== undefined && dadosBrutos.prem_param_a !== undefined && 
+      dadosBrutos.prem_param_b !== undefined && dadosBrutos.prem_dil !== undefined) {
+    const valorPrem = dadosBrutos.prem
+    const paramA = dadosBrutos.prem_param_a
+    const paramB = dadosBrutos.prem_param_b
+    const diluicaoPrem = dadosBrutos.prem_dil
+    
+    if (valorPrem === 0 || valorPrem === null || valorPrem === undefined) {
+      resultados.prem = 0
+    } else if (paramA !== 0) {
+      resultados.prem = ((valorPrem - paramB) / paramA) * diluicaoPrem
+    } else {
+      resultados.prem = 0
+    }
+  }
+
   return resultados
 }
 
@@ -155,7 +245,7 @@ export function prepararDadosBrutos(resultados: any[]): DadosBrutos {
   const dadosBrutos: DadosBrutos = {}
   
   resultados.forEach(resultado => {
-    const { tipo, valor, diluicao, massa, branco, al, h_al } = resultado
+    const { tipo, valor, diluicao, massa, branco, al, h_al, param_a, param_b } = resultado
     const valorNum = parseFloat(valor) || 0
     const diluicaoNum = parseFloat(diluicao) || 1
     const massaNum = parseFloat(massa) || 0
@@ -169,6 +259,9 @@ export function prepararDadosBrutos(resultados: any[]): DadosBrutos {
         break
       case 'P':
         dadosBrutos.p = valorNum
+        dadosBrutos.p_dil = diluicaoNum
+        dadosBrutos.p_param_a = parseFloat(param_a) || 0
+        dadosBrutos.p_param_b = parseFloat(param_b) || 0
         break
       case 'Na':
         dadosBrutos.na = valorNum
@@ -213,6 +306,38 @@ export function prepararDadosBrutos(resultados: any[]): DadosBrutos {
       case 'Mn':
         dadosBrutos.mn = valorNum
         dadosBrutos.mn_dil = diluicaoNum
+        break
+      case 'B':
+        if (valor && valor !== 'null' && valor !== null && String(valor).trim() !== '') {
+          dadosBrutos.b = valorNum
+        }
+        if (branco && branco !== 'null' && branco !== null && String(branco).trim() !== '') {
+          dadosBrutos.b_branco = brancoNum
+        }
+        if (param_a && param_a !== 'null' && param_a !== null && String(param_a).trim() !== '') {
+          dadosBrutos.b_param_a = parseFloat(param_a)
+        }
+        if (param_b && param_b !== 'null' && param_b !== null && String(param_b).trim() !== '') {
+          dadosBrutos.b_param_b = parseFloat(param_b)
+        }
+        break
+      case 'S':
+        dadosBrutos.s = valorNum
+        if (branco && branco !== 'null' && branco !== null && String(branco).trim() !== '') {
+          dadosBrutos.s_branco = brancoNum
+        }
+        if (param_a && param_a !== 'null' && param_a !== null && String(param_a).trim() !== '') {
+          dadosBrutos.s_param_a = parseFloat(param_a)
+        }
+        if (param_b && param_b !== 'null' && param_b !== null && String(param_b).trim() !== '') {
+          dadosBrutos.s_param_b = parseFloat(param_b)
+        }
+        break
+      case 'PREM':
+        dadosBrutos.prem = valorNum
+        dadosBrutos.prem_dil = diluicaoNum
+        dadosBrutos.prem_param_a = parseFloat(param_a) || 0
+        dadosBrutos.prem_param_b = parseFloat(param_b) || 0
         break
     }
   })
