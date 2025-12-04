@@ -20,12 +20,14 @@ import Atividades from './pages/Atividades'
 import { Logs } from './pages/Logs'
 import { ClientePortal } from './pages/ClientePortal'
 import { ControleUsuarios } from './pages/ControleUsuarios'
+import { ValoresAnalise } from './pages/ValoresAnalise'
 
 function App() {
   return (
     <AuthProvider>
       <ModuleProvider>
-        <Routes>
+        <ValoresAnaliseProvider>
+          <Routes>
           <Route path="/login" element={<Login />} />
           <Route
             path="/cliente"
@@ -62,8 +64,14 @@ function App() {
               <ControleUsuarios />
             </ProtectedRoute>
           } />
+          <Route path="valores-analise" element={
+            <ProtectedRoute allowedRoles={['admin']} redirectTo="/dashboard">
+              <ValoresAnalise />
+            </ProtectedRoute>
+          } />
           </Route>
         </Routes>
+        </ValoresAnaliseProvider>
       </ModuleProvider>
     </AuthProvider>
   )

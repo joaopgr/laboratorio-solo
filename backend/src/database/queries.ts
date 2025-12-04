@@ -595,6 +595,44 @@ export const SQL_QUERIES = {
     })
   },
 
+  // ===== VALORES DE ANÁLISE =====
+  valoresAnalise: {
+    // Buscar todos os valores por módulo
+    findByModulo: (modulo: 'solo' | 'foliar') => ({
+      query: 'SELECT * FROM valores_analise WHERE modulo = $1 ORDER BY tipo',
+      params: [modulo]
+    }),
+
+    // Buscar todos os valores
+    findAll: () => ({
+      query: 'SELECT * FROM valores_analise ORDER BY modulo, tipo',
+      params: []
+    }),
+
+    // Atualizar valor de um tipo de análise
+    update: (modulo: 'solo' | 'foliar', tipo: string, valor: number) => ({
+      query: `
+        UPDATE valores_analise 
+        SET valor = $1, "updatedAt" = NOW()
+        WHERE modulo = $2 AND tipo = $3
+        RETURNING *
+      `,
+      params: [valor, modulo, tipo]
+    }),
+
+    // Criar valor (se não existir)
+    upsert: (modulo: 'solo' | 'foliar', tipo: string, valor: number) => ({
+      query: `
+        INSERT INTO valores_analise (id, modulo, tipo, valor, "createdAt", "updatedAt")
+        VALUES (gen_random_uuid(), $1, $2, $3, NOW(), NOW())
+        ON CONFLICT (modulo, tipo) 
+        DO UPDATE SET valor = $3, "updatedAt" = NOW()
+        RETURNING *
+      `,
+      params: [modulo, tipo, valor]
+    })
+  },
+
   // ===== USUÁRIOS =====
   usuarios: {
     // Buscar todos os usuários

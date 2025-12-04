@@ -4,6 +4,7 @@ import { query } from '../database/connection';
 import { SQL_QUERIES } from '../database/queries';
 import { authenticateToken, authorizeRoles } from './auth';
 import { prepararDadosBrutos, calcularResultados, calcularResultadosFoliar } from '../utils/calculosResultados';
+import { getValoresAnalise } from '../utils/valoresAnalise';
 
 const router = Router();
 
@@ -922,26 +923,8 @@ router.get('/financeiro', async (req, res): Promise<any> => {
       // Determinar tipo de análise baseado nas amostras (solo ou foliar)
       const tipoAnalise = amostras.length > 0 ? amostras[0].modulo : 'solo';
       
-      // Usar valores corretos baseados no tipo de análise
-      const valoresAnalise = tipoAnalise === 'foliar' ? {
-        rotina: 15,
-        organica: 0,       // Não usado em foliar
-        micronutrientes: 15,
-        enxofre: 15,
-        prem: 0,           // Não usado em foliar
-        nitrogenio: 15,
-        granulometria: 0,  // Não usado em foliar
-        foliar: 0
-      } : {
-        rotina: 15,
-        organica: 10,
-        micronutrientes: 20,
-        enxofre: 10,
-        prem: 12,
-        nitrogenio: 10,
-        granulometria: 30,
-        foliar: 0
-      };
+      // Buscar valores do banco de dados
+      const valoresAnalise = await getValoresAnalise(tipoAnalise as 'solo' | 'foliar');
       
       // Calcular valor para cada amostra
       amostras.forEach(amostra => {

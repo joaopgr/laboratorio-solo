@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { useLotes, useDeleteLote } from '../hooks/useLotes'
 import { Plus, Calendar, Package, Eye, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { LoteAmostra, Cliente, getAnaliseValues } from '../../../shared/types'
+import { LoteAmostra, Cliente } from '../../../shared/types'
 import { AmostraForm } from './AmostraForm'
 import { AnaliseValues } from './AnaliseValues'
 import { LoteStatusEditor } from './LoteStatusEditor'
 import { ConfirmModal } from './ConfirmModal'
+import { useValoresAnaliseContext } from '../contexts/ValoresAnaliseContext'
 
 interface ClienteLotesProps {
   cliente: Cliente
@@ -95,11 +96,14 @@ export function ClienteLotes({ cliente }: ClienteLotesProps) {
     }
   }
 
+  // Obter valores dinâmicos do contexto
+  const { getValores } = useValoresAnaliseContext()
+  
   // Função para calcular valor total do lote
   const calcularValorLote = (lote: LoteAmostra) => {
     if (!lote || !lote.amostras) return 0
     
-    const analiseValues = getAnaliseValues(lote.tipoAnalise as 'solo' | 'foliar')
+    const analiseValues = getValores(lote.tipoAnalise as 'solo' | 'foliar')
     let valorTotal = 0
     
     lote.amostras.forEach(amostra => {

@@ -5,6 +5,7 @@ import { useResultados } from '../hooks/useResultados'
 import { useQueryClient } from '@tanstack/react-query'
 import { ArrowLeft, Calendar, Package, User, MapPin, FileText, CheckCircle, Clock, Edit3, DollarSign, Plus, Download, AlertCircle } from 'lucide-react'
 import { getAnaliseValues } from '../../../shared/types'
+import { useValoresAnaliseContext } from '../contexts/ValoresAnaliseContext'
 import { AtualizarAmostrasLote } from '../components/AtualizarAmostrasLote'
 import { GerarLaudoModal } from '../components/GerarLaudoModal'
 import { AdicionarAmostraLoteForm } from '../components/AdicionarAmostraLoteForm'
@@ -65,12 +66,15 @@ export function LoteDetails() {
     }
   }, [lote])
 
+  // Obter valores dinâmicos do contexto
+  const { getValores } = useValoresAnaliseContext()
+  
   // Calcular valor total do lote
   const calcularValorLote = () => {
     if (!lote || !lote.amostras) return 0
     
     // Obter valores corretos baseados no módulo do lote (modulo é 'solo' ou 'foliar')
-    const analiseValues = getAnaliseValues(lote.modulo as 'solo' | 'foliar')
+    const analiseValues = getValores(lote.modulo as 'solo' | 'foliar')
     let valorTotal = 0
     
     // Calcular valor baseado nas amostras individuais

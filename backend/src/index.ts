@@ -14,6 +14,7 @@ import atividadeRoutes from './routes/atividade';
 import logsRoutes from './routes/logs';
 import portalClienteRoutes from './routes/portalCliente';
 import usuariosRoutes from './routes/usuarios';
+import valoresAnaliseRoutes from './routes/valoresAnalise';
 
 // Configuração
 dotenv.config();
@@ -53,6 +54,7 @@ app.use('/api/atividades', atividadeRoutes);
 app.use('/api/logs', logsRoutes);
 app.use('/api/portal-cliente', portalClienteRoutes);
 app.use('/api/usuarios', usuariosRoutes);
+app.use('/api/valores-analise', valoresAnaliseRoutes);
 
 // Rota de health check
 app.get('/api/health', (req, res) => {

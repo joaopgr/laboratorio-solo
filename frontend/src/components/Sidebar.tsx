@@ -12,7 +12,8 @@ import {
   Calculator,
   CheckSquare,
   Activity,
-  UserCog
+  UserCog,
+  DollarSign
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAtividades } from '../hooks/useAtividades'
@@ -30,6 +31,7 @@ const navigation = [
   { name: 'Atividades', href: '/atividades', icon: CheckSquare, roles: ['admin', 'funcionario', 'estagiario', 'recepcao', 'visitante'] },
   { name: 'Registro de Atividades', href: '/logs', icon: Activity, roles: ['admin', 'funcionario', 'recepcao', 'visitante'] },
   { name: 'Controle de Usuários', href: '/controle-usuarios', icon: UserCog, roles: ['admin'] },
+  { name: 'Valores', href: '/valores-analise', icon: DollarSign, roles: ['admin'] },
 ]
 
 export function Sidebar() {
