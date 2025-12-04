@@ -3,7 +3,7 @@ import { useLotes, useDeleteLote } from '../hooks/useLotes'
 import { Plus, Calendar, Package, Eye, Trash2, ChevronDown, ChevronRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { LoteAmostra, Cliente, getAnaliseValues } from '../../../shared/types'
-import { AmostrasLoteForm } from './AmostrasLoteForm'
+import { AmostraForm } from './AmostraForm'
 import { AnaliseValues } from './AnaliseValues'
 import { LoteStatusEditor } from './LoteStatusEditor'
 import { ConfirmModal } from './ConfirmModal'
@@ -264,12 +264,14 @@ export function ClienteLotes({ cliente }: ClienteLotesProps) {
         </div>
       )}
 
-      {/* Form Modals */}
-      <AmostrasLoteForm
-        cliente={cliente}
-        isOpen={isAmostrasFormOpen}
-        onClose={handleCloseAmostrasForm}
-      />
+      {/* Form Modal - Usando o mesmo formulário da aba Amostras, mas com cliente pré-selecionado */}
+      {isAmostrasFormOpen && (
+        <AmostraForm
+          isOpen={isAmostrasFormOpen}
+          onClose={handleCloseAmostrasForm}
+          clienteInicial={cliente}
+        />
+      )}
 
       {/* Modal de Detalhes do Lote */}
       {selectedLoteForDetails && (

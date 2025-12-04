@@ -12,14 +12,15 @@ interface AmostraFormProps {
   amostra?: Amostra
   isOpen: boolean
   onClose: () => void
+  clienteInicial?: Cliente // Cliente pré-selecionado (usado quando acessado pelos detalhes do cliente)
 }
 
-export function AmostraForm({ amostra, isOpen, onClose }: AmostraFormProps) {
+export function AmostraForm({ amostra, isOpen, onClose, clienteInicial }: AmostraFormProps) {
   const { modulo } = useModule()
   const [errors, setErrors] = useState<Partial<CreateAmostraData>>({})
   
   // Estados para o novo fluxo simplificado
-  const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(null)
+  const [selectedCliente, setSelectedCliente] = useState<Cliente | null>(clienteInicial || null)
   const [clienteSearch, setClienteSearch] = useState('')
   const [showClienteForm, setShowClienteForm] = useState(false)
   const [amostras, setAmostras] = useState<CreateAmostraData[]>([])
@@ -561,44 +562,56 @@ export function AmostraForm({ amostra, isOpen, onClose }: AmostraFormProps) {
             {/* Seleção de Cliente */}
             <div className="lg:col-span-2 relative">
               <h3 className="text-sm font-medium text-gray-700 mb-2">Cliente *</h3>
-              <div className="relative">
-                <input
-                  type="text"
-                  value={clienteSearch}
-                  onChange={(e) => setClienteSearch(e.target.value)}
-                  className="input w-full pr-10 text-sm"
-                  placeholder="Buscar cliente por nome ou CPF..."
-                />
-                <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-              </div>
               
-              {clienteSearch && (
-                <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                  {clientesData?.clientes?.map((cliente: any) => (
-                    <div
-                      key={cliente.id}
-                      onClick={() => handleClienteSelect(cliente)}
-                      className="p-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 text-sm"
-                    >
-                      <div className="font-medium text-gray-900">{cliente.nome}</div>
-                      <div className="text-xs text-gray-500">{cliente.cpf}</div>
-                    </div>
-                  ))}
-                  <div
-                    onClick={() => setShowClienteForm(true)}
-                    className="p-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 text-blue-600 text-sm"
-                  >
-                    <Plus className="inline w-3 h-3 mr-1" />
-                    Criar novo cliente
-                  </div>
-                </div>
-              )}
-              
-              {selectedCliente && (
-                <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
+              {/* Se cliente inicial foi fornecido, mostrar apenas o cliente selecionado */}
+              {clienteInicial && selectedCliente ? (
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded text-sm">
                   <div className="font-medium text-gray-900">{selectedCliente.nome}</div>
                   <div className="text-xs text-gray-500">{selectedCliente.cpf}</div>
+                  <div className="text-xs text-blue-600 mt-1">Cliente pré-selecionado</div>
                 </div>
+              ) : (
+                <>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={clienteSearch}
+                      onChange={(e) => setClienteSearch(e.target.value)}
+                      className="input w-full pr-10 text-sm"
+                      placeholder="Buscar cliente por nome ou CPF..."
+                    />
+                    <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  </div>
+                  
+                  {clienteSearch && (
+                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                      {clientesData?.clientes?.map((cliente: any) => (
+                        <div
+                          key={cliente.id}
+                          onClick={() => handleClienteSelect(cliente)}
+                          className="p-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 text-sm"
+                        >
+                          <div className="font-medium text-gray-900">{cliente.nome}</div>
+                          <div className="text-xs text-gray-500">{cliente.cpf}</div>
+                        </div>
+                      ))}
+                      <div
+                        onClick={() => setShowClienteForm(true)}
+                        className="p-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 text-blue-600 text-sm"
+                      >
+                        <Plus className="inline w-3 h-3 mr-1" />
+                        Criar novo cliente
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selectedCliente && !clienteInicial && (
+                    <div className="mt-2 p-2 bg-blue-50 rounded text-sm">
+                      <div className="font-medium text-gray-900">{selectedCliente.nome}</div>
+                      <div className="text-xs text-gray-500">{selectedCliente.cpf}</div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
