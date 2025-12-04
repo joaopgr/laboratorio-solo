@@ -41,7 +41,7 @@ export function useGerarLaudo() {
         // Função assíncrona para processar os PDFs
         const processarPDFs = async () => {
           // Verificar se há múltiplas páginas
-          const htmlContents = Array.isArray(data.html) ? data.html : [data.html]
+          const htmlContents: string[] = Array.isArray(data.html) ? data.html : (data.html ? [data.html] : [])
           const clienteNome = data.lote?.clienteNome?.replace(/\s+/g, '_') || 'laudo'
           const codigoAmostra = data.lote?.codigo || 'N/A'
           const tipoSufixo = data.tipoAnalise === 'granulometrica' ? '_Fisica' : (data.lote?.modulo === 'foliar' ? '_Foliar' : '')
