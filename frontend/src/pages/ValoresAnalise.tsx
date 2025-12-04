@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useValoresAnalise, useUpdateValorAnalise } from '../hooks/useValoresAnalise';
 import toast from 'react-hot-toast';
-import { Edit2, Save, X, Loader2 } from 'lucide-react';
+import { DollarSign, Edit2, Save, X, Loader2 } from 'lucide-react';
 
 const TIPOS_ANALISE = {
   solo: [
@@ -70,13 +70,13 @@ export function ValoresAnalise() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
       </div>
     );
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -98,7 +98,11 @@ export function ValoresAnalise() {
                 setEditandoTipo(null);
                 setValorEditado('');
               }}
-              className={`btn ${moduloSelecionado === 'solo' ? 'btn-primary' : 'btn-outline'}`}
+              className={`px-6 py-3 rounded-lg font-semibold transition-all text-base ${
+                moduloSelecionado === 'solo'
+                  ? 'bg-emerald-600 text-white shadow-md hover:bg-emerald-700'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
             >
               Solo
             </button>
@@ -108,7 +112,11 @@ export function ValoresAnalise() {
                 setEditandoTipo(null);
                 setValorEditado('');
               }}
-              className={`btn ${moduloSelecionado === 'foliar' ? 'btn-primary' : 'btn-outline'}`}
+              className={`px-6 py-3 rounded-lg font-semibold transition-all text-base ${
+                moduloSelecionado === 'foliar'
+                  ? 'bg-emerald-600 text-white shadow-md hover:bg-emerald-700'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
             >
               Foliar
             </button>
@@ -140,7 +148,7 @@ export function ValoresAnalise() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
+              <tbody className="divide-y divide-gray-200">
                 {tiposAnalise.map((tipo) => {
                   const valorAtual = valores[tipo.key] || 0;
                   const estaEditando = editandoTipo === tipo.key;
@@ -148,13 +156,13 @@ export function ValoresAnalise() {
 
                   return (
                     <tr key={tipo.key} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4">
                         <div className="font-semibold text-gray-900">{tipo.label}</div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-600">{tipo.descricao}</div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4">
                         {estaEditando ? (
                           <div className="flex items-center gap-2">
                             <input
@@ -194,7 +202,7 @@ export function ValoresAnalise() {
                           </div>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4">
                         <div className="flex justify-center">
                           {!estaEditando && (
                             <button
