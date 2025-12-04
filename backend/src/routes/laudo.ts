@@ -798,28 +798,28 @@ async function calcularResultadosGranulometricos(amostraId: string) {
 // Função para gerar QR Code com dados de validação do laudo
 async function gerarQRCodeLaudo(lote: any, amostras: any[], cliente: any): Promise<string> {
   try {
-    const dataGeracao = new Date().toISOString()
-    const dadosValidacao = {
-      tipo: 'laudo_analise',
-      dataGeracao: dataGeracao,
-      cliente: {
-        nome: cliente?.nome || '',
-        cpf: cliente?.cpf || ''
-      },
-      lote: {
-        codigo: lote?.codigo || '',
-        id: lote?.id || ''
-      },
-      amostras: {
-        quantidade: amostras?.length || 0,
-        codigos: amostras?.map((a: any) => a.codigo) || []
-      },
-      modulo: lote?.modulo || lote?.tipoAnalise || 'solo'
-    }
+    const dataGeracao = new Date().toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    })
     
-    // Converter para JSON e gerar QR Code
-    const jsonDados = JSON.stringify(dadosValidacao)
-    const qrCodeDataURL = await QRCode.toDataURL(jsonDados, {
+    // Criar texto formatado e legível para o QR Code
+    const textoQRCode = `LAUDO DE ANÁLISE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Cliente: ${cliente?.nome || 'N/A'}
+CPF: ${cliente?.cpf || 'N/A'}
+Lote: ${lote?.codigo || 'N/A'}
+Data de Geração: ${dataGeracao}
+Quantidade de Amostras: ${amostras?.length || 0}
+Módulo: ${lote?.modulo || lote?.tipoAnalise || 'solo'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Este QR Code valida a autenticidade do laudo.`
+    
+    // Gerar QR Code com o texto formatado
+    const qrCodeDataURL = await QRCode.toDataURL(textoQRCode, {
       errorCorrectionLevel: 'M',
       type: 'image/png',
       width: 200,
@@ -1240,13 +1240,12 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
         
         .qrcode-container {
             margin-top: 15px;
-            text-align: center;
+            text-align: left;
         }
         
         .qrcode-image {
             width: 80px;
             height: 80px;
-            margin: 0 auto;
             display: block;
         }
         
