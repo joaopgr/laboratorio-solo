@@ -70,13 +70,13 @@ export function ValoresAnalise() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        <Loader2 className="w-8 h-8 animate-spin text-emerald-600" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
@@ -123,96 +123,95 @@ export function ValoresAnalise() {
         </div>
         <div className="card-content p-0">
           <div className="overflow-x-auto">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Tipo de Análise
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Descrição
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Valor (R$)
-                </th>
-                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
-                  Editar
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {tiposAnalise.map((tipo) => {
-                const valorAtual = valores[tipo.key] || 0;
-                const estaEditando = editandoTipo === tipo.key;
-                const isSaving = updateValor.isPending;
+            <table className="w-full">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Tipo de Análise
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Descrição
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Valor (R$)
+                  </th>
+                  <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-24">
+                    Editar
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 bg-white">
+                {tiposAnalise.map((tipo) => {
+                  const valorAtual = valores[tipo.key] || 0;
+                  const estaEditando = editandoTipo === tipo.key;
+                  const isSaving = updateValor.isPending;
 
-                return (
-                  <tr key={tipo.key} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="font-semibold text-gray-900">{tipo.label}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="text-sm text-gray-600">{tipo.descricao}</div>
-                    </td>
-                    <td className="px-6 py-4">
-                      {estaEditando ? (
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={valorEditado}
-                            onChange={(e) => setValorEditado(e.target.value)}
-                            className="w-32 px-3 py-2 border border-emerald-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-emerald-50"
-                            placeholder="0.00"
-                            autoFocus
-                          />
-                          <button
-                            onClick={() => handleSalvar(tipo.key)}
-                            disabled={isSaving}
-                            className="btn btn-primary btn-sm"
-                            title="Salvar"
-                          >
-                            {isSaving ? (
-                              <Loader2 className="w-4 h-4 animate-spin" />
-                            ) : (
-                              <Save className="w-4 h-4" />
-                            )}
-                          </button>
-                          <button
-                            onClick={handleCancelarEdicao}
-                            disabled={isSaving}
-                            className="btn btn-outline btn-sm"
-                            title="Cancelar"
-                          >
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="text-lg font-semibold text-gray-900">
-                          R$ {valorAtual.toFixed(2)}
-                        </div>
-                      )}
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex justify-center">
-                        {!estaEditando && (
-                          <button
-                            onClick={() => handleIniciarEdicao(tipo.key)}
-                            className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
-                            title="Editar valor"
-                          >
-                            <Edit2 className="w-5 h-5" />
-                          </button>
+                  return (
+                    <tr key={tipo.key} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="font-semibold text-gray-900">{tipo.label}</div>
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="text-sm text-gray-600">{tipo.descricao}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        {estaEditando ? (
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="number"
+                              min="0"
+                              step="0.01"
+                              value={valorEditado}
+                              onChange={(e) => setValorEditado(e.target.value)}
+                              className="w-32 px-3 py-2 border border-emerald-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 bg-emerald-50"
+                              placeholder="0.00"
+                              autoFocus
+                            />
+                            <button
+                              onClick={() => handleSalvar(tipo.key)}
+                              disabled={isSaving}
+                              className="btn btn-primary btn-sm"
+                              title="Salvar"
+                            >
+                              {isSaving ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                              ) : (
+                                <Save className="w-4 h-4" />
+                              )}
+                            </button>
+                            <button
+                              onClick={handleCancelarEdicao}
+                              disabled={isSaving}
+                              className="btn btn-outline btn-sm"
+                              title="Cancelar"
+                            >
+                              <X className="w-4 h-4" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="text-lg font-semibold text-gray-900">
+                            R$ {valorAtual.toFixed(2)}
+                          </div>
                         )}
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="flex justify-center">
+                          {!estaEditando && (
+                            <button
+                              onClick={() => handleIniciarEdicao(tipo.key)}
+                              className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
+                              title="Editar valor"
+                            >
+                              <Edit2 className="w-5 h-5" />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
