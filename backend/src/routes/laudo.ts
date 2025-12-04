@@ -5,6 +5,7 @@ import { SQL_QUERIES } from '../database/queries'
 import * as path from 'path'
 import * as fs from 'fs'
 import { authenticateToken, authorizeRoles } from './auth'
+import QRCode from 'qrcode'
 // PDF será gerado no frontend
 import { getUfesLogoBase64, getLabLogoBase64, getSeloBase64, getAssinaturaBase64 } from '../utils/imageUtils'
 
@@ -1182,6 +1183,37 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
             text-align: right;
         }
         
+        .qrcode-container {
+            margin-top: 20px;
+            padding: 15px;
+            border: 2px solid #000;
+            border-radius: 5px;
+            background-color: white;
+            text-align: center;
+        }
+        
+        .qrcode-title {
+            font-size: 10px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #000;
+            text-transform: uppercase;
+        }
+        
+        .qrcode-image {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto;
+            display: block;
+            border: 1px solid #000;
+        }
+        
+        .qrcode-info {
+            font-size: 8px;
+            margin-top: 8px;
+            color: #000;
+            line-height: 1.3;
+        }
         
         @media print {
             body {
