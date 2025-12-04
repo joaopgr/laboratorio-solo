@@ -431,6 +431,48 @@ export function Relatorios() {
           </div>
         </div>
 
+        <div className="card hover:shadow-lg transition-shadow">
+          <div className="card-content">
+            <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="p-2 bg-indigo-100 rounded-lg">
+                  <FileText className="w-6 h-6 text-indigo-600" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900">Relatório Completo</h3>
+                <p className="text-sm text-gray-600">Todas as amostras com resultados calculados</p>
+                </div>
+              </div>
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => handleGenerateReport('completo')}
+                  className="btn btn-outline btn-sm"
+                  disabled={relatorioCompleto.isPending && activeReport === 'completo'}
+                >
+                  <Eye className="w-4 h-4 mr-1" />
+                  {relatorioCompleto.isPending && activeReport === 'completo' ? 'Carregando...' : 'Ver'}
+                </button>
+                <button
+                  onClick={() => handleSaveReport('completo')}
+                  className="btn btn-secondary btn-sm"
+                  disabled={!relatorioCompleto.data}
+                >
+                  <FileText className="w-4 h-4 mr-1" />
+                  Salvar
+                </button>
+                <button
+                  onClick={() => handleExportReport('completo')}
+                  className="btn btn-primary btn-sm"
+                  disabled={!relatorioCompleto.data}
+                >
+                  <Download className="w-4 h-4 mr-1" />
+                  Exportar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       {/* Relatório Ativo */}
