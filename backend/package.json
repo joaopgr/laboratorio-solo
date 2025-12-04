@@ -7,8 +7,7 @@
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
-    "db:seed": "tsx src/seed.ts",
-    "db:lote-teste": "tsx src/scripts/criarLoteTeste.ts"
+    "db:seed": "tsx src/seed.ts"
   },
   "dependencies": {
     "@sparticuz/chromium": "^131.0.0",

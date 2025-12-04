@@ -18,7 +18,8 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
   const createAmostra = useCreateAmostra()
   
   // Usar o módulo do lote, mas fallback para o módulo global se lote ainda não carregou
-  const modulo = lote?.modulo || moduloGlobal
+  // Garantir que seja 'solo' ou 'foliar', nunca undefined
+  const modulo = (lote?.modulo || lote?.tipoAnalise || moduloGlobal || 'solo') as 'solo' | 'foliar'
 
   const [formData, setFormData] = useState({
     codigo: '',
@@ -262,7 +263,8 @@ export function AdicionarAmostraLoteForm({ loteId, onSuccess, onCancel }: Adicio
                     return !isSoloOnly
                   }
                   
-                  // Módulo solo: mostrar todos (rotina, micronutrientes, enxofre, nitrogenio são gerais)
+                  // Módulo solo: mostrar TODOS os tipos, incluindo granulométrica
+                  // Se não for foliar, assume que é solo e mostra tudo
                   return true
                 })
                 .map(({ key, label }) => (
