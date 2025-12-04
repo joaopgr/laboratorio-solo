@@ -98,9 +98,9 @@ export function ControleUsuarios() {
         </div>
         <button
           onClick={handleCreateUsuario}
-          className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 transition-colors"
+          className="btn btn-primary btn-md flex items-center"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 mr-2" />
           Novo Usuário
         </button>
       </div>

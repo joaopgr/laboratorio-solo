@@ -105,9 +105,9 @@ export function Amostras() {
         <h1 className="text-2xl font-bold text-gray-900">Amostras</h1>
         <button
           onClick={() => setIsFormOpen(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 flex items-center gap-2"
+          className="btn btn-primary btn-md flex items-center"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 mr-2" />
           Nova Amostra
         </button>
       </div>
