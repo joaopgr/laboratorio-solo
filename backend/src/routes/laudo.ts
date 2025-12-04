@@ -847,17 +847,10 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
       minute: '2-digit'
     })
     
-    // HTML do QR Code (se gerado com sucesso)
+    // HTML do QR Code (se gerado com sucesso) - simplificado
     const qrCodeHTML = qrCodeBase64 ? `
     <div class="qrcode-container">
-        <div class="qrcode-title">Validação Digital</div>
         <img src="${qrCodeBase64}" alt="QR Code de Validação" class="qrcode-image">
-        <div class="qrcode-info">
-            <p><strong>Data de Geração:</strong> ${dataGeracao}</p>
-            <p><strong>Cliente:</strong> ${cliente?.nome || 'N/A'}</p>
-            <p><strong>Lote:</strong> ${lote?.codigo || 'N/A'} | <strong>Amostras:</strong> ${amostras?.length || 0}</p>
-            <p style="font-size: 7px; margin-top: 5px; font-style: italic;">Este QR Code contém informações de validação do laudo. Escaneie para verificar a autenticidade do documento.</p>
-        </div>
     </div>` : ''
     
     // Agrupar resultados por amostra e calcular resultados finais
@@ -1246,35 +1239,15 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
         }
         
         .qrcode-container {
-            margin-top: 20px;
-            padding: 15px;
-            border: 2px solid #000;
-            border-radius: 5px;
-            background-color: white;
+            margin-top: 15px;
             text-align: center;
         }
         
-        .qrcode-title {
-            font-size: 10px;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #000;
-            text-transform: uppercase;
-        }
-        
         .qrcode-image {
-            width: 150px;
-            height: 150px;
+            width: 80px;
+            height: 80px;
             margin: 0 auto;
             display: block;
-            border: 1px solid #000;
-        }
-        
-        .qrcode-info {
-            font-size: 8px;
-            margin-top: 8px;
-            color: #000;
-            line-height: 1.3;
         }
         
         @media print {
