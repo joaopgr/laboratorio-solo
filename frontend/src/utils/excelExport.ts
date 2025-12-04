@@ -379,3 +379,51 @@ export function exportResultadosCompletos(resultadosData: any) {
   const filename = `Resultados_Completos_${new Date().toISOString().split('T')[0]}`
   XLSX.writeFile(workbook, `${filename}.xlsx`)
 }
+
+// Função específica para relatório completo
+export function exportRelatorioCompleto(relatorioData: any) {
+  if (!relatorioData) {
+    console.error('Dados do relatório não disponíveis')
+    throw new Error('Dados do relatório não disponíveis')
+  }
+
+  const { dados } = relatorioData
+  const amostrasArray = dados || []
+  
+  if (!Array.isArray(amostrasArray)) {
+    console.error('Dados de amostras inválidos:', { dados, amostrasArray })
+    throw new Error('Dados de amostras inválidos')
+  }
+
+  // Criar dados formatados para Excel
+  const dadosExcel = amostrasArray.map((amostra: any) => ({
+    'Cultura': amostra.cultura || '',
+    'Localidade': amostra.localidade || '',
+    'Data': amostra.data || '',
+    'pH': amostra.ph || '',
+    'P': amostra.p || '',
+    'Na': amostra.na || '',
+    'K': amostra.k || '',
+    'Ca': amostra.ca || '',
+    'Mg': amostra.mg || '',
+    'Al': amostra.al || '',
+    'H+Al': amostra.h_al || '',
+    'SB': amostra.sb || '',
+    't': amostra.t || '',
+    'CTC': amostra.ctc || '',
+    'V': amostra.v || '',
+    'm': amostra.m || '',
+    'Fe': amostra.fe || '',
+    'Cu': amostra.cu || '',
+    'Zn': amostra.zn || '',
+    'Mn': amostra.mn || '',
+    'B': amostra.b || '',
+    'S': amostra.s || '',
+    'MO': amostra.mo || '',
+    'PREM': amostra.prem || '',
+    'N': amostra.n || '', // Para foliar
+  }))
+
+  const filename = `Relatorio_Completo_${new Date().toISOString().split('T')[0]}`
+  exportToExcel(dadosExcel, { filename, sheetName: 'Relatório Completo' })
+}

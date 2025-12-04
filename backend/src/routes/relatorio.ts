@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { query } from '../database/connection';
 import { SQL_QUERIES } from '../database/queries';
 import { authenticateToken, authorizeRoles } from './auth';
+import { prepararDadosBrutos, calcularResultados, calcularResultadosFoliar } from '../utils/calculosResultados';
 
 const router = Router();
 
@@ -1006,6 +1007,140 @@ router.get('/financeiro', async (req, res): Promise<any> => {
 
   } catch (error) {
     console.error('Erro ao buscar relatório financeiro:', error);
+    return res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// GET /api/relatorios/completo - Relatório completo com todas as amostras e resultados calculados
+router.get('/completo', async (req, res): Promise<any> => {
+  try {
+    const filters = relatorioFiltersSchema.parse(req.query);
+    
+    // Buscar todas as amostras com filtros
+    let amostrasQuery = `
+      SELECT 
+        a.*,
+        l.codigo as lote_codigo,
+        l.modulo as lote_modulo,
+        l."dataEntrega" as lote_data_entrega,
+        c.nome as cliente_nome,
+        c.cpf as cliente_cpf
+      FROM amostras a
+      JOIN lotes_amostras l ON a."loteId" = l.id
+      JOIN clientes c ON l."clienteId" = c.id
+      WHERE 1=1
+    `;
+    
+    const conditions: string[] = [];
+    const params: any[] = [];
+    let paramCount = 0;
+
+    // Filtros
+    if (filters.modulo) {
+      paramCount++;
+      conditions.push(`l.modulo = $${paramCount}`);
+      params.push(filters.modulo);
+    }
+
+    if (filters.localidade) {
+      paramCount++;
+      conditions.push(`a.localidade ILIKE $${paramCount}`);
+      params.push(`%${filters.localidade}%`);
+    }
+
+    if (filters.cultura) {
+      paramCount++;
+      conditions.push(`a.cultura ILIKE $${paramCount}`);
+      params.push(`%${filters.cultura}%`);
+    }
+
+    if (filters.dataInicio) {
+      paramCount++;
+      conditions.push(`l."dataEntrega" >= $${paramCount}`);
+      params.push(filters.dataInicio);
+    }
+
+    if (filters.dataFim) {
+      paramCount++;
+      conditions.push(`l."dataEntrega" <= $${paramCount}`);
+      params.push(filters.dataFim);
+    }
+
+    if (conditions.length > 0) {
+      amostrasQuery += ` AND ${conditions.join(' AND ')}`;
+    }
+
+    amostrasQuery += ` ORDER BY a."createdAt" DESC`;
+
+    const amostrasResult = await query(amostrasQuery, params);
+    const amostras = amostrasResult.rows;
+
+    // Para cada amostra, buscar resultados e calcular
+    const dadosCompletos = await Promise.all(
+      amostras.map(async (amostra: any) => {
+        // Buscar resultados brutos da amostra
+        const { query: resultadosQuery, params: resultadosParams } = SQL_QUERIES.resultados.findByAmostra(amostra.id);
+        const resultadosResult = await query(resultadosQuery, resultadosParams);
+        const resultadosBrutos = resultadosResult.rows;
+
+        // Determinar módulo (solo ou foliar)
+        const modulo = amostra.lote_modulo || amostra.modulo || 'solo';
+        
+        // Calcular resultados finais
+        const resultadosCalculados = modulo === 'foliar' 
+          ? calcularResultadosFoliar(resultadosBrutos)
+          : calcularResultados(prepararDadosBrutos(resultadosBrutos));
+
+        // Formatar data
+        const dataFormatada = amostra.dataColeta 
+          ? new Date(amostra.dataColeta).toLocaleDateString('pt-BR')
+          : amostra.lote_data_entrega
+          ? new Date(amostra.lote_data_entrega).toLocaleDateString('pt-BR')
+          : '';
+
+        return {
+          codigo: amostra.codigo || '',
+          cultura: amostra.cultura || '',
+          localidade: amostra.localidade || '',
+          data: dataFormatada,
+          cliente: amostra.cliente_nome || '',
+          lote: amostra.lote_codigo || '',
+          modulo: modulo,
+          // Resultados calculados
+          ph: resultadosCalculados.ph !== undefined ? resultadosCalculados.ph.toFixed(2) : '',
+          p: resultadosCalculados.p !== undefined ? resultadosCalculados.p.toFixed(2) : '',
+          na: resultadosCalculados.na !== undefined ? resultadosCalculados.na.toFixed(2) : '',
+          k: resultadosCalculados.k !== undefined ? resultadosCalculados.k.toFixed(2) : '',
+          ca: resultadosCalculados.ca !== undefined ? resultadosCalculados.ca.toFixed(2) : '',
+          mg: resultadosCalculados.mg !== undefined ? resultadosCalculados.mg.toFixed(2) : '',
+          al: resultadosCalculados.al !== undefined ? resultadosCalculados.al.toFixed(2) : '',
+          h_al: resultadosCalculados.h_al !== undefined ? resultadosCalculados.h_al.toFixed(2) : '',
+          sb: resultadosCalculados.sb !== undefined ? resultadosCalculados.sb.toFixed(2) : '',
+          t: resultadosCalculados.t !== undefined ? resultadosCalculados.t.toFixed(2) : '',
+          ctc: resultadosCalculados.ctc !== undefined ? resultadosCalculados.ctc.toFixed(2) : '',
+          v: resultadosCalculados.v !== undefined ? resultadosCalculados.v.toFixed(2) : '',
+          m: resultadosCalculados.m !== undefined ? resultadosCalculados.m.toFixed(2) : '',
+          fe: resultadosCalculados.fe !== undefined ? resultadosCalculados.fe.toFixed(4) : '',
+          cu: resultadosCalculados.cu !== undefined ? resultadosCalculados.cu.toFixed(4) : '',
+          zn: resultadosCalculados.zn !== undefined ? resultadosCalculados.zn.toFixed(4) : '',
+          mn: resultadosCalculados.mn !== undefined ? resultadosCalculados.mn.toFixed(4) : '',
+          b: resultadosCalculados.b !== undefined ? resultadosCalculados.b.toFixed(4) : '',
+          s: resultadosCalculados.s !== undefined ? resultadosCalculados.s.toFixed(2) : '',
+          mo: resultadosCalculados.mo !== undefined ? resultadosCalculados.mo.toFixed(2) : '',
+          prem: resultadosCalculados.prem !== undefined ? resultadosCalculados.prem.toFixed(2) : '',
+          n: resultadosCalculados.n !== undefined ? resultadosCalculados.n.toFixed(2) : '', // Para foliar
+        };
+      })
+    );
+
+    res.json({
+      dados: dadosCompletos,
+      total: dadosCompletos.length,
+      modulo: filters.modulo || 'todos'
+    });
+
+  } catch (error) {
+    console.error('Erro ao gerar relatório completo:', error);
     return res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });

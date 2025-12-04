@@ -106,6 +106,25 @@ export function useRelatorioEstatisticas(filters: RelatorioFilters = {}, enabled
   })
 }
 
+// Hook para relatório completo
+export function useRelatorioCompleto(filters: RelatorioFilters = {}, enabled: boolean = false) {
+  const { modulo } = useModule()
+  
+  return useQuery({
+    queryKey: ['relatorios', 'completo', filters, modulo],
+    queryFn: async () => {
+      const response = await api.get('/relatorios/completo', {
+        params: {
+          ...filters,
+          modulo
+        }
+      })
+      return response.data
+    },
+    enabled: enabled,
+  })
+}
+
 // Hook para salvar relatório
 export function useSalvarRelatorio() {
   const queryClient = useQueryClient()
