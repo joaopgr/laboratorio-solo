@@ -795,6 +795,45 @@ async function calcularResultadosGranulometricos(amostraId: string) {
   }
 }
 
+// Função para gerar QR Code com dados de validação do laudo
+async function gerarQRCodeLaudo(lote: any, amostras: any[], cliente: any): Promise<string> {
+  try {
+    const dataGeracao = new Date().toISOString()
+    const dadosValidacao = {
+      tipo: 'laudo_analise',
+      dataGeracao: dataGeracao,
+      cliente: {
+        nome: cliente?.nome || '',
+        cpf: cliente?.cpf || ''
+      },
+      lote: {
+        codigo: lote?.codigo || '',
+        id: lote?.id || ''
+      },
+      amostras: {
+        quantidade: amostras?.length || 0,
+        codigos: amostras?.map((a: any) => a.codigo) || []
+      },
+      modulo: lote?.modulo || lote?.tipoAnalise || 'solo'
+    }
+    
+    // Converter para JSON e gerar QR Code
+    const jsonDados = JSON.stringify(dadosValidacao)
+    const qrCodeDataURL = await QRCode.toDataURL(jsonDados, {
+      errorCorrectionLevel: 'M',
+      type: 'image/png',
+      width: 200,
+      margin: 2
+    })
+    
+    return qrCodeDataURL
+  } catch (error) {
+    console.error('Erro ao gerar QR Code:', error)
+    // Retornar string vazia em caso de erro para não quebrar o laudo
+    return ''
+  }
+}
+
 // Função para gerar HTML do laudo (template completo)
 async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[], tipoAnalise: string, cliente: any, modulo: string = 'solo') {
   try {
