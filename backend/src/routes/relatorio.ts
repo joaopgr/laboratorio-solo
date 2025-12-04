@@ -928,14 +928,14 @@ router.get('/financeiro', async (req, res): Promise<any> => {
       
       // Calcular valor para cada amostra
       amostras.forEach(amostra => {
-        if (amostra.rotina) valorBase += valoresAnalise.rotina;
-        if (amostra.organica) valorBase += valoresAnalise.organica;
-        if (amostra.micronutrientes) valorBase += valoresAnalise.micronutrientes;
-        if (amostra.enxofre) valorBase += valoresAnalise.enxofre;
-        if (amostra.prem) valorBase += valoresAnalise.prem;
-        if (amostra.nitrogenio) valorBase += valoresAnalise.nitrogenio;
-        if (amostra.granulometria) valorBase += valoresAnalise.granulometria;
-        if (amostra.foliar) valorBase += valoresAnalise.foliar;
+        if (amostra.rotina && valoresAnalise.rotina) valorBase += valoresAnalise.rotina;
+        if (amostra.organica && valoresAnalise.organica) valorBase += valoresAnalise.organica;
+        if (amostra.micronutrientes && valoresAnalise.micronutrientes) valorBase += valoresAnalise.micronutrientes;
+        if (amostra.enxofre && valoresAnalise.enxofre) valorBase += valoresAnalise.enxofre;
+        if (amostra.prem && valoresAnalise.prem) valorBase += valoresAnalise.prem;
+        if (amostra.nitrogenio && valoresAnalise.nitrogenio) valorBase += valoresAnalise.nitrogenio;
+        if (amostra.granulometria && valoresAnalise.granulometria) valorBase += valoresAnalise.granulometria;
+        // Nota: 'foliar' não é um tipo de análise com valor separado, é o módulo
       });
       
       // Aplicar desconto

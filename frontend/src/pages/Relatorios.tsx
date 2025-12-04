@@ -677,73 +677,77 @@ export function Relatorios() {
 
             {activeReport === 'financeiro' && relatorioFinanceiro.data && (
               <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-green-900">Total Faturado</h4>
-                    <p className="text-2xl font-bold text-green-600">
-                      R$ {relatorioFinanceiro.data.estatisticas.totalFaturado?.toFixed(2).replace('.', ',') || '0,00'}
-                    </p>
+                {relatorioFinanceiro.data.estatisticas && (
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <h4 className="font-semibold text-green-900">Total Faturado</h4>
+                      <p className="text-2xl font-bold text-green-600">
+                        R$ {relatorioFinanceiro.data.estatisticas.totalFaturado?.toFixed(2).replace('.', ',') || '0,00'}
+                      </p>
+                    </div>
+                    <div className="bg-blue-50 p-4 rounded-lg">
+                      <h4 className="font-semibold text-blue-900">Total Pago</h4>
+                      <p className="text-2xl font-bold text-blue-600">
+                        R$ {relatorioFinanceiro.data.estatisticas.totalPago?.toFixed(2).replace('.', ',') || '0,00'}
+                      </p>
+                    </div>
+                    <div className="bg-red-50 p-4 rounded-lg">
+                      <h4 className="font-semibold text-red-900">Total Pendente</h4>
+                      <p className="text-2xl font-bold text-red-600">
+                        R$ {relatorioFinanceiro.data.estatisticas.totalPendente?.toFixed(2).replace('.', ',') || '0,00'}
+                      </p>
+                    </div>
                   </div>
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-blue-900">Total Pago</h4>
-                    <p className="text-2xl font-bold text-blue-600">
-                      R$ {relatorioFinanceiro.data.estatisticas.totalPago?.toFixed(2).replace('.', ',') || '0,00'}
-                    </p>
-                  </div>
-                  <div className="bg-red-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-red-900">Total Pendente</h4>
-                    <p className="text-2xl font-bold text-red-600">
-                      R$ {relatorioFinanceiro.data.estatisticas.totalPendente?.toFixed(2).replace('.', ',') || '0,00'}
-                    </p>
-                  </div>
-                </div>
+                )}
                 
                 {/* Tabela de dados financeiros */}
-                <div className="bg-white border rounded-lg">
-                  <div className="p-4 border-b">
-                    <h4 className="font-semibold text-gray-900">Detalhamento Financeiro</h4>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Lote</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Cliente</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Valor Base</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Desconto</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Valor Final</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {relatorioFinanceiro.data.dados.map((item: any) => (
-                          <tr key={item.id}>
-                            <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.codigo}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{item.cliente}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">
-                              R$ {item.valorBase.toFixed(2).replace('.', ',')}
-                            </td>
-                            <td className="px-4 py-3 text-sm text-gray-700">
-                              {item.desconto > 0 ? `${item.desconto}%` : '-'}
-                            </td>
-                            <td className="px-4 py-3 text-sm font-medium text-gray-900">
-                              R$ {item.valorFinal.toFixed(2).replace('.', ',')}
-                            </td>
-                            <td className="px-4 py-3 text-sm">
-                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                item.pago 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : 'bg-yellow-100 text-yellow-800'
-                              }`}>
-                                {item.pago ? 'Pago' : 'Pendente'}
-                              </span>
-                            </td>
+                {relatorioFinanceiro.data.dados && Array.isArray(relatorioFinanceiro.data.dados) && (
+                  <div className="bg-white border rounded-lg">
+                    <div className="p-4 border-b">
+                      <h4 className="font-semibold text-gray-900">Detalhamento Financeiro</h4>
+                    </div>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Lote</th>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Cliente</th>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Valor Base</th>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Desconto</th>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Valor Final</th>
+                            <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Status</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                          {relatorioFinanceiro.data.dados.map((item: any) => (
+                            <tr key={item.id}>
+                              <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.codigo || '-'}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{item.cliente || '-'}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">
+                                R$ {item.valorBase ? item.valorBase.toFixed(2).replace('.', ',') : '0,00'}
+                              </td>
+                              <td className="px-4 py-3 text-sm text-gray-700">
+                                {item.desconto > 0 ? `${item.desconto}%` : '-'}
+                              </td>
+                              <td className="px-4 py-3 text-sm font-medium text-gray-900">
+                                R$ {item.valorFinal ? item.valorFinal.toFixed(2).replace('.', ',') : '0,00'}
+                              </td>
+                              <td className="px-4 py-3 text-sm">
+                                <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                  item.pago 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                  {item.pago ? 'Pago' : 'Pendente'}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
 
