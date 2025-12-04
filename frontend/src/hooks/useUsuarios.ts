@@ -31,11 +31,34 @@ export function useUsuarios() {
   return useQuery({
     queryKey: ['usuarios'],
     queryFn: async () => {
-      const response = await api.get<Usuario[]>('/usuarios');
-      return response.data;
+      try {
+        console.log('🔍 Fazendo requisição para /api/usuarios...');
+        const response = await api.get<Usuario[]>('/usuarios');
+        console.log('✅ Resposta recebida:', response.status, response.data?.length || 0, 'usuários');
+        if (response.data && response.data.length > 0) {
+          console.log('👥 Primeiros usuários:', response.data.slice(0, 3).map(u => u.nome));
+        }
+        return response.data || [];
+      } catch (error: any) {
+        console.error('❌ Erro ao carregar usuários:', error);
+        console.error('📋 Detalhes do erro:', {
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          data: error.response?.data,
+          message: error.message
+        });
+        // Se for erro 403, pode ser problema de permissão
+        if (error.response?.status === 403) {
+          console.error('⚠️ Acesso negado (403) - verifique permissões da rota');
+        }
+        // Retornar array vazio em caso de erro para não quebrar a UI
+        return [];
+      }
     },
     retry: 1,
     refetchOnWindowFocus: false,
+    staleTime: 0, // Sempre buscar dados frescos
+    cacheTime: 0, // Não cachear
   });
 }
 

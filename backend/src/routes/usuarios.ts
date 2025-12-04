@@ -31,6 +31,9 @@ router.use(authenticateToken);
 // Se for admin, retorna com senhas. Se não for admin, retorna sem senhas
 router.get('/', async (req: any, res): Promise<any> => {
   try {
+    // Log para debug
+    console.log('🔍 GET /api/usuarios - Usuário:', req.user?.email, 'Role:', req.user?.role);
+    
     const isAdmin = req.user?.role === 'admin';
     
     // Se for admin, buscar com senhas. Se não, buscar sem senhas
@@ -39,6 +42,8 @@ router.get('/', async (req: any, res): Promise<any> => {
       : SQL_QUERIES.usuarios.findAllActive();
     
     const result = await query(usersQuery, params);
+    
+    console.log('📊 Usuários encontrados:', result.rows.length);
     
     const usuarios = result.rows.map((u: any) => ({
       id: u.id,
@@ -52,7 +57,7 @@ router.get('/', async (req: any, res): Promise<any> => {
     
     res.json(usuarios);
   } catch (error) {
-    console.error('Erro ao buscar usuários:', error);
+    console.error('❌ Erro ao buscar usuários:', error);
     return res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });

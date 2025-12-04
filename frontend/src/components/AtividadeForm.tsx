@@ -32,8 +32,20 @@ export default function AtividadeForm({ atividade, onClose }: AtividadeFormProps
   const [showResponsavelDropdown, setShowResponsavelDropdown] = useState(false);
   const [responsaveisSelecionados, setResponsaveisSelecionados] = useState<string[]>([]);
 
-  const { data: usuariosData } = useUsuarios();
+  const { data: usuariosData, error: usuariosError, isLoading: usuariosLoading } = useUsuarios();
   const usuarios = Array.isArray(usuariosData) ? usuariosData : [];
+  
+  // Log para debug
+  useEffect(() => {
+    if (usuariosError) {
+      console.error('❌ Erro ao carregar usuários no AtividadeForm:', usuariosError);
+    }
+    if (usuarios.length > 0) {
+      console.log('✅ Usuários disponíveis no AtividadeForm:', usuarios.length);
+    } else if (!usuariosLoading && usuarios.length === 0) {
+      console.warn('⚠️ Nenhum usuário carregado no AtividadeForm');
+    }
+  }, [usuarios, usuariosError, usuariosLoading]);
 
   const createAtividade = useCreateAtividade();
   const updateAtividade = useUpdateAtividade();
