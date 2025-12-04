@@ -690,6 +690,12 @@ export const SQL_QUERIES = {
     findAllActiveWithPassword: () => ({
       query: 'SELECT id, nome, email, senha, role, ativo, "createdAt" FROM usuarios WHERE ativo = true ORDER BY nome',
       params: []
+    }),
+
+    // Buscar todos os usuários ativos sem senha (para seleção de responsáveis)
+    findAllActive: () => ({
+      query: 'SELECT id, nome, email, role, ativo, "createdAt" FROM usuarios WHERE ativo = true ORDER BY nome',
+      params: []
     })
   },
 

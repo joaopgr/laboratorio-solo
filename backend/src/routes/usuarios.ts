@@ -23,20 +23,28 @@ const updateUsuarioSchema = z.object({
   ativo: z.boolean().optional(),
 });
 
-// Todas as rotas requerem autenticação e permissão de admin
-router.use(authenticateToken, authorizeRoles('admin'));
+// Todas as rotas requerem autenticação
+router.use(authenticateToken);
 
-// GET /api/usuarios - Listar todos os usuários ativos (com senhas para admin)
+// GET /api/usuarios - Listar todos os usuários ativos
+// Permitido para todos os usuários autenticados (para seleção de responsáveis em atividades)
+// Se for admin, retorna com senhas. Se não for admin, retorna sem senhas
 router.get('/', async (req: any, res): Promise<any> => {
   try {
-    const { query: usersQuery, params } = SQL_QUERIES.usuarios.findAllActiveWithPassword();
+    const isAdmin = req.user?.role === 'admin';
+    
+    // Se for admin, buscar com senhas. Se não, buscar sem senhas
+    const { query: usersQuery, params } = isAdmin 
+      ? SQL_QUERIES.usuarios.findAllActiveWithPassword()
+      : SQL_QUERIES.usuarios.findAllActive();
+    
     const result = await query(usersQuery, params);
     
     const usuarios = result.rows.map((u: any) => ({
       id: u.id,
       nome: u.nome,
       email: u.email,
-      senha: u.senha, // Admin pode ver senhas
+      ...(isAdmin && { senha: u.senha }), // Apenas admin vê senhas
       role: u.role,
       ativo: u.ativo,
       createdAt: u.createdAt
@@ -49,7 +57,10 @@ router.get('/', async (req: any, res): Promise<any> => {
   }
 });
 
-// GET /api/usuarios/:id - Buscar usuário por ID
+// Rotas que requerem permissão de admin
+router.use(authorizeRoles('admin'));
+
+// GET /api/usuarios/:id - Buscar usuário por ID (apenas admin)
 router.get('/:id', async (req: any, res): Promise<any> => {
   try {
     const { id } = req.params;
@@ -76,7 +87,7 @@ router.get('/:id', async (req: any, res): Promise<any> => {
   }
 });
 
-// POST /api/usuarios - Criar novo usuário
+// POST /api/usuarios - Criar novo usuário (apenas admin)
 router.post('/', async (req: any, res): Promise<any> => {
   try {
     const data = createUsuarioSchema.parse(req.body);
