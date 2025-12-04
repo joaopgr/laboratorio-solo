@@ -770,85 +770,93 @@ export function Relatorios() {
               </div>
             )}
 
-            {activeReport === 'completo' && relatorioCompleto.data && (
-              <div className="space-y-6">
-                <div className="bg-white border rounded-lg">
-                  <div className="p-4 border-b">
-                    <h4 className="font-semibold text-gray-900">Relatório Completo</h4>
-                    <p className="text-sm text-gray-600 mt-1">Total de amostras: {relatorioCompleto.data.total || 0}</p>
-                  </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Cultura</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Localidade</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Data</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">pH</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">P</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Na</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">K</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Ca</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Mg</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Al</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">H+Al</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">SB</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">t</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">CTC</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">V</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">m</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Fe</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Cu</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Zn</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">Mn</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">B</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">S</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">MO</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">PREM</th>
-                          <th className="px-4 py-3 text-left text-sm font-medium text-gray-700">N</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-200">
-                        {relatorioCompleto.data.dados?.slice(0, 50).map((amostra: any, index: number) => (
-                          <tr key={index}>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.cultura || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.localidade || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.data || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.ph || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.p || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.na || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.k || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.ca || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.mg || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.al || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.h_al || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.sb || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.t || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.ctc || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.v || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.m || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.fe || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.cu || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.zn || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.mn || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.b || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.s || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.mo || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.prem || '-'}</td>
-                            <td className="px-4 py-3 text-sm text-gray-700">{amostra.n || '-'}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  {relatorioCompleto.data.dados && relatorioCompleto.data.dados.length > 50 && (
-                    <div className="p-4 border-t text-sm text-gray-600">
-                      Mostrando 50 de {relatorioCompleto.data.dados.length} amostras. Exporte o relatório para ver todas.
+            {activeReport === 'completo' && relatorioCompleto.data && (() => {
+              // Determinar módulo (verificar primeira amostra ou usar módulo do filtro)
+              const primeiroModulo = relatorioCompleto.data.dados?.[0]?.modulo || relatorioCompleto.data.modulo || modulo
+              const isFoliar = primeiroModulo === 'foliar'
+              
+              // Definir colunas baseado no módulo
+              const colunas = isFoliar 
+                ? ['Cultura', 'Localidade', 'Data', 'P', 'K', 'Ca', 'Mg', 'S', 'Fe', 'Cu', 'Zn', 'Mn', 'B', 'N']
+                : ['Cultura', 'Localidade', 'Data', 'pH', 'P', 'Na', 'K', 'Ca', 'Mg', 'Al', 'H+Al', 'SB', 't', 'CTC', 'V', 'm', 'Fe', 'Cu', 'Zn', 'Mn', 'B', 'S', 'MO', 'PREM']
+              
+              return (
+                <div className="space-y-6">
+                  <div className="bg-white border rounded-lg">
+                    <div className="p-4 border-b">
+                      <h4 className="font-semibold text-gray-900">Relatório Completo - {isFoliar ? 'Foliar' : 'Solo'}</h4>
+                      <p className="text-sm text-gray-600 mt-1">Total de amostras: {relatorioCompleto.data.total || 0}</p>
                     </div>
-                  )}
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead className="bg-gray-50">
+                          <tr>
+                            {colunas.map((coluna) => (
+                              <th key={coluna} className="px-4 py-3 text-left text-sm font-medium text-gray-700">
+                                {coluna}
+                              </th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-200">
+                          {relatorioCompleto.data.dados?.slice(0, 50).map((amostra: any, index: number) => (
+                            <tr key={index}>
+                              <td className="px-4 py-3 text-sm text-gray-700">{amostra.cultura || '-'}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{amostra.localidade || '-'}</td>
+                              <td className="px-4 py-3 text-sm text-gray-700">{amostra.data || '-'}</td>
+                              {isFoliar ? (
+                                <>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.p || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.k || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.ca || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.mg || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.s || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.fe || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.cu || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.zn || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.mn || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.b || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.n || '-'}</td>
+                                </>
+                              ) : (
+                                <>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.ph || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.p || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.na || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.k || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.ca || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.mg || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.al || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.h_al || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.sb || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.t || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.ctc || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.v || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.m || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.fe || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.cu || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.zn || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.mn || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.b || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.s || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.mo || '-'}</td>
+                                  <td className="px-4 py-3 text-sm text-gray-700">{amostra.prem || '-'}</td>
+                                </>
+                              )}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    {relatorioCompleto.data.dados && relatorioCompleto.data.dados.length > 50 && (
+                      <div className="p-4 border-t text-sm text-gray-600">
+                        Mostrando 50 de {relatorioCompleto.data.dados.length} amostras. Exporte o relatório para ver todas.
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )
+            })()}
 
             {activeReport && !relatorioGeral.data && !relatorioCliente.data && !relatorioCultura.data && !relatorioFinanceiro.data && !relatorioEstatisticas.data && !relatorioCompleto.data && (
               <div className="text-center py-8">

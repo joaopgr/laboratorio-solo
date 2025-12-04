@@ -1098,7 +1098,8 @@ router.get('/completo', async (req, res): Promise<any> => {
           ? new Date(amostra.lote_data_entrega).toLocaleDateString('pt-BR')
           : '';
 
-        return {
+        // Criar objeto base com informações comuns
+        const dadosAmostra: any = {
           codigo: amostra.codigo || '',
           cultura: amostra.cultura || '',
           localidade: amostra.localidade || '',
@@ -1106,30 +1107,48 @@ router.get('/completo', async (req, res): Promise<any> => {
           cliente: amostra.cliente_nome || '',
           lote: amostra.lote_codigo || '',
           modulo: modulo,
-          // Resultados calculados
-          ph: resultadosCalculados.ph !== undefined ? resultadosCalculados.ph.toFixed(2) : '',
-          p: resultadosCalculados.p !== undefined ? resultadosCalculados.p.toFixed(2) : '',
-          na: resultadosCalculados.na !== undefined ? resultadosCalculados.na.toFixed(2) : '',
-          k: resultadosCalculados.k !== undefined ? resultadosCalculados.k.toFixed(2) : '',
-          ca: resultadosCalculados.ca !== undefined ? resultadosCalculados.ca.toFixed(2) : '',
-          mg: resultadosCalculados.mg !== undefined ? resultadosCalculados.mg.toFixed(2) : '',
-          al: resultadosCalculados.al !== undefined ? resultadosCalculados.al.toFixed(2) : '',
-          h_al: resultadosCalculados.h_al !== undefined ? resultadosCalculados.h_al.toFixed(2) : '',
-          sb: resultadosCalculados.sb !== undefined ? resultadosCalculados.sb.toFixed(2) : '',
-          t: resultadosCalculados.t !== undefined ? resultadosCalculados.t.toFixed(2) : '',
-          ctc: resultadosCalculados.ctc !== undefined ? resultadosCalculados.ctc.toFixed(2) : '',
-          v: resultadosCalculados.v !== undefined ? resultadosCalculados.v.toFixed(2) : '',
-          m: resultadosCalculados.m !== undefined ? resultadosCalculados.m.toFixed(2) : '',
-          fe: resultadosCalculados.fe !== undefined ? resultadosCalculados.fe.toFixed(4) : '',
-          cu: resultadosCalculados.cu !== undefined ? resultadosCalculados.cu.toFixed(4) : '',
-          zn: resultadosCalculados.zn !== undefined ? resultadosCalculados.zn.toFixed(4) : '',
-          mn: resultadosCalculados.mn !== undefined ? resultadosCalculados.mn.toFixed(4) : '',
-          b: resultadosCalculados.b !== undefined ? resultadosCalculados.b.toFixed(4) : '',
-          s: resultadosCalculados.s !== undefined ? resultadosCalculados.s.toFixed(2) : '',
-          mo: resultadosCalculados.mo !== undefined ? resultadosCalculados.mo.toFixed(2) : '',
-          prem: resultadosCalculados.prem !== undefined ? resultadosCalculados.prem.toFixed(2) : '',
-          n: resultadosCalculados.n !== undefined ? resultadosCalculados.n.toFixed(2) : '', // Para foliar
         };
+
+        // Adicionar resultados calculados baseado no módulo
+        if (modulo === 'foliar') {
+          // Módulo foliar: P, K, Ca, Mg, S, Fe, Cu, Zn, Mn, B, N
+          dadosAmostra.p = resultadosCalculados.p !== undefined ? resultadosCalculados.p.toFixed(2) : '';
+          dadosAmostra.k = resultadosCalculados.k !== undefined ? resultadosCalculados.k.toFixed(2) : '';
+          dadosAmostra.ca = resultadosCalculados.ca !== undefined ? resultadosCalculados.ca.toFixed(2) : '';
+          dadosAmostra.mg = resultadosCalculados.mg !== undefined ? resultadosCalculados.mg.toFixed(2) : '';
+          dadosAmostra.s = resultadosCalculados.s !== undefined ? resultadosCalculados.s.toFixed(2) : '';
+          dadosAmostra.fe = resultadosCalculados.fe !== undefined ? resultadosCalculados.fe.toFixed(4) : '';
+          dadosAmostra.cu = resultadosCalculados.cu !== undefined ? resultadosCalculados.cu.toFixed(4) : '';
+          dadosAmostra.zn = resultadosCalculados.zn !== undefined ? resultadosCalculados.zn.toFixed(4) : '';
+          dadosAmostra.mn = resultadosCalculados.mn !== undefined ? resultadosCalculados.mn.toFixed(4) : '';
+          dadosAmostra.b = resultadosCalculados.b !== undefined ? resultadosCalculados.b.toFixed(4) : '';
+          dadosAmostra.n = resultadosCalculados.n !== undefined ? resultadosCalculados.n.toFixed(2) : '';
+        } else {
+          // Módulo solo: pH, P, Na, K, Ca, Mg, Al, H+Al, SB, t, CTC, V, m, Fe, Cu, Zn, Mn, B, S, MO, PREM
+          dadosAmostra.ph = resultadosCalculados.ph !== undefined ? resultadosCalculados.ph.toFixed(2) : '';
+          dadosAmostra.p = resultadosCalculados.p !== undefined ? resultadosCalculados.p.toFixed(2) : '';
+          dadosAmostra.na = resultadosCalculados.na !== undefined ? resultadosCalculados.na.toFixed(2) : '';
+          dadosAmostra.k = resultadosCalculados.k !== undefined ? resultadosCalculados.k.toFixed(2) : '';
+          dadosAmostra.ca = resultadosCalculados.ca !== undefined ? resultadosCalculados.ca.toFixed(2) : '';
+          dadosAmostra.mg = resultadosCalculados.mg !== undefined ? resultadosCalculados.mg.toFixed(2) : '';
+          dadosAmostra.al = resultadosCalculados.al !== undefined ? resultadosCalculados.al.toFixed(2) : '';
+          dadosAmostra.h_al = resultadosCalculados.h_al !== undefined ? resultadosCalculados.h_al.toFixed(2) : '';
+          dadosAmostra.sb = resultadosCalculados.sb !== undefined ? resultadosCalculados.sb.toFixed(2) : '';
+          dadosAmostra.t = resultadosCalculados.t !== undefined ? resultadosCalculados.t.toFixed(2) : '';
+          dadosAmostra.ctc = resultadosCalculados.ctc !== undefined ? resultadosCalculados.ctc.toFixed(2) : '';
+          dadosAmostra.v = resultadosCalculados.v !== undefined ? resultadosCalculados.v.toFixed(2) : '';
+          dadosAmostra.m = resultadosCalculados.m !== undefined ? resultadosCalculados.m.toFixed(2) : '';
+          dadosAmostra.fe = resultadosCalculados.fe !== undefined ? resultadosCalculados.fe.toFixed(4) : '';
+          dadosAmostra.cu = resultadosCalculados.cu !== undefined ? resultadosCalculados.cu.toFixed(4) : '';
+          dadosAmostra.zn = resultadosCalculados.zn !== undefined ? resultadosCalculados.zn.toFixed(4) : '';
+          dadosAmostra.mn = resultadosCalculados.mn !== undefined ? resultadosCalculados.mn.toFixed(4) : '';
+          dadosAmostra.b = resultadosCalculados.b !== undefined ? resultadosCalculados.b.toFixed(4) : '';
+          dadosAmostra.s = resultadosCalculados.s !== undefined ? resultadosCalculados.s.toFixed(2) : '';
+          dadosAmostra.mo = resultadosCalculados.mo !== undefined ? resultadosCalculados.mo.toFixed(2) : '';
+          dadosAmostra.prem = resultadosCalculados.prem !== undefined ? resultadosCalculados.prem.toFixed(2) : '';
+        }
+
+        return dadosAmostra;
       })
     );
 

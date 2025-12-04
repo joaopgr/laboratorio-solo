@@ -395,34 +395,57 @@ export function exportRelatorioCompleto(relatorioData: any) {
     throw new Error('Dados de amostras inválidos')
   }
 
-  // Criar dados formatados para Excel
-  const dadosExcel = amostrasArray.map((amostra: any) => ({
-    'Cultura': amostra.cultura || '',
-    'Localidade': amostra.localidade || '',
-    'Data': amostra.data || '',
-    'pH': amostra.ph || '',
-    'P': amostra.p || '',
-    'Na': amostra.na || '',
-    'K': amostra.k || '',
-    'Ca': amostra.ca || '',
-    'Mg': amostra.mg || '',
-    'Al': amostra.al || '',
-    'H+Al': amostra.h_al || '',
-    'SB': amostra.sb || '',
-    't': amostra.t || '',
-    'CTC': amostra.ctc || '',
-    'V': amostra.v || '',
-    'm': amostra.m || '',
-    'Fe': amostra.fe || '',
-    'Cu': amostra.cu || '',
-    'Zn': amostra.zn || '',
-    'Mn': amostra.mn || '',
-    'B': amostra.b || '',
-    'S': amostra.s || '',
-    'MO': amostra.mo || '',
-    'PREM': amostra.prem || '',
-    'N': amostra.n || '', // Para foliar
-  }))
+  // Determinar módulo (verificar primeira amostra ou usar módulo do filtro)
+  const modulo = amostrasArray.length > 0 ? amostrasArray[0].modulo : 'solo'
+
+  // Criar dados formatados para Excel baseado no módulo
+  const dadosExcel = amostrasArray.map((amostra: any) => {
+    const baseData: any = {
+      'Cultura': amostra.cultura || '',
+      'Localidade': amostra.localidade || '',
+      'Data': amostra.data || '',
+    }
+
+    if (amostra.modulo === 'foliar') {
+      // Módulo foliar: P, K, Ca, Mg, S, Fe, Cu, Zn, Mn, B, N
+      baseData['P'] = amostra.p || ''
+      baseData['K'] = amostra.k || ''
+      baseData['Ca'] = amostra.ca || ''
+      baseData['Mg'] = amostra.mg || ''
+      baseData['S'] = amostra.s || ''
+      baseData['Fe'] = amostra.fe || ''
+      baseData['Cu'] = amostra.cu || ''
+      baseData['Zn'] = amostra.zn || ''
+      baseData['Mn'] = amostra.mn || ''
+      baseData['B'] = amostra.b || ''
+      baseData['N'] = amostra.n || ''
+    } else {
+      // Módulo solo: pH, P, Na, K, Ca, Mg, Al, H+Al, SB, t, CTC, V, m, Fe, Cu, Zn, Mn, B, S, MO, PREM
+      baseData['pH'] = amostra.ph || ''
+      baseData['P'] = amostra.p || ''
+      baseData['Na'] = amostra.na || ''
+      baseData['K'] = amostra.k || ''
+      baseData['Ca'] = amostra.ca || ''
+      baseData['Mg'] = amostra.mg || ''
+      baseData['Al'] = amostra.al || ''
+      baseData['H+Al'] = amostra.h_al || ''
+      baseData['SB'] = amostra.sb || ''
+      baseData['t'] = amostra.t || ''
+      baseData['CTC'] = amostra.ctc || ''
+      baseData['V'] = amostra.v || ''
+      baseData['m'] = amostra.m || ''
+      baseData['Fe'] = amostra.fe || ''
+      baseData['Cu'] = amostra.cu || ''
+      baseData['Zn'] = amostra.zn || ''
+      baseData['Mn'] = amostra.mn || ''
+      baseData['B'] = amostra.b || ''
+      baseData['S'] = amostra.s || ''
+      baseData['MO'] = amostra.mo || ''
+      baseData['PREM'] = amostra.prem || ''
+    }
+
+    return baseData
+  })
 
   const filename = `Relatorio_Completo_${new Date().toISOString().split('T')[0]}`
   exportToExcel(dadosExcel, { filename, sheetName: 'Relatório Completo' })
