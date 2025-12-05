@@ -72,8 +72,10 @@ export function ClienteForm({ cliente, isOpen, onClose, onSuccess, onCancel, asM
       newErrors.estado = 'UF é obrigatório'
     }
     
-    // Validação opcional do CPF (apenas se preenchido)
-    if (formData.cpf.trim() && !/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(formData.cpf)) {
+    // Validação obrigatória do CPF
+    if (!formData.cpf.trim()) {
+      newErrors.cpf = 'CPF é obrigatório'
+    } else if (!/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(formData.cpf)) {
       newErrors.cpf = 'CPF deve estar no formato 000.000.000-00'
     }
     
@@ -177,7 +179,7 @@ export function ClienteForm({ cliente, isOpen, onClose, onSuccess, onCancel, asM
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                CPF
+                CPF *
               </label>
               <input
                 type="text"

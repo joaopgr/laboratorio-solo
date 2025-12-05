@@ -49,7 +49,7 @@ function generateSearchVariations(term: string): string[] {
 // Schemas de validação
 const createClienteSchema = z.object({
   nome: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres'),
-  cpf: z.string().regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, 'CPF deve estar no formato 000.000.000-00').optional(),
+  cpf: z.string().regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, 'CPF deve estar no formato 000.000.000-00').min(1, 'CPF é obrigatório'),
   email: z.string().email('Email inválido').optional().or(z.literal('')),
   telefone: z.string().optional(),
   cidade: z.string().min(1, 'Cidade é obrigatória'),
@@ -182,13 +182,10 @@ router.post('/', async (req, res): Promise<any> => {
     // Limpar campos vazios para evitar problemas com constraints
     const clienteData: any = {
       nome: data.nome,
+      cpf: data.cpf,
       cidade: data.cidade,
       estado: data.estado
     };
-
-    if (data.cpf && data.cpf.trim() !== '') {
-      clienteData.cpf = data.cpf;
-    }
     if (data.email && data.email.trim() !== '') {
       clienteData.email = data.email;
     }

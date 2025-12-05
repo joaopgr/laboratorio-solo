@@ -44,7 +44,23 @@ export function useCreateCliente() {
       toast.success('Cliente criado com sucesso!')
     },
     onError: (error: any) => {
-      const message = error.response?.data?.error || 'Erro ao criar cliente'
+      let message = 'Erro ao criar cliente'
+      
+      if (error.response?.data) {
+        const errorData = error.response.data
+        
+        // Se houver detalhes de validação do Zod
+        if (errorData.details && Array.isArray(errorData.details)) {
+          const errorMessages = errorData.details.map((detail: any) => {
+            const field = detail.path?.join('.') || 'campo'
+            return `${field}: ${detail.message}`
+          })
+          message = errorMessages.join('; ') || errorData.error || message
+        } else if (errorData.error) {
+          message = errorData.error
+        }
+      }
+      
       toast.error(message)
     },
   })
@@ -64,7 +80,23 @@ export function useUpdateCliente() {
       toast.success('Cliente atualizado com sucesso!')
     },
     onError: (error: any) => {
-      const message = error.response?.data?.error || 'Erro ao atualizar cliente'
+      let message = 'Erro ao atualizar cliente'
+      
+      if (error.response?.data) {
+        const errorData = error.response.data
+        
+        // Se houver detalhes de validação do Zod
+        if (errorData.details && Array.isArray(errorData.details)) {
+          const errorMessages = errorData.details.map((detail: any) => {
+            const field = detail.path?.join('.') || 'campo'
+            return `${field}: ${detail.message}`
+          })
+          message = errorMessages.join('; ') || errorData.error || message
+        } else if (errorData.error) {
+          message = errorData.error
+        }
+      }
+      
       toast.error(message)
     },
   })
