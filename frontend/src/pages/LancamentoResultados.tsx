@@ -146,12 +146,21 @@ export function LancamentoResultados() {
 
   // Função para verificar se todas as amostras CARREGADAS já têm dados lançados
   const verificarSeJaFoiLancado = (tipo: string) => {
-    if (!amostrasData?.amostras) {
+    if (!amostrasData?.amostras || !tipo || tipo === '') {
       return false
     }
     
-    // Verificar se TODAS as amostras atualmente carregadas têm dados lançados para este tipo
-    const todasTemResultado = amostrasData.amostras.every((amostra: any) => {
+    // Filtrar apenas amostras que solicitam este tipo de análise
+    const amostrasRelevantes = amostrasData.amostras.filter((amostra: any) => {
+      return amostraSolicitaAnalise(amostra, tipo)
+    })
+    
+    if (amostrasRelevantes.length === 0) {
+      return false
+    }
+    
+    // Verificar se TODAS as amostras relevantes têm dados lançados para este tipo
+    const todasTemResultado = amostrasRelevantes.every((amostra: any) => {
       if (!amostra.resultados || amostra.resultados.length === 0) {
         return false
       }
@@ -1664,7 +1673,7 @@ export function LancamentoResultados() {
               )}
 
               {/* Seção para definir valor de Branco em lote */}
-              {((['H+Al', 'B', 'S'].includes(tipoResultado) && tipoAnalise === 'solo') || 
+              {((['H+Al', 'B', 'S', 'MO'].includes(tipoResultado) && tipoAnalise === 'solo') || 
                 (['S'].includes(tipoResultado) && tipoAnalise === 'foliar')) && (
                 <div className="mt-3 p-3 bg-amber-50 rounded border border-amber-200">
                   <h5 className="text-xs font-medium text-amber-900 mb-2">Branco em Lote</h5>

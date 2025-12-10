@@ -71,40 +71,58 @@ const resultadoBaseSchema = z.object({
   // Campos granulométricos
   massaRecipienteAreiaGrossa: z.union([z.number(), z.string()]).optional().transform(val => {
     if (val === '' || val === null || val === undefined) return undefined;
-    return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+    if (typeof val === 'number') return isNaN(val) ? undefined : val;
+    const parsed = parseFloat(val.replace(',', '.'));
+    return isNaN(parsed) ? undefined : parsed;
   }),
   massaRecipienteAreiaFina: z.union([z.number(), z.string()]).optional().transform(val => {
     if (val === '' || val === null || val === undefined) return undefined;
-    return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+    if (typeof val === 'number') return isNaN(val) ? undefined : val;
+    const parsed = parseFloat(val.replace(',', '.'));
+    return isNaN(parsed) ? undefined : parsed;
   }),
   massaRecipienteSilteArgila: z.union([z.number(), z.string()]).optional().transform(val => {
     if (val === '' || val === null || val === undefined) return undefined;
-    return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+    if (typeof val === 'number') return isNaN(val) ? undefined : val;
+    const parsed = parseFloat(val.replace(',', '.'));
+    return isNaN(parsed) ? undefined : parsed;
   }),
   massaRecipienteArgila: z.union([z.number(), z.string()]).optional().transform(val => {
     if (val === '' || val === null || val === undefined) return undefined;
-    return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+    if (typeof val === 'number') return isNaN(val) ? undefined : val;
+    const parsed = parseFloat(val.replace(',', '.'));
+    return isNaN(parsed) ? undefined : parsed;
   }),
   massaRecipientePartAreiaGrossa: z.union([z.number(), z.string()]).optional().transform(val => {
     if (val === '' || val === null || val === undefined) return undefined;
-    return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+    if (typeof val === 'number') return isNaN(val) ? undefined : val;
+    const parsed = parseFloat(val.replace(',', '.'));
+    return isNaN(parsed) ? undefined : parsed;
   }),
   massaRecipientePartAreiaFina: z.union([z.number(), z.string()]).optional().transform(val => {
     if (val === '' || val === null || val === undefined) return undefined;
-    return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+    if (typeof val === 'number') return isNaN(val) ? undefined : val;
+    const parsed = parseFloat(val.replace(',', '.'));
+    return isNaN(parsed) ? undefined : parsed;
   }),
   massaRecipientePartSilteArgila: z.union([z.number(), z.string()]).optional().transform(val => {
     if (val === '' || val === null || val === undefined) return undefined;
-    return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+    if (typeof val === 'number') return isNaN(val) ? undefined : val;
+    const parsed = parseFloat(val.replace(',', '.'));
+    return isNaN(parsed) ? undefined : parsed;
   }),
   massaRecipientePartArgila: z.union([z.number(), z.string()]).optional().transform(val => {
     if (val === '' || val === null || val === undefined) return undefined;
-    return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+    if (typeof val === 'number') return isNaN(val) ? undefined : val;
+    const parsed = parseFloat(val.replace(',', '.'));
+    return isNaN(parsed) ? undefined : parsed;
   }),
   // Campo TFSA
   tfsa: z.union([z.number(), z.string()]).optional().transform(val => {
     if (val === '' || val === null || val === undefined) return undefined;
-    return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+    if (typeof val === 'number') return isNaN(val) ? undefined : val;
+    const parsed = parseFloat(val.replace(',', '.'));
+    return isNaN(parsed) ? undefined : parsed;
   }),
   // Campos de análise química
   ph: z.union([z.number(), z.string()]).optional().transform(val => {
@@ -239,15 +257,21 @@ const resultadoBaseSchema = z.object({
   // Campos granulométricos - massa para o fator F
   massaLata: z.union([z.number(), z.string()]).optional().transform(val => {
     if (val === '' || val === null || val === undefined) return undefined;
-    return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+    if (typeof val === 'number') return isNaN(val) ? undefined : val;
+    const parsed = parseFloat(val.replace(',', '.'));
+    return isNaN(parsed) ? undefined : parsed;
   }),
   massaLataSu: z.union([z.number(), z.string()]).optional().transform(val => {
     if (val === '' || val === null || val === undefined) return undefined;
-    return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+    if (typeof val === 'number') return isNaN(val) ? undefined : val;
+    const parsed = parseFloat(val.replace(',', '.'));
+    return isNaN(parsed) ? undefined : parsed;
   }),
   massaLataSs: z.union([z.number(), z.string()]).optional().transform(val => {
     if (val === '' || val === null || val === undefined) return undefined;
-    return typeof val === 'string' ? parseFloat(val.replace(',', '.')) : val;
+    if (typeof val === 'number') return isNaN(val) ? undefined : val;
+    const parsed = parseFloat(val.replace(',', '.'));
+    return isNaN(parsed) ? undefined : parsed;
   }),
 });
 
@@ -683,14 +707,26 @@ router.post('/lote', async (req, res): Promise<any> => {
     });
   } catch (error) {
     if (error instanceof z.ZodError) {
+      console.error('❌ Erro de validação Zod ao criar resultados em lote:');
+      console.error('Erros detalhados:', JSON.stringify(error.errors, null, 2));
+      console.error('Dados recebidos:', JSON.stringify(req.body, null, 2));
       return res.status(400).json({ 
         error: 'Dados inválidos',
-        details: error.errors
+        details: error.errors.map(e => ({
+          path: e.path.join('.'),
+          message: e.message,
+          code: e.code
+        }))
       });
     }
     
     console.error('Erro ao criar resultados em lote:', error);
-    return res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error('Stack trace:', error instanceof Error ? error.stack : 'N/A');
+    console.error('Dados recebidos:', JSON.stringify(req.body, null, 2));
+    return res.status(500).json({ 
+      error: 'Erro interno do servidor',
+      message: error instanceof Error ? error.message : 'Erro desconhecido'
+    });
   }
 });
 
