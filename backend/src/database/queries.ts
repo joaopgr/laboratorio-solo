@@ -548,9 +548,26 @@ export const SQL_QUERIES = {
       });
       const values = fields.map((_, index) => `$${index + 1}`);
       
+      // Mapear nomes de campos para nomes corretos do banco (case-sensitive)
+      const fieldMapping: Record<string, string> = {
+        'massaRecipienteAreiaGrossa': '"massaRecipienteAreiaGrossa"',
+        'massaRecipienteAreiaFina': '"massaRecipienteAreiaFina"',
+        'massaRecipienteSilteArgila': '"massaRecipienteSilteArgila"',
+        'massaRecipienteArgila': '"massaRecipienteArgila"',
+        'massaRecipientePartAreiaGrossa': '"massaRecipientePartAreiaGrossa"',
+        'massaRecipientePartAreiaFina': '"massaRecipientePartAreiaFina"',
+        'massaRecipientePartSilteArgila': '"massaRecipientePartSilteArgila"',
+        'massaRecipientePartArgila': '"massaRecipientePartArgila"',
+        'massaLata': '"massaLata"',
+        'massaLataSu': '"massaLataSu"',
+        'massaLataSs': '"massaLataSs"',
+      };
+      
+      const mappedFields = fields.map(f => fieldMapping[f] || `"${f}"`);
+      
       return {
         query: `
-          INSERT INTO resultados (id, ${fields.map(f => `"${f}"`).join(', ')}, "createdAt", "updatedAt")
+          INSERT INTO resultados (id, ${mappedFields.join(', ')}, "createdAt", "updatedAt")
           VALUES (gen_random_uuid(), ${values.join(', ')}, NOW(), NOW())
           RETURNING *
         `,
@@ -564,7 +581,26 @@ export const SQL_QUERIES = {
         const value = data[key];
         return value !== undefined && value !== null && value !== '';
       });
-      const setClause = fields.map((field, index) => `"${field}" = $${index + 2}`);
+      
+      // Mapear nomes de campos para nomes corretos do banco (case-sensitive)
+      const fieldMapping: Record<string, string> = {
+        'massaRecipienteAreiaGrossa': '"massaRecipienteAreiaGrossa"',
+        'massaRecipienteAreiaFina': '"massaRecipienteAreiaFina"',
+        'massaRecipienteSilteArgila': '"massaRecipienteSilteArgila"',
+        'massaRecipienteArgila': '"massaRecipienteArgila"',
+        'massaRecipientePartAreiaGrossa': '"massaRecipientePartAreiaGrossa"',
+        'massaRecipientePartAreiaFina': '"massaRecipientePartAreiaFina"',
+        'massaRecipientePartSilteArgila': '"massaRecipientePartSilteArgila"',
+        'massaRecipientePartArgila': '"massaRecipientePartArgila"',
+        'massaLata': '"massaLata"',
+        'massaLataSu': '"massaLataSu"',
+        'massaLataSs': '"massaLataSs"',
+      };
+      
+      const setClause = fields.map((field, index) => {
+        const mappedField = fieldMapping[field] || `"${field}"`;
+        return `${mappedField} = $${index + 2}`;
+      });
       
       return {
         query: `
