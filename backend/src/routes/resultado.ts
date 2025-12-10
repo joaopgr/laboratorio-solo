@@ -658,15 +658,24 @@ router.post('/lote', async (req, res): Promise<any> => {
           [validatedData.amostraId, validatedData.tipo, validatedData.categoria]
         );
 
+        // Remover campos undefined antes de criar/atualizar
+        const dadosLimpos: any = {};
+        Object.keys(validatedData).forEach(key => {
+          const value = validatedData[key as keyof typeof validatedData];
+          if (value !== undefined && value !== null && value !== '') {
+            dadosLimpos[key] = value;
+          }
+        });
+
         let resultado;
         if (checkExisting.rows[0]?.id) {
           const existingId = checkExisting.rows[0].id as string;
-          const { query: updateQuery, params: updateParams } = SQL_QUERIES.resultados.update(existingId, validatedData);
+          const { query: updateQuery, params: updateParams } = SQL_QUERIES.resultados.update(existingId, dadosLimpos);
           const upd = await query(updateQuery, updateParams);
           resultado = upd.rows[0];
         } else {
-          const { query: createQuery, params: createParams } = SQL_QUERIES.resultados.create(validatedData);
-          console.log('📝 Criando resultado:', { tipo: validatedData.tipo, categoria: validatedData.categoria, campos: Object.keys(validatedData) });
+          const { query: createQuery, params: createParams } = SQL_QUERIES.resultados.create(dadosLimpos);
+          console.log('📝 Criando resultado:', { tipo: dadosLimpos.tipo, categoria: dadosLimpos.categoria, campos: Object.keys(dadosLimpos) });
           console.log('📝 Query:', createQuery);
           console.log('📝 Params:', createParams);
           const ins = await query(createQuery, createParams);

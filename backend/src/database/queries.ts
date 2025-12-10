@@ -542,7 +542,10 @@ export const SQL_QUERIES = {
 
     // Criar resultado
     create: (data: any) => {
-      const fields = Object.keys(data).filter(key => data[key] !== undefined);
+      const fields = Object.keys(data).filter(key => {
+        const value = data[key];
+        return value !== undefined && value !== null && value !== '';
+      });
       const values = fields.map((_, index) => `$${index + 1}`);
       
       return {
@@ -557,7 +560,10 @@ export const SQL_QUERIES = {
 
     // Atualizar resultado
     update: (id: string, data: any) => {
-      const fields = Object.keys(data).filter(key => data[key] !== undefined);
+      const fields = Object.keys(data).filter(key => {
+        const value = data[key];
+        return value !== undefined && value !== null && value !== '';
+      });
       const setClause = fields.map((field, index) => `"${field}" = $${index + 2}`);
       
       return {
