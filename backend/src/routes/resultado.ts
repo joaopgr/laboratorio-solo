@@ -641,36 +641,45 @@ router.post('/lote', async (req, res): Promise<any> => {
     const amostrasAfetadas = new Set<string>();
 
     for (const data of resultados) {
-      const validatedData = createResultadoSchema.parse(data);
+      try {
+        const validatedData = createResultadoSchema.parse(data);
 
-      // Verificar se amostra existe
-      const { query: amostraQuery, params: amostraParams } = SQL_QUERIES.amostras.findById(validatedData.amostraId);
-      const amostraResult = await query(amostraQuery, amostraParams);
-      
-      if (!amostraResult.rows[0]) {
-        return res.status(400).json({ error: `Amostra ${validatedData.amostraId} não encontrada` });
+        // Verificar se amostra existe
+        const { query: amostraQuery, params: amostraParams } = SQL_QUERIES.amostras.findById(validatedData.amostraId);
+        const amostraResult = await query(amostraQuery, amostraParams);
+        
+        if (!amostraResult.rows[0]) {
+          return res.status(400).json({ error: `Amostra ${validatedData.amostraId} não encontrada` });
+        }
+
+        // Upsert: se já existir resultado para mesmo (amostraId, tipo, categoria), atualizar em vez de criar
+        const checkExisting = await query(
+          'SELECT id FROM resultados WHERE "amostraId" = $1 AND tipo = $2 AND categoria = $3 ORDER BY "createdAt" DESC LIMIT 1',
+          [validatedData.amostraId, validatedData.tipo, validatedData.categoria]
+        );
+
+        let resultado;
+        if (checkExisting.rows[0]?.id) {
+          const existingId = checkExisting.rows[0].id as string;
+          const { query: updateQuery, params: updateParams } = SQL_QUERIES.resultados.update(existingId, validatedData);
+          const upd = await query(updateQuery, updateParams);
+          resultado = upd.rows[0];
+        } else {
+          const { query: createQuery, params: createParams } = SQL_QUERIES.resultados.create(validatedData);
+          console.log('📝 Criando resultado:', { tipo: validatedData.tipo, categoria: validatedData.categoria, campos: Object.keys(validatedData) });
+          console.log('📝 Query:', createQuery);
+          console.log('📝 Params:', createParams);
+          const ins = await query(createQuery, createParams);
+          resultado = ins.rows[0];
+        }
+
+        resultadosCriados.push(resultado);
+        amostrasAfetadas.add(validatedData.amostraId);
+      } catch (error) {
+        console.error('❌ Erro ao processar resultado individual:', error);
+        console.error('❌ Dados do resultado:', JSON.stringify(data, null, 2));
+        throw error; // Re-throw para ser capturado pelo catch externo
       }
-
-      // Upsert: se já existir resultado para mesmo (amostraId, tipo, categoria), atualizar em vez de criar
-      const checkExisting = await query(
-        'SELECT id FROM resultados WHERE "amostraId" = $1 AND tipo = $2 AND categoria = $3 ORDER BY "createdAt" DESC LIMIT 1',
-        [validatedData.amostraId, validatedData.tipo, validatedData.categoria]
-      );
-
-      let resultado;
-      if (checkExisting.rows[0]?.id) {
-        const existingId = checkExisting.rows[0].id as string;
-        const { query: updateQuery, params: updateParams } = SQL_QUERIES.resultados.update(existingId, validatedData);
-        const upd = await query(updateQuery, updateParams);
-        resultado = upd.rows[0];
-      } else {
-        const { query: createQuery, params: createParams } = SQL_QUERIES.resultados.create(validatedData);
-        const ins = await query(createQuery, createParams);
-        resultado = ins.rows[0];
-      }
-
-      resultadosCriados.push(resultado);
-      amostrasAfetadas.add(validatedData.amostraId);
     }
 
     // Atualizar status das amostras afetadas e coletar lotes afetados

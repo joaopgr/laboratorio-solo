@@ -168,6 +168,12 @@ export function LancamentoResultados() {
       if (tipo === 'H+Al') {
         // Para H+Al, verificar se existe resultado do tipo H+Al
         return amostra.resultados.some((r: any) => r.tipo === 'H+Al')
+      } else if (tipo === 'MASSA_GERAL') {
+        // Para MASSA_GERAL, verificar se existe resultado do tipo MASSA_GERAL ou se tem massaGeral
+        return amostra.resultados.some((r: any) => 
+          r.tipo === 'MASSA_GERAL' || 
+          (r.massaGeral !== null && r.massaGeral !== undefined && r.massaGeral !== '')
+        )
       } else {
         // Para outros tipos, verificar se existe resultado do tipo específico
         return amostra.resultados.some((r: any) => r.tipo === tipo)
@@ -1385,6 +1391,10 @@ export function LancamentoResultados() {
         break
       case 'Nitrogênio':
         resultado = amostraTemAnalise('nitrogenio')
+        break
+      case 'Foliar':
+        // Para tipos foliares (MASSA_GERAL, DETERMINACAO_F), sempre retornar true se estiver no módulo foliar
+        resultado = tipoAnalise === 'foliar'
         break
       case 'Granulométrica':
         // Usar o módulo atual do contexto, não o tipoAnalise
