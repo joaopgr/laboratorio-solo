@@ -166,10 +166,42 @@ export function useCreateResultadosLote() {
         categoria: modulo
       }))
       
-      const response = await api.post<Resultado[]>('/resultados/lote', {
-        resultados: resultadosComCategoria
-      })
-      return response.data
+      // Logs detalhados antes de enviar
+      console.log('🔍 [DEBUG API] Enviando dados para /resultados/lote:', {
+        totalResultados: resultadosComCategoria.length,
+        modulo,
+        resultados: resultadosComCategoria.map(r => ({
+          amostraId: r.amostraId,
+          tipo: r.tipo,
+          categoria: r.categoria,
+          camposEnviados: Object.keys(r).filter(k => {
+            const value = r[k as keyof typeof r];
+            return value !== undefined && value !== null && value !== '';
+          }),
+          dadosCompletos: r
+        }))
+      });
+
+      try {
+        const response = await api.post<Resultado[]>('/resultados/lote', {
+          resultados: resultadosComCategoria
+        })
+        console.log('✅ [DEBUG API] Resposta recebida:', response.data);
+        return response.data
+      } catch (error: any) {
+        console.error('❌ [DEBUG API] Erro ao enviar:', {
+          message: error.message,
+          response: error.response?.data,
+          status: error.response?.status,
+          statusText: error.response?.statusText,
+          headers: error.response?.headers,
+          dadosEnviados: {
+            totalResultados: resultadosComCategoria.length,
+            resultados: resultadosComCategoria
+          }
+        });
+        throw error;
+      }
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['resultados'] })
