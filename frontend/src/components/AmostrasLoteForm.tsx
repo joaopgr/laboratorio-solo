@@ -201,17 +201,17 @@ export function AmostrasLoteForm({ cliente, isOpen, onClose }: AmostrasLoteFormP
       for (let loteIndex = 0; loteIndex < lotesAmostras.length; loteIndex++) {
         const amostrasDoLote = lotesAmostras[loteIndex]
         
-        // 1. Criar o lote automaticamente
-        const loteData = {
-          codigo: '', // Será gerado automaticamente pelo backend
-          dataEntrega: new Date().toISOString(), // Data atual em formato ISO
+      // 1. Criar o lote automaticamente
+      const loteData = {
+        codigo: '', // Será gerado automaticamente pelo backend
+        dataEntrega: new Date().toISOString(), // Data atual em formato ISO
           observacoes: lotesAmostras.length > 1 
             ? `Lote gerado automaticamente (${loteIndex + 1}/${lotesAmostras.length})`
             : 'Lote gerado automaticamente',
-          status: 'pendente' as const,
-          pago: false,
-          clienteId: cliente.id,
-          tipoAnalise: modulo,
+        status: 'pendente' as const,
+        pago: false,
+        clienteId: cliente.id,
+        tipoAnalise: modulo,
           // Tipos de análise - determinar baseado nas amostras deste lote
           rotina: amostrasDoLote.some(a => a.rotina),
           organica: amostrasDoLote.some(a => a.organica),
@@ -221,33 +221,33 @@ export function AmostrasLoteForm({ cliente, isOpen, onClose }: AmostrasLoteFormP
           nitrogenio: amostrasDoLote.some(a => a.nitrogenio),
           granulometria: amostrasDoLote.some(a => a.granulometria),
           foliar: amostrasDoLote.some(a => a.foliar),
-        }
+      }
 
-        const lote = await createLote.mutateAsync(loteData)
-        
-        // 2. Criar todas as amostras vinculadas ao lote
+           const lote = await createLote.mutateAsync(loteData)
+      
+      // 2. Criar todas as amostras vinculadas ao lote
         const amostrasData = amostrasDoLote.map(amostra => ({
-          codigo: amostra.codigo,
-          identificacao: amostra.identificacao,
-          cultura: amostra.cultura,
-          localidade: amostra.localidade || '',
-          dataColeta: amostra.dataColeta ? new Date(amostra.dataColeta).toISOString() : undefined,
-          observacoes: amostra.observacoes || '',
-          tipoAnalise: modulo,
-          rotina: amostra.rotina,
-          organica: amostra.organica,
-          micronutrientes: amostra.micronutrientes,
-          enxofre: amostra.enxofre,
-          prem: amostra.prem,
-          nitrogenio: amostra.nitrogenio,
-          granulometria: amostra.granulometria,
-          foliar: amostra.foliar,
-          pago: amostra.pago,
-          loteId: lote.id,
-        }))
+        codigo: amostra.codigo,
+        identificacao: amostra.identificacao,
+        cultura: amostra.cultura,
+        localidade: amostra.localidade || '',
+        dataColeta: amostra.dataColeta ? new Date(amostra.dataColeta).toISOString() : undefined,
+        observacoes: amostra.observacoes || '',
+        tipoAnalise: modulo,
+        rotina: amostra.rotina,
+        organica: amostra.organica,
+        micronutrientes: amostra.micronutrientes,
+        enxofre: amostra.enxofre,
+        prem: amostra.prem,
+        nitrogenio: amostra.nitrogenio,
+        granulometria: amostra.granulometria,
+        foliar: amostra.foliar,
+        pago: amostra.pago,
+        loteId: lote.id,
+      }))
 
-        for (const amostraData of amostrasData) {
-          await createAmostra.mutateAsync(amostraData)
+      for (const amostraData of amostrasData) {
+        await createAmostra.mutateAsync(amostraData)
         }
       }
       

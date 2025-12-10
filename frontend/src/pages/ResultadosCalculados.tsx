@@ -162,11 +162,11 @@ export function ResultadosCalculados() {
       } else {
         // Se está desmarcando, apenas desmarcar este
         return {
-          ...prev,
-          tiposAnalise: {
-            ...prev.tiposAnalise,
+      ...prev,
+      tiposAnalise: {
+        ...prev.tiposAnalise,
             [tipo]: false
-          }
+      }
         }
       }
     })

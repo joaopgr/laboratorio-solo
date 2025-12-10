@@ -126,14 +126,6 @@ export function LancamentoResultados() {
     }
   };
   
-  // Debug dos dados recebidos da API
-  useEffect(() => {
-    if (amostrasData?.amostras) {
-      const amostra03 = amostrasData.amostras.find((a: any) => a.codigo === '03')
-      if (amostra03) {
-      }
-    }
-  }, [amostrasData])
   const createResultadosLote = useCreateResultadosLote()
 
   // Função para converter códigos automaticamente baseado no módulo
@@ -174,6 +166,27 @@ export function LancamentoResultados() {
           r.tipo === 'MASSA_GERAL' || 
           (r.massaGeral !== null && r.massaGeral !== undefined && r.massaGeral !== '')
         )
+      } else if (tipo === 'MO') {
+        // Para Matéria Orgânica, verificar se existe resultado do tipo MO
+        return amostra.resultados.some((r: any) => r.tipo === 'MO')
+      } else if (tipo === 'PREM') {
+        // Para PREM, verificar se existe resultado do tipo PREM
+        return amostra.resultados.some((r: any) => r.tipo === 'PREM')
+      } else if (tipo === 'S') {
+        // Para Enxofre, verificar se existe resultado do tipo S
+        return amostra.resultados.some((r: any) => r.tipo === 'S')
+      } else if (tipo === 'N') {
+        // Para Nitrogênio, verificar se existe resultado do tipo N
+        return amostra.resultados.some((r: any) => r.tipo === 'N')
+      } else if (['P', 'K', 'Ca', 'Mg', 'pH', 'Na'].includes(tipo)) {
+        // Para tipos de rotina, verificar se existe resultado do tipo específico
+        return amostra.resultados.some((r: any) => r.tipo === tipo)
+      } else if (['Fe', 'Zn', 'Cu', 'Mn', 'B'].includes(tipo)) {
+        // Para micronutrientes, verificar se existe resultado do tipo específico
+        return amostra.resultados.some((r: any) => r.tipo === tipo)
+      } else if (['GRAN_MASSA_RECIPIENTES', 'GRAN_MASSA_RECIPIENTES_PARTICULAS', 'GRAN_MASSA_FATOR_F'].includes(tipo)) {
+        // Para tipos granulométricos, verificar se existe resultado do tipo específico
+        return amostra.resultados.some((r: any) => r.tipo === tipo)
       } else {
         // Para outros tipos, verificar se existe resultado do tipo específico
         return amostra.resultados.some((r: any) => r.tipo === tipo)
@@ -1333,50 +1346,6 @@ export function LancamentoResultados() {
           })
       }
 
-      // Logs detalhados para debug
-      console.log('🔍 [DEBUG] Preparando para enviar resultados:', {
-        totalResultados: resultados.length,
-        tipoResultado,
-        tipoAnalise,
-        resultados: resultados.map(r => ({
-          amostraId: r.amostraId,
-          tipo: r.tipo,
-          categoria: r.categoria,
-          campos: Object.keys(r).filter(k => r[k as keyof typeof r] !== undefined),
-          valores: Object.keys(r).reduce((acc, key) => {
-            const value = r[key as keyof typeof r];
-            if (value !== undefined && value !== null && value !== '') {
-              acc[key] = value;
-            }
-            return acc;
-          }, {} as any)
-        }))
-      });
-
-      // Log específico para granulometria
-      if (['GRAN_MASSA_RECIPIENTES', 'GRAN_MASSA_RECIPIENTES_PARTICULAS', 'GRAN_MASSA_FATOR_F'].includes(tipoResultado)) {
-        console.log('🔍 [DEBUG GRANULOMETRIA] Dados granulométricos:', {
-          tipoResultado,
-          resultadosGranulometricos: resultados.map(r => ({
-            amostraId: r.amostraId,
-            tipo: r.tipo,
-            categoria: r.categoria,
-            massaRecipienteAreiaGrossa: r.massaRecipienteAreiaGrossa,
-            massaRecipienteAreiaFina: r.massaRecipienteAreiaFina,
-            massaRecipienteSilteArgila: r.massaRecipienteSilteArgila,
-            massaRecipienteArgila: r.massaRecipienteArgila,
-            massaRecipientePartAreiaGrossa: r.massaRecipientePartAreiaGrossa,
-            massaRecipientePartAreiaFina: r.massaRecipientePartAreiaFina,
-            massaRecipientePartSilteArgila: r.massaRecipientePartSilteArgila,
-            massaRecipientePartArgila: r.massaRecipientePartArgila,
-            tfsa: r.tfsa,
-            massaLata: r.massaLata,
-            massaLataSu: r.massaLataSu,
-            massaLataSs: r.massaLataSs,
-            todosOsCampos: r
-          }))
-        });
-      }
 
       const response = await createResultadosLote.mutateAsync({ resultados })
       

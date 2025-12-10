@@ -1136,6 +1136,7 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
             padding: 3px 2px;
             text-align: center;
             vertical-align: middle;
+            line-height: 1.4;
         }
         
         th {
@@ -1144,6 +1145,13 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
             font-weight: bold;
             font-size: 9px;
             border: 2px solid #000;
+            vertical-align: middle;
+            padding: 4px 2px;
+        }
+        
+        td {
+            vertical-align: middle;
+            padding: 4px 2px;
         }
         
         .table-title {
