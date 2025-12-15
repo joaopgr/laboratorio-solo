@@ -345,7 +345,7 @@ export function ResultadoForm({
     
     // MATÉRIA ORGÂNICA - apenas para solo e se solicitado
     if (modulo === 'solo' && (!amostra || amostra.organica)) {
-      tipos.push({ value: 'MO', label: 'Matéria Orgânica', categoria: 'Matéria Orgânica', campos: ['valor', 'massa', 'branco'] })
+      tipos.push({ value: 'MO', label: 'Matéria Orgânica', categoria: 'Matéria Orgânica', campos: ['massa', 'valor', 'branco'] })
     }
     
     // PREM - apenas para solo e se solicitado

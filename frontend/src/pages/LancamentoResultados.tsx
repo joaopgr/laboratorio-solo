@@ -218,7 +218,7 @@ export function LancamentoResultados() {
     { value: 'B', label: 'Boro (B)', categoria: 'Micronutrientes', campos: tipoAnalise === 'foliar' ? ['massa_b_foliar', 'valor', 'dil_b', 'branco_b', 'param_a', 'param_b'] : ['valor', 'branco', 'param_a', 'param_b'] },
     
     // MATÉRIA ORGÂNICA - apenas para solo
-    ...(tipoAnalise === 'solo' ? [{ value: 'MO', label: 'Matéria Orgânica', categoria: 'Matéria Orgânica', campos: ['valor', 'massa', 'branco'] }] : []),
+    ...(tipoAnalise === 'solo' ? [{ value: 'MO', label: 'Matéria Orgânica', categoria: 'Matéria Orgânica', campos: ['massa', 'valor', 'branco'] }] : []),
     
     // PREM - apenas para solo
     ...(tipoAnalise === 'solo' ? [{ value: 'PREM', label: 'PREM', categoria: 'PREM', campos: ['valor', 'diluicao', 'param_a', 'param_b'] }] : []),
