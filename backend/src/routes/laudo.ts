@@ -1188,7 +1188,7 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
             background-color: #f8f9fa;
         }
         
-        .methodology {
+        .unified-text-box {
             margin: 15px 0;
             font-size: 9px;
             line-height: 1.2;
@@ -1199,10 +1199,20 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
             border: 2px solid #000;
         }
         
+        .methodology {
+            margin: 0;
+            font-size: 9px;
+            line-height: 1.2;
+            text-align: justify;
+            background-color: transparent;
+            padding: 0;
+            border: none;
+        }
+        
         .methodology h4 {
             font-size: 10px;
             font-weight: bold;
-            margin: 8px 0 6px 0;
+            margin: 0 0 6px 0;
             color: #000;
             text-transform: uppercase;
         }
@@ -1212,25 +1222,23 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
         }
         
         .observations {
-            margin: 12px 0;
+            margin: 8px 0 0 0;
             font-size: 9px;
             line-height: 1.2;
-            background-color: white;
-            padding: 8px;
-            border: 2px solid #000;
-            border-radius: 3px;
+            background-color: transparent;
+            padding: 0;
+            border: none;
         }
         
         .legal-disclaimer {
-            margin: 12px 0;
+            margin: 8px 0 0 0;
             font-size: 8px;
             line-height: 1.2;
             color: #000;
             text-align: justify;
-            background-color: white;
-            padding: 8px;
-            border-radius: 3px;
-            border: 1px solid #000;
+            background-color: transparent;
+            padding: 0;
+            border: none;
         }
         
         .footer {
@@ -1533,24 +1541,26 @@ async function gerarPDFLaudoSobrio(lote: any, amostras: any[], resultados: any[]
       </div>
     `}
     
-    <div class="methodology">
-        <h4>METODOLOGIA</h4>
-        ${tipoAnalise === 'granulometrica' ? `
-        <p><strong>Método utilizado:</strong> Agitação lenta a 50 rpm por 16 horas, com agitador tipo Wagner; dispersante químico: NaOH 0,1 mol/L e determinação das frações silte e argila pelo método da pipeta.</p>
-        ` : modulo === 'foliar' ? `
-        <p><strong>N:</strong> Digestão sulfúrica, destilação e determinação por titulometria | <strong>B:</strong> Calcinação e determinação por colorimetria | <strong>K:</strong> Digestão nitro-perclórica e determinação por fotometria de chama | <strong>P e S:</strong> Digestão nitro-perclórica e determinação por colorimetria | <strong>Ca, Mg, Fe, Cu, Zn e Mn:</strong> Digestão nitro-perclórica e determinação por absorção atômica.</p>
-        ` : `
-        <p><strong>pH:</strong> relação solo-água 1:2,5 | <strong>P:</strong> extrator Mehlich 1 e determinação por colorimetria | <strong>Na e K:</strong> extrator Mehlich-1 e determinação por fotometria de chama | <strong>Ca e Mg:</strong> extrator KCl 1 mol/L e determinação por espectrometria de absorção atómica | <strong>Al:</strong> extrator KCl 1 mol/L e determinação por titulometria | <strong>H+Al:</strong> extrator Acetato de Cálcio 0,5 mol/L pH 7,0 e determinação por titulometria | <strong>SB:</strong> Soma de bases trocáveis | <strong>t:</strong> capacidade de troca catiónica efetiva | <strong>CTC7,0 (T):</strong> capacidade de troca catiónica a pH 7,0 | <strong>V:</strong> Índice de saturação de bases | <strong>m:</strong> Índice de saturação por alumínio | <strong>Fe, Cu, Zn e Mn:</strong> extrator Mehlich-1 e determinação por espectrometria de absorção atómica | <strong>B:</strong> extração por água quente e determinação por colorimetria | <strong>Matéria Orgânica:</strong> oxidação de carbono via úmida com dicromato de potássio em meio ácido (H2SO4) | <strong>P rem (fósforo remanescente):</strong> solução de CaCl2 0,01 mol/L contendo 60 mg/L de P</p>
-        `}
+    <div class="unified-text-box">
+        <div class="methodology">
+            <h4>METODOLOGIA</h4>
+            ${tipoAnalise === 'granulometrica' ? `
+            <p><strong>Método utilizado:</strong> Agitação lenta a 50 rpm por 16 horas, com agitador tipo Wagner; dispersante químico: NaOH 0,1 mol/L e determinação das frações silte e argila pelo método da pipeta.</p>
+            ` : modulo === 'foliar' ? `
+            <p><strong>N:</strong> Digestão sulfúrica, destilação e determinação por titulometria | <strong>B:</strong> Calcinação e determinação por colorimetria | <strong>K:</strong> Digestão nitro-perclórica e determinação por fotometria de chama | <strong>P e S:</strong> Digestão nitro-perclórica e determinação por colorimetria | <strong>Ca, Mg, Fe, Cu, Zn e Mn:</strong> Digestão nitro-perclórica e determinação por absorção atômica.</p>
+            ` : `
+            <p><strong>pH:</strong> relação solo-água 1:2,5 | <strong>P:</strong> extrator Mehlich 1 e determinação por colorimetria | <strong>Na e K:</strong> extrator Mehlich-1 e determinação por fotometria de chama | <strong>Ca e Mg:</strong> extrator KCl 1 mol/L e determinação por espectrometria de absorção atómica | <strong>Al:</strong> extrator KCl 1 mol/L e determinação por titulometria | <strong>H+Al:</strong> extrator Acetato de Cálcio 0,5 mol/L pH 7,0 e determinação por titulometria | <strong>SB:</strong> Soma de bases trocáveis | <strong>t:</strong> capacidade de troca catiónica efetiva | <strong>CTC7,0 (T):</strong> capacidade de troca catiónica a pH 7,0 | <strong>V:</strong> Índice de saturação de bases | <strong>m:</strong> Índice de saturação por alumínio | <strong>Fe, Cu, Zn e Mn:</strong> extrator Mehlich-1 e determinação por espectrometria de absorção atómica | <strong>B:</strong> extração por água quente e determinação por colorimetria | <strong>Matéria Orgânica:</strong> oxidação de carbono via úmida com dicromato de potássio em meio ácido (H2SO4) | <strong>P rem (fósforo remanescente):</strong> solução de CaCl2 0,01 mol/L contendo 60 mg/L de P</p>
+            `}
         </div>
 
-    <div class="observations">
-        <strong>Obs:</strong> As amostras ficarão armazenadas por um período de dois meses antes de serem descartadas.
+        <div class="observations">
+            <strong>Obs:</strong> As amostras ficarão armazenadas por um período de dois meses antes de serem descartadas.
         </div>
 
-    <div class="legal-disclaimer">
-        <p>De acordo com o Código Penal, art. 297 a falsificação ou alteração, no todo ou em parte, de documento público, acarreta multa e pena com reclusão de dois a seis anos.</p>
+        <div class="legal-disclaimer">
+            <p>De acordo com o Código Penal, art. 297 a falsificação ou alteração, no todo ou em parte, de documento público, acarreta multa e pena com reclusão de dois a seis anos.</p>
         </div>
+    </div>
 
     ${qrCodeHTML}
     
